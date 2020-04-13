@@ -21,7 +21,8 @@ from django.contrib import admin
 
 
 class State(models.Model):
-    state_id  			= models.IntegerField(primary_key=True)
+    state_id  			= models.BigAutoField(primary_key=True)
+    #state_id  			= models.IntegerField(primary_key=True)
     state_name			= models.CharField(max_length=250,unique=True)
     creation_date		= models.DateTimeField(auto_now_add=True)
 
@@ -31,7 +32,8 @@ class State(models.Model):
 
 
 class District(models.Model):
-    district_id			= models.IntegerField(primary_key=True)
+    #district_id			= models.IntegerField(primary_key=True)
+    district_id			= models.BigAutoField(primary_key=True)
     district_name		= models.CharField(max_length=250,unique=True)
     state_id 			= models.ForeignKey(State,on_delete=models.CASCADE)
     creation_date = models.DateTimeField(auto_now_add=True)
@@ -41,7 +43,8 @@ class District(models.Model):
 
 
 class Hospital(models.Model):
-	hospital_id				= models.IntegerField(primary_key=True)
+	#hospital_id				= models.IntegerField(primary_key=True)
+	hospital_id			= models.BigAutoField(primary_key=True)
 	district_id 			= models.ForeignKey(District,on_delete=models.CASCADE)
 	hospital_name			= models.CharField(max_length=250)
 	hospital_type			= models.CharField(max_length=250)
@@ -58,7 +61,8 @@ class Hospital(models.Model):
 
 
 class Asset(models.Model):
-    asset_id			= models.IntegerField(primary_key=True)
+    #asset_id			= models.IntegerField(primary_key=True)
+    asset_id			= models.BigAutoField(primary_key=True)
     asset_name			= models.CharField(max_length=250,unique=True)
     author 				= models.ForeignKey(User,on_delete=models.CASCADE)
     creation_date 		= models.DateTimeField(auto_now_add=True)
