@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
 from .models import District
+from .models import Hospital
 
 
 CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
@@ -25,6 +26,14 @@ class ExtendedUserCreationForm(UserCreationForm):
 		if commit:
 			user.save()
 		return user
+
+class HospitalForm(forms.ModelForm):
+	class Meta:
+		model = Hospital
+		fields = ('hospital_id', 'district_id','hospital_name',
+				'hospital_type', 'address', 'contact_number',
+					'city','taluk','pincode', 'doctors', 'healthworkers', 'latitude',
+				'longitude')
 
 class UserProfileForm(forms.ModelForm):
 	adminstate = forms.ChoiceField(choices = CATE)

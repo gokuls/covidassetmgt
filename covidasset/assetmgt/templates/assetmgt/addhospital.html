@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+
+	<form method="POST" action="{% url 'addhospital' %}">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Add Hospital" />
+		<input type="reset" value="Reset" />
+	</form>
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  
+
+	</body>
+	</html>
