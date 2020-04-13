@@ -5,6 +5,7 @@ from django.http import Http404
 from .models import Asset
 from .models import State
 from .models import District
+from .models import Hospital
 
 from .forms import ExtendedUserCreationForm
 from .forms import UserProfileForm
@@ -68,7 +69,7 @@ def addHospital(request):
 		form = HospitalForm(request.POST)
 
 
-		if form.is_valid() and profile_form.is_valid():
+		if form.is_valid():
 			user = form.save()
 			return redirect('index')
 
@@ -85,3 +86,12 @@ def load_district(request):
     state = State.objects.get(state_id=state_id)
     dist = District.objects.filter(state_id=state).order_by('district_name')
     return render(request, 'assetmgt/district_dropdown_list.html', {'dist': dist})
+
+
+def load_hospital(request):
+    distid = request.GET.get('distid')
+    dist = District.objects.get(district_id=distid)
+    hospitals = Hospital.objects.filter(district_id=dist).order_by('hospital_name')
+    return render(request, 'assetmgt/hospital_dropdown_list.html', {'hospitals': hospitals})
+
+

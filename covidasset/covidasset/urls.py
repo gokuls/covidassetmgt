@@ -25,4 +25,5 @@ urlpatterns = [
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
+    path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
 ]

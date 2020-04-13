@@ -41,7 +41,7 @@ class District(models.Model):
 
 
 class Hospital(models.Model):
-	hospital_id			= models.BigAutoField(primary_key=True)
+	hospital_id				= models.BigAutoField(primary_key=True)
 	district_id 			= models.ForeignKey(District,on_delete=models.CASCADE)
 	hospital_name			= models.CharField(max_length=250)
 	hospital_type			= models.CharField(max_length=250)
@@ -54,7 +54,7 @@ class Hospital(models.Model):
 	healthworkers			= models.IntegerField()
 	latitude 				= models.CharField(max_length=250)
 	longitude 				= models.CharField(max_length=250)
-	creation_date = models.DateTimeField(auto_now_add=True)
+	creation_date 			= models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return self.hospital_name

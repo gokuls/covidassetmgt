@@ -1,0 +1,4 @@
+<option value="">---------</option>
+{% for hosp in hospitals %}
+<option value="{{ hosp.hospital_id }}">{{ hosp.hospital_name }}</option>
+{% endfor %}
