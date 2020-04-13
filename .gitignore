@@ -223,6 +223,11 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+
+## ignore migrations
+**/migrations/**
+
+
 # Environments
 .env
 .venv
