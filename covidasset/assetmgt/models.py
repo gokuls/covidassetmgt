@@ -11,6 +11,11 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from django.contrib import admin
+
+
+
+
 
 
 
@@ -79,6 +84,20 @@ class PatientStat(models.Model):
 	hospital_id 		= models.ForeignKey(Hospital,on_delete=models.CASCADE)
 	author 				= models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
 	patient_count		= models.IntegerField(default=0)
+	creation_date 		= models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return "%d-patients"%self.patient_count
+
+
+class UserProfile(models.Model):
+	user 				= models.OneToOneField(User, on_delete=models.CASCADE)
+	state_id 			= models.ForeignKey(State,on_delete=models.CASCADE)
+	district_id			= models.ForeignKey(District,on_delete=models.CASCADE)
+	hospital_id			= models.ForeignKey(Hospital,models.SET_NULL,blank=True,null=True)
+	distadmin 			= models.BooleanField()
+	creation_date 		= models.DateTimeField(auto_now_add=True)
+
+
+	def __str__(self):
+		return self.user.username
