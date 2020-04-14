@@ -6,13 +6,20 @@ from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
 #from assetmgt.hospitalforms import HospitalForm
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.contrib import messages
 
 class AddHospitalTemplate(View):
     '''To render a templet to get hospital Information Invidually '''
     def get(self,request):
         #hospitalform = HospitalForm()
-        usr = User.objects.get(username='shivam')#To do user username from request object
+        #To do user username from request object
         #usr = User.objects.get(username='boss')#To do user username from request object
+        if not request.user:
+            print("User----------",request.user.id)
+            usr = User.objects.get(username=request.user.username)
+        else:
+            usr = User.objects.get(pk=1)   
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.filter(author=usr)
         context_dict = {}
@@ -38,8 +45,14 @@ class GetDistrictByState(View):
             
 
 class AddHospital(View):
+    @transaction.atomic
     def post(self,request):
-        usr = User.objects.get(username='shivam')#To do user username from request object
+        #usr = User.objects.get(username='boss')
+        #To do user username from request object
+        if not request.user:
+            usr = User.objects.get(username=request.user.username)#To do user username from request object
+        else:
+            usr = User.objects.get(id=1)
         #usr = User.objects.get(username='boss')#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.filter(author=usr)
@@ -70,9 +83,12 @@ class AddHospital(View):
                 else:
                     print("")
                     continue
+
+            messages.info(request,"Hospital Added successfully")
             
         except Exception as add_h_err:
             print(add_h_err)
+            messages.error(request,"Hospital not added")
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
 
