@@ -4,7 +4,8 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
 body {
-  overflow-x: hidden; font-family: 'Montserrat', sans-serif !important; background-color:#f2edf3; 
+  overflow-x: hidden;  background-color:#eff1f4; font-family: 'Open Sans', sans-serif;     font-size: 0.9rem !important;
+
 
 }
 .bg-gradient-danger {
@@ -43,12 +44,12 @@ transition: opacity 0.3s ease; color:#fff;}
   -webkit-transition: margin .25s ease-out;
   -moz-transition: margin .25s ease-out;
   -o-transition: margin .25s ease-out;
-  transition: margin .25s ease-out; background-color:#fff;
+  transition: margin .25s ease-out; background-color:#33077c;
 }
 
 #sidebar-wrapper .sidebar-heading {
-  padding: 0.875rem 1.25rem;
-  font-size: 1.2rem;
+  padding: 0.8rem 1.25rem;
+  font-size: 1rem;
 }
 
 #sidebar-wrapper .list-group {
@@ -61,6 +62,8 @@ transition: opacity 0.3s ease; color:#fff;}
     padding: 30px 1rem;
 
 }
+.custom-bg {background-color:#1c0148;}
+.border-light {border-color:#6c509d !important;}
 
 #page-content-wrapper {
   min-width: 100vw;   
@@ -74,6 +77,8 @@ transition: opacity 0.3s ease; color:#fff;}
   #sidebar-wrapper {
     margin-left: 0;
   }
+  
+  
 
   #page-content-wrapper {
     min-width: 0;
@@ -85,6 +90,6 @@ transition: opacity 0.3s ease; color:#fff;}
   }
 }
 .breadcrumb {background-color:transparent !important; padding-left:0 !important;}
-.list-group-item {padding:1.5rem 0 1.5rem 1rem}
+.list-group-item {padding:0.8rem 0 .8rem 1rem; background-color:#33077c; color:#ede7ff	;}
+.list-group-item:hover {background-color:#4309a2; color:#fafafa;}
 
-.list-group-item-action .active{ color: #b66dff !important;}
