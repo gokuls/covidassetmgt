@@ -18,14 +18,11 @@ from django.urls import path
 from django.urls import re_path
 
 from assetmgt import usercreation
-<<<<<<< HEAD
 from assetmgt import assetmgt
 
-=======
 #from assetmgt import hospital
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
->>>>>>> 81be9f0cd7e106845992aa15200939e1c9aa6f77
 
 urlpatterns = [
     path('admin/', admin.site.urls),
