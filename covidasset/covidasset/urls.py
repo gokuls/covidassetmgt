@@ -14,9 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import include
+
+from django.urls import path
+from django.urls import re_path
+
+from assetmgt import usercreation
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', usercreation.index, name="index"),
+    path('adduser', usercreation.register, name="register"),
+    path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('assetmgt/',include('assetmgt.urls'),name='assetmgt'),
+
 ]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+
+	<form method="POST" action="{% url 'register' %}">
+		{% csrf_token %}
+		{{ form.as_p }}
+		{{ profile_form.as_p }}
+		<input type="submit" value="Create User" />
+		<input type="reset" value="Reset" />
+	</form>
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_state_id").change(function () {
+      var url = "{% url 'ajax_load_districts' %}"  // get the url of the `load_cities` view
+      var stateid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'state': stateid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_district_id").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+	</body>
+	</html>

@@ -18,8 +18,6 @@ class AddHospitalTemplate(View):
         context_dict['states'] = states
         context_dict['hospitalform'] = hospitalform
         context_dict['assets'] = assets
-
-
         return render(request,'assetmgt/add_hospital.html',context=context_dict)
 
 
@@ -30,16 +28,29 @@ class GetDistrictByState(View):
         districts_dict = {}
         try:
             state = State.objects.get(pk=stateid)
-            districts = District.objects.filter(state_id=state).values('district_id','district_name')
-            if districts:
-                for district in districts:
-                    districts_dict[district.district_id] = district.district_name
+            districts = District.objects.filter(state_id=state)
 
         except State.DoesNotExist as state_not_found:
             print(state_not_found)
             
-        return JsonResponse({'data':districts_dict})
+        return render(request,"assetmgt/district_dropdown_list.html",{'dist':districts})
             
 
+class AddHospital(View):
+    def post(self,request):
 
+        stid = int(request.POST['state'])
+        did = int(request.POST['district'])
+        tk = request.POST['taluk']
+        city = requet.POST['city']
+        addr = request.POST['address']
+        pin = request.POST['pin']
+        ht = request.POST['htype']
+        nd = int(request.POST['ndoc'])
+        nhw = int(request.POST['nhw'])
+        hcontact = requet.POST['hcontact']
+
+
+
+        return render(request,'assetmgt/add_hospital.html',{})
 
