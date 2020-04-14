@@ -1,0 +1,70 @@
+{% extends 'assetmgt/base.html' %}
+{% block 'title' %} Add Hospital {% endblock %}
+{% block 'content' %}
+		<div ><!-- for row -->
+			<div> <!-- for radio group-->
+				<input type="radio" id="single" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
+				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Data</label>
+			</div>
+			<br>
+			<div id="forbulk" > <!-- for render file browser -->
+				<form name="addbulk" id="bulkhospitalform" method="post">
+					<input type="file" >Select CSV file</input>
+					<input type="submit" value='Upload Hospital Datta' ></input>
+					<input type="reset"/>
+
+				</form>
+			</div>
+			<br>
+			<div id="forsingle" > <!-- for Single hospital information -->
+				<form name="addhospital" id="addhospital" method="post">		
+					{% csrf_token %}
+					<label for="state">State</label><select name="state" id="state" required=true>
+							<option value="0">--select-state--</option>
+							{% for state in states %}
+							 <option value="{{state.state_id}}">{{state.state_name}}</option>
+							 {% endfor %}
+					</select><br>
+					<label for="district">District</label><select name="district" id="district" required=true >
+						<option value="0">--Select-District--</option>
+					</select><br>
+					<label for="taluk">Taluk</label><input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true /><br>
+					<label for="city">City</label><input type="text" name="city" id="city" placeholder="Enter City Name" required=true /><br>
+					<label for="htype">Type</label><select id="htype" name="htype">
+						<option value="Government">Government</option>
+						<option value="Private">Private</option>
+
+					</select><br>
+					<label for="hname">Hospital Name</label><input type="text" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" /><br>
+					<label for="haddress"></label>Full Address<input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" /><br>
+					<label for="hpin">Pincode</label><input type="text" placeholder="600001" id="hpin" name="hpin" required=true /><br>
+					<label for="hcontact">Primary Contact Number</label><input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true /><br>
+					   {% for asset in assets %}
+					   <label for="{{asset.asset_name}}">Total Numbers of {{asset.asset_name | title }}'s available</label><input type="number" min=0 required=true value=0 /><br>
+					   {% endfor %}
+
+					<input type="submit" value="Add Hospital"></input>
+					<input type="reset" />
+				</form>
+			</div>
+		</div>
+
+{% endblock %}
+{% block 'customjs' %}
+<script type="text/javascript">
+function ShowHideDiv() {
+        var chkSingleYes = document.getElementById("single");
+	if(chkSingleYes.checked){
+		var singleDiv = document.getElementById("forsingle");
+		var bulkDiv = document.getElementById("forbulk");
+		bulkDiv.style.display = "none";
+		singleDiv.style.display = "block";
+	}
+	else if(){
+	}
+	else{
+		alert("Select any one optio to add Hospital details");
+    }
+}
+	</script>
+{% endblock %}
