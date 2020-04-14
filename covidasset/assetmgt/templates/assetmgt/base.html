@@ -37,15 +37,16 @@
     <!-- Sidebar -->
     <div  id="sidebar-wrapper">
          <div class="sidebar-heading  shadow-sm "><img width="120px" src="{% static 'assetmgt/images/logo.svg' %}" alt="logo"> </div>
-	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p >Ramkumar<br/><small>System Administrator</small> </p></div>
+	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p >
+      {{ user }}<br/><small>System Administrator</small> </p></div>
       <div class="list-group list-group-flush">
         <a href="#" class="list-group-item  border-0 list-group-item-action "><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
         <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-address-book-o" aria-hidden="true"></i>
- Shortcuts</a>
+ Manage Assets</a>
         <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-grav" aria-hidden="true"></i>
- Overview</a>
+ Update Daily Status</a>
         <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-american-sign-language-interpreting" aria-hidden="true"></i>
- Events</a>
+ Reports</a>
       
       </div>
     </div>
@@ -333,8 +334,8 @@
   <!-- /#wrapper -->
 
   <!-- Bootstrap core JavaScript -->
-      <script src="{% static 'devicemanagement/js/jquery.min.js' %}"></script>
-      <script src="{% static 'devicemanagement/js/bootstrap.bundle.min.js' %}"></script>
+      <script src="{% static 'assetmgt/js/jquery.min.js' %}"></script>
+      <script src="{% static 'assetmgt/js/bootstrap.bundle.min.js' %}"></script>
 
 
   <!-- Menu Toggle Script -->

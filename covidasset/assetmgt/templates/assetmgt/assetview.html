@@ -1,0 +1,68 @@
+{% extends 'assetmgt/base.html' %}
+
+
+
+{% block 'title' %}
+	Asset
+{% endblock %}
+
+{% block 'content' %}
+{% endblock %}
+
+
+{% block 'customjs' %}
+{% include 'snippets/dataTable.html' %}
+ 
+<script type="text/javascript">
+
+ $(document).ready(function() {
+
+    var table = $('#example').DataTable({
+        {% include "snippets/datatable-option.html" %},
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "autoWidth": true,
+        "columnDefs": [ {
+            "searchable": false,
+            "orderable": false,
+            "targets": 0
+        },
+            { "width": "10px", "targets": 0 }
+
+         ],
+        "order": [[ 1, 'asc' ]],
+        "drawCallback": function ( settings ) {
+            var api = this.api();
+            var rows = api.rows( {page:'current'} ).nodes();
+            var last=null;
+ 
+            api.column(3, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="8">'+group+'</td></tr>'
+                    );
+ 
+                    last = group;
+                }
+            } );
+        },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+            } );
+        }
+    });
+
+});
+</script>
+{% endblock %}

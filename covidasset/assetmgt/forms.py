@@ -30,7 +30,7 @@ class ExtendedUserCreationForm(UserCreationForm):
 class HospitalForm(forms.ModelForm):
 	class Meta:
 		model = Hospital
-		fields = ('hospital_id', 'district_id','hospital_name',
+		fields = ('state_id','hospital_id', 'district_id','hospital_name',
 				'hospital_type', 'address', 'contact_number',
 					'city','taluk','pincode', 'doctors', 'healthworkers', 'latitude',
 				'longitude')

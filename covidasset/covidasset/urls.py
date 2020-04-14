@@ -18,12 +18,16 @@ from django.urls import path
 from django.urls import re_path
 
 from assetmgt import usercreation
+from assetmgt import assetmgt
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', usercreation.index, name="index"),
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
+    ## asset management
+    path('assets', assetmgt.AssetsView, name="assetview"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
 ]
