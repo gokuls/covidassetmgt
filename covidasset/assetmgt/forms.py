@@ -97,5 +97,6 @@ class UserProfileForm(forms.ModelForm):
 			except (ValueError, TypeError):
 				pass  # invalid input from the client; ignore and fallback to empty City queryset
 		elif self.instance.pk:
+			#self.fields['district_id'].queryset = self.instance.state.district_set.order_by('district_name')
 			self.fields['hospital_id'].queryset = self.instance.district.hospital_set.order_by(
 												'hospital_name')

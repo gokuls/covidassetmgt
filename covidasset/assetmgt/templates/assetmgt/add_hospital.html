@@ -1,3 +1,4 @@
+
 {% extends 'assetmgt/base.html' %}
 {% block 'title' %} Add Hospital {% endblock %}
 {% block 'content' %}
@@ -9,15 +10,16 @@
 			<br>
 			<div id="forbulk" > <!-- for render file browser -->
 				<form name="addbulk" id="bulkhospitalform" method="post">
-					<input type="file" >Select CSV file</input>
-					<input type="submit" value='Upload Hospital Datta' ></input>
+					{% csrf_token %}
+					Select CSV file : <input type="file" />
+					<input type="submit" value='Upload file' ></input>
 					<input type="reset"/>
 
 				</form>
 			</div>
 			<br>
 			<div id="forsingle" > <!-- for Single hospital information -->
-				<form name="addhospital" id="addhospital" method="post">		
+				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
 					{% csrf_token %}
 					<label for="state">State</label><select name="state" id="state" required=true>
 							<option value="0">--select-state--</option>
@@ -39,32 +41,79 @@
 					<label for="haddress"></label>Full Address<input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" /><br>
 					<label for="hpin">Pincode</label><input type="text" placeholder="600001" id="hpin" name="hpin" required=true /><br>
 					<label for="hcontact">Primary Contact Number</label><input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true /><br>
+
+					<label for="nhw">Total Numbers of Doctors Available</label><input type="number" placeholder="E.g 20" id="ndoc" name="ndoc" required=true /><br>
+					<label for="nhw">Total Number of Health Workers Available</label><input type="text" placeholder="100" id="nhw" name="nhw" required=true /><br>
 					   {% for asset in assets %}
-					   <label for="{{asset.asset_name}}">Total Numbers of {{asset.asset_name | title }}'s available</label><input type="number" min=0 required=true value=0 /><br>
+					   <label for="{{asset.asset_id}}">Total Numbers of {{asset.asset_name | title }}(s) available </label><input type="number" min=0 required=true value=0 name="{{asset.asset_name}}" /><br>
 					   {% endfor %}
 
 					<input type="submit" value="Add Hospital"></input>
+
 					<input type="reset" />
 				</form>
 			</div>
 		</div>
+		{% endblock %}
 
-{% endblock %}
-{% block 'customjs' %}
-<script type="text/javascript">
-function ShowHideDiv() {
-        var chkSingleYes = document.getElementById("single");
-	if(chkSingleYes.checked){
-		var singleDiv = document.getElementById("forsingle");
-		var bulkDiv = document.getElementById("forbulk");
-		bulkDiv.style.display = "none";
-		singleDiv.style.display = "block";
+		{% block 'customjs' %}
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		
+	<script type="text/javascript">
+$(document).ready(function(){
+	$("#forbulk").hide();
+	$("#state").change(function () {
+		var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
+		var stateid = $(this).val();  // get the selected country ID from the HTML input
+		var token = "{{csrf_token}}";
+		$.ajax({                       // initialize an AJAX request
+			type:"POST",
+			headers: {
+				'X-CSRFToken':"{{csrf_token}}"
+			},
+			url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+			data: {
+				'stateid': stateid       // add the country id to the GET parameters
+			},
+			success: function (data) { // `data` is the return of the `load_cities` view function
+				
+				$("#district").html(data);
+				console.log(data);
+			}
+		});
+
+	});
+$("#single").change(function(){
+	if($(this).is(':checked')){
+		console.log("single clicked");
+		$("#forsingle").show();
+		$("#forbulk").hide();
 	}
-	else if(){
+	else{$("#forsingle").hide();
+		$("#forbulk").show();
+	}
+
+});
+
+$("#multiple").change(function(){
+	if($(this).is(':checked')){
+		console.log("multiple clicked");
+		$("#forbulk").show();
+		$("#forsingle").hide();
 	}
 	else{
-		alert("Select any one optio to add Hospital details");
-    }
-}
-	</script>
-{% endblock %}
+		$("#forbulk").hide();
+		$("#forsingle").show();
+	}
+
+	});
+
+});
+
+  </script>
+
+  {% endblock %}
+	</body>
+	
+</html>
+

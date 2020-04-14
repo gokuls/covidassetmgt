@@ -87,11 +87,11 @@ def load_district(request):
     dist = District.objects.filter(state_id=state).order_by('district_name')
     return render(request, 'assetmgt/district_dropdown_list.html', {'dist': dist})
 
-
 def load_hospital(request):
     distid = request.GET.get('distid')
     dist = District.objects.get(district_id=distid)
     hospitals = Hospital.objects.filter(district_id=dist).order_by('hospital_name')
     return render(request, 'assetmgt/hospital_dropdown_list.html', {'hospitals': hospitals})
+
 
 

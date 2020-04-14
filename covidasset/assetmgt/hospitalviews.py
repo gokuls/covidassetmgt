@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.http import HttpResponse,JsonResponse
-from assetmgt.models import Hospital,Asset,State,District
+from assetmgt.models import Hospital,Asset,State,District,AssetMgt
 from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
 #from assetmgt.hospitalforms import HospitalForm
@@ -11,7 +11,8 @@ class AddHospitalTemplate(View):
     '''To render a templet to get hospital Information Invidually '''
     def get(self,request):
         #hospitalform = HospitalForm()
-        usr = User.objects.get(username='boss')#To do user username from request object
+        usr = User.objects.get(username='shivam')#To do user username from request object
+        #usr = User.objects.get(username='boss')#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.filter(author=usr)
         context_dict = {}
@@ -38,16 +39,40 @@ class GetDistrictByState(View):
 
 class AddHospital(View):
     def post(self,request):
+        usr = User.objects.get(username='shivam')#To do user username from request object
+        #usr = User.objects.get(username='boss')#To do user username from request object
+        states = State.objects.all()#To do to query the State respect to the user permission
+        assets = Asset.objects.filter(author=usr)
+        states = State.objects.all()
+        try:
+            #To do get user's distict,state ids 
+            stid = int(request.POST['state'])  
+            did = int(request.POST['district'])
+            tk = request.POST['taluk']
+            city = request.POST['city']
+            addr = request.POST['haddress']
+            pin = request.POST['hpin']
+            ht = request.POST['htype']
+            nd = int(request.POST['ndoc'])
+            nhw = int(request.POST['nhw'])
+            hcontact = request.POST['hcontact']
+            hname = request.POST['hname']
+            #To get State and District Objects
+            s = State.objects.get(state_id=stid)
+            d = District.objects.get(district_id=did)
+            hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
+            asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+            for asset in asset_name_list:
+                if asset in request.POST:
+                    total_asset = int(request.POST[asset])
+                    asset_id = Asset.objects.get(asset_name=asset)
+                    AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr,asset_total=total_asset)
+                else:
+                    print("")
+                    continue
+            
+        except Exception as add_h_err:
+            print(add_h_err)
 
-        stid = int(request.POST['state'])
-        did = int(request.POST['district'])
-        tk = request.POST['taluk']
-        city = requet.POST['city']
-        addr = request.POST['address']
-        pin = request.POST['pin']
-        ht = request.POST['htype']
-        nd = int(request.POST['ndoc'])
-        nhw = int(request.POST['nhw'])
-
-        return render(request,'assetmgt/add_hospital.html',{})
+        return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
 
