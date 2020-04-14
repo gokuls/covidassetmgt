@@ -33,6 +33,9 @@ urlpatterns = [
     path('assets', assetmgt.AssetsView, name="assetview"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
+    path('ajax/loadassetform/', assetmgt.returnAssetForm, name='assetcform'),
+    path('addasset/', assetmgt.addAsset, name='addasset'),
+    path('login', assetmgt.LoginMeth, name='login'),
 #K.Karthikeyan
 #    path('add_hospital',hospital.addHospital,name="add_hospital"),
     path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
