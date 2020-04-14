@@ -14,7 +14,7 @@
     <div class="modal-content">
       <div class="modal-header">
 
-        <h4 class="modal-title" id="clientinfo"> Add Policy           </h4>
+        <h4 class="modal-title" id="clientinfo"> Add  Assets           </h4>
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
@@ -36,52 +36,188 @@
 </div></div></div></div>
 
 <div class="row">
-<div class="col-md-2">
-<div class="card bg-success text-center">
-<div class="card-body">
-<a  data-toggle='modal' data-target='#addpolicymodel' href='#addpolicymodel' class="text-white"  onclick="addasset('service')"> <i class="fa fa-plus fa-2x"></i> <br/> ADD Asset
+
+<a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
 </a>
-</div>
-</div>
-</div>
+
 </div>
 
+<p> </p>
 
-<div class="table-responsive">
-          <table id="example" class="table table-bordered table-condensed">
-          	
-          </table>
+<div class="row" >
 
+
+	<div class="table-responsive">
+	          <table id="example" class="table">
+	          		<thead><tr> 
+
+	          	<th>
+	          		Asset NAme 
+	          	</th>
+	          </tr></thead>
+	          <tbody>
+	          	{% for i in assets %}
+	          	<tr>
+					<td> {{ i.asset_name }} </td>
+				</tr>
+					{% endfor %}
+				</tbody>
+	          </table>
  
+	</div>
 </div>
 
 {% endblock %}
 
 
 {% block 'customjs' %}
-{% include 'snippets/dataTable.html' %}
  
 <script type="text/javascript">
 
-
-function addasset(value){
+function addassetfun(){
   $.ajax({
             type:"POST",
-            url:"{% url 'serviceform' %}",
-            data : "type="+value,
+            url:"{% url 'assetcform' %}",
             success:function(result){
-              $("#addpolicy").html(result);
+              $("#addasset").html(result);
         }
             })
 };
 
+ $(document).ready(function() {
 
+function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+  var $myForm = $('#formid')
+    $myForm.submit(function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      var $val = confirm("Are you sure!!");
+        if ($val) {
+
+              var $formData = $(this).serialize()
+	      console.log($formData);
+              var $thisURL = $myForm.attr('data-url') || window.location.href // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess,
+                  error: handleFormError,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        $("#addassetmodel").modal('toggle');
+        $("#responseText").html(data);
+        $('#overlay').modal('show').slideUp( 300 ).delay( 800 ).fadeIn( 400 );
+	    if(data=="Done"){
+		    alert("Value for Asset is added successfully");
+	    }
+	    else if(data=="AE"){
+		    alert("Value of the Asset is already exists");
+	    }
+	    else{
+		    alert("Value for Asset is already exists");
+	    }
+          window.location.replace("{% url 'assetview' %}");
+
+            };
+
+    function handleFormError(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
+
+
+ 
+});
+</script>
+
+{% include 'snippets/dataTable.html' %}
+ 
+<script type="text/javascript">
 
  $(document).ready(function() {
 
     var table = $('#example').DataTable({
-        {% include "snippets/datatable-option.html" %},
-        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    		dom:             "<'row'<'col-sm-5'B>>"+
+						"<'hr'>"+
+						"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+						"<'row'<'col-sm-12'tr>>" +
+						"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+			buttons: [
+            { 
+              extend : 'copyHtml5',  
+              text:      '<i class="fa   text-info fa-file"></i>',          
+              titleAttr: 'Copy'
+            },
+            {
+              extend : 'csvHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa  text-warning fa-file-text"></i>',
+              titleAttr: 'CSV'
+            },
+            {
+                extend: 'excelHtml5',
+                title: 'Devices',
+                text:      '<i class="fa text-success fa-file-excel-o"></i>',
+                titleAttr: 'EXCEL'
+            },
+            {
+              extend : 'pdfHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
+              titleAttr: 'PDF'
+            }
+        ],
+    			"language": {
+                "search": '<i class="fa fa-search"></i>',
+                "searchPlaceholder": "search",
+                "paginate": {
+                "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>'
+            }
+          },
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
         "autoWidth": true,
         "columnDefs": [ {
             "searchable": false,
@@ -91,40 +227,14 @@ function addasset(value){
             { "width": "10px", "targets": 0 }
 
          ],
-        "order": [[ 1, 'asc' ]],
-        "drawCallback": function ( settings ) {
-            var api = this.api();
-            var rows = api.rows( {page:'current'} ).nodes();
-            var last=null;
- 
-            api.column(3, {page:'current'} ).data().each( function ( group, i ) {
-                if ( last !== group ) {
-                    $(rows).eq( i ).before(
-                        '<tr class="group"><td colspan="8">'+group+'</td></tr>'
-                    );
- 
-                    last = group;
-                }
-            } );
-        },
-        initComplete: function () {
-            this.api().columns().every( function () {
-                var column = this;
-                var select = $('<select><option value=""></option></select>')
-                    .appendTo( $(column.footer()).empty() )
-                    .on( 'change', function () {
-                        var val = $.fn.dataTable.util.escapeRegex(
-                            $(this).val()
-                        );
- 
-                        column
-                            .search( val ? '^'+val+'$' : '', true, false )
-                            .draw();
-                    } );
-            } );
-        }
+        "order": [[ 0, 'asc' ]],
+
     });
 
-});
+
+
+} ); 
+
+
 </script>
 {% endblock %}

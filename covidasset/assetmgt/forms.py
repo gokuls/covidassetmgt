@@ -4,9 +4,25 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
 from .models import District
 from .models import Hospital
+from .models import Asset
+from django.forms import TextInput
+from django.forms import PasswordInput
+
 
 
 CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
+
+class LoginForm(forms.Form):
+        username = forms.CharField(
+				widget=forms.TextInput(attrs={'class':'form-control'}), 
+				help_text='Enter User Name')
+        password = forms.CharField(
+				label='Password', 
+				widget=forms.PasswordInput(
+					attrs={'class':'form-control','autocomplete':'off'}), 
+				help_text='Enter Password')
+
+
 
 class ExtendedUserCreationForm(UserCreationForm):
 	first_name = forms.CharField(max_length=150)
@@ -26,6 +42,19 @@ class ExtendedUserCreationForm(UserCreationForm):
 		if commit:
 			user.save()
 		return user
+
+
+class AssetForm(forms.ModelForm):
+	asset_name = forms.CharField(max_length=150)
+	
+
+
+	class Meta:
+		model = Asset 
+		fields = ('asset_name',)
+		
+
+
 
 class HospitalForm(forms.ModelForm):
 	class Meta:

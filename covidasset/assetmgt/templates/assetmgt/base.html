@@ -31,6 +31,8 @@
 </head>
 
 <body>
+      {% block 'main' %}
+
 
   <div class="d-flex" id="wrapper">
 
@@ -95,7 +97,8 @@
   </ol>
 </nav>
     
-		
+{% endblock %}		
+
 		{% block 'content' %}
 		<div class="row">
               <div class="col-md-3  ">

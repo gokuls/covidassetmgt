@@ -18,7 +18,7 @@
 			<div id="forbulk" > <!-- for render file browser -->
 				<form name="addbulk" id="bulkhospitalform" method="post" action="#" enctype="multipart/form-data" >
 					{% csrf_token %}
-					<input type="file" required accept=".csv" ></input>
+					<label for="#datafile"> Select CSV File </label> <input id="#datafile" type="file" required accept=".csv" ></input>
 					<input type="submit" id="multipliesubmit" value='Upload Hospital Datta' ></input>
 					<input type="reset"/>
 
@@ -85,7 +85,7 @@ $(document).ready(function(){
 			success: function (data) { // `data` is the return of the `load_cities` view function
 				
 				$("#district").html(data);
-				console.log(data);
+				//console.log(data);
 			}
 		});
 
