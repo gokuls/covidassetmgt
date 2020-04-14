@@ -1,0 +1,16 @@
+<ul class="list-group">
+<li class="list-group-item d-flex justify-content-between align-items-left btn btn-sm btn-primary" style="color:#fff;">
+    Activity       <b> <a href="{% url 'messagedetailview' %}"> Detail</a> </b>
+  </li>
+{% if objects %}
+	{% for other_object in objects %}
+		<li class="list-group-item d-flex justify-content-between align-items-center">	
+			{{ other_object.dmessage }}
+		</li>
+	{% endfor %}	
+{% else  %}
+	<li class="list-group-item d-flex justify-content-between align-items-center">	
+			No Activity found. 
+		</li>
+{% endif %}
+</ul>

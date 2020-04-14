@@ -1,0 +1,19 @@
+
+
+   {% csrf_token %}
+   {% for form_field in form %}
+   <div class ="form-group">
+      <label class="control-label col-sm-4"> {{ form_field.label }}</label>
+      <div class="col-sm-8" >
+         {{ form_field }}{% if form_field.help_text %}
+          <small style="color: grey">{{ form_field.help_text | safe }}</small>
+        {% endif %}
+      </div>
+   </div>
+   {% endfor %}
+   <div class ="form-group">
+      <div class="col-sm-offset-4 col-sm-8">
+         <button type="submit" class="btn btn-primary "> <i class="fa fa-plus"> </i>   Register Device</button>
+      </div>
+   </div>
+

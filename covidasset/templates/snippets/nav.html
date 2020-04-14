@@ -1,0 +1,128 @@
+
+<h6 > User Device </h6>  
+    <ul class="nav nav-sidebar">
+               <!--li class="">
+                  <a href="/mdm/mapping"><i class="fa fa-tachometer" aria-hidden="true"> </i> 
+                   <span><abbr title="Lists Mapping status"> Mapping </abbr></span> 
+                  </a>
+               </li-->
+
+
+               <li {% if request.path == '/mdm/devices/' %} class="active" {% endif %} for="devices">
+                  <a href="/mdm/devices" id="devices"> <i class="fa  fa-tablet fa-fw" aria-hidden="true"></i> 
+                     <span for="devices"> <abbr title="List of Devices registered and their status"> Devices </abbr>
+                     </span>
+                  </a>
+               </li>
+
+               <li {% if request.path == '/mdm/users/' %} class="active"{% endif %} >
+                  <a href="/mdm/users"> <i class="fa   fa-user-circle fa-fw" aria-hidden="true"></i> 
+                     <span> <abbr title="List of Users registered and their status"> Users </abbr> </span>
+               </a>
+               </li>
+
+               <li {% if request.path == '/mdm/userdev/' %} class="active"{% endif %}> 
+                  <a href="/mdm/userdev"><i class="fa   fa-user-plus fa-fw" aria-hidden="true"></i> 
+                     <span> <abbr title="Issue a User to UnMapped Device ">  Issue User </abbr></span>
+                  </a>
+               </li>
+
+               
+
+               <li {% if request.path == '/mdm/addgroup/' %} class="active"{% endif %} >
+                  <a href="/mdm/addgroup"> <i class="fa  fa-users fa-fw" aria-hidden="true"></i>
+                     <span> <abbr title="Add Edit and Delete Group">  User Group </abbr> </span>
+                  </a>
+               </li>
+
+               <li {% if request.path == '/mdm/connecteddevice/' %} class="active"{% endif %} >
+                  <a href="/mdm/connecteddevice"> <i class="fas fa-cog" aria-hidden="true"></i>
+                     <span> <abbr title="Add Edit and Delete Group">  Authorize </abbr> </span>
+                  </a>
+               </li>
+
+               <!--li {% if request.path == '/mdm/uploadcsvfile/' %} class="active"{% endif %}>
+                  <a href="/mdm/uploadcsvfile/"> <i class="fas fa-download" aria-hidden="true"></i>
+                     <span> <abbr title="Import users from CSV files.">  Import Users </abbr> </span>
+                  </a>
+               </li-->
+
+
+
+</ul>
+<h6 > Course </h6>
+    <ul class="nav nav-sidebar">
+
+               <li {% if request.path == '/mdm/issuecourse/' %} class="active"{% endif %} >
+                  <a href="/mdm/issuecourse"> <i class="fa  fa-book fa-fw" aria-hidden="true"></i> 
+                     <span> <abbr title="Issue a course to a Group or Users">  Issue Course </abbr> </span>
+                  </a>
+               </li>
+
+                 <li {% if request.path == '/mdm/mappingusercourse/' %} class="active"{% endif %} >
+                  <a href="/mdm/mappingusercourse"> <i class="fa  fa-history fa-fw" aria-hidden="true"></i>
+                     <span> <abbr title="List of Course issued to User"> Course Issued </abbr> </span>
+                  </a>
+               </li>
+
+               <li {% if request.path == '/mdm/mapuserschool/' %} class="active"{% endif %}>
+                  <a href="/mdm/mapuserschool/"> <i class="fa  fa-tag fa-fw" aria-hidden="true"></i>
+                     <span> <abbr title="Map User to school from open pool">  Map User </abbr> </span>
+                  </a>
+               </li>
+
+</ul>
+
+<h6 > Report </h6>
+                <ul class="nav nav-sidebar"> 
+
+
+               
+
+               <!--li {% if request.path == '/mdm/hierarchy/' %} class="active"{% endif %}>
+                  <a href="/mdm/hierarchy/"> <i class="fa  fa-sitemap fa-fw " aria-hidden="true"></i>
+                     <span> <abbr title="Hierarchical View of entire formation ">  Hierarchy  </abbr> </span>
+                  </a>
+               </li-->
+
+               
+               <li {% if request.path == '/mdm/schools/' %} class="active"{% endif %}>
+                  <a href="/mdm/schools/"> <i class="fas fa-chess-rook" aria-hidden="true" ></i> 
+                                       <span> <abbr title="Import users from CSV files.">  School </abbr> </span>
+                  </a>
+               </li>
+
+               <li {% if request.path == '/mdm/schoolsummary/' %} class="active"{% endif %}>
+                  <a href="/mdm/schoolsummary/"> <i class="fas fa-database" aria-hidden="true"></i> 
+                     <span> <abbr title="Import users from CSV files.">  School Summary </abbr> </span>
+                  </a>
+               </li>
+
+
+               <li {% if request.path == '/mdm/uploadscript/' %} class="active"{% endif %}>
+                  <a href="/mdm/uploadscript/"> <i class="fas fa-database" aria-hidden="true"></i> 
+                     <span> <abbr title="Scripts">  Scripts </abbr> </span>
+                  </a>
+               </li>
+
+
+
+<!--
+      <a class="btn btn-primary" href="{% url 'userreport' %}"> <i class="fa fa-plus"> </i> List of All Users</a>
+   
+
+      <a class="btn btn-primary " href="{% url 'devicereport' %}"> <i class="fa fa-plus"> </i> List of All Devices</a>
+    
+
+      <a class="btn btn-primary " href="{% url 'usercoursereport' %}"> <i class="fa fa-plus"> </i> List of All User Course</a>
+  --> 
+               <!--li {% if request.path == '/mdm/report/' %} class="active"{% endif %}>
+                  <a href="/mdm/report/"> <i class="fa  fa-tag" aria-hidden="true"></i>
+                     <span> <abbr title="Import users from CSV files.">  Report </abbr> </span>
+                  </a>
+               </li-->
+
+
+            </ul>
+
+

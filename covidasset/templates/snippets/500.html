@@ -1,0 +1,46 @@
+ {% extends "devicemanagement/base.html" %}
+
+ {% block mainmenu %}
+ {% endblock %}
+ {% block skipdiv %}
+ 
+ <style>
+    body {
+            background: rgba(0, 0, 0, 0) linear-gradient(rgb(19, 106, 138), rgb(38, 120, 113)) repeat scroll 0% 0%;
+    }
+</style>
+
+<div class="container">
+  <!-- Jumbotron -->
+  <div class="jumbotron">
+    <h1><span class="glyphicon glyphicon-fire red"></span> {{title}}</h1>
+    <p class="lead">The web server is returning an internal error <em><span id="display-domain"></span></em>.</p>
+    <p><a href="{% url 'mdmlogin' %}"class="btn btn-default btn-lg green">Take Me To The Homepage</a>
+    </p>
+    
+      </div>
+</div>
+<div class="container">
+  <div class="body-content">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>What happened?</h2>
+        <p class="lead">A 500 error status implies there is a problem with the web server's software causing it to malfunction.</p>
+      </div>
+      <div class="col-md-6">
+        <h2>What can I do?</h2>
+        <p class="lead">If you're a site visitor</p>
+        <p> Nothing you can do at the moment. If you need immediate assistance, please send us an email instead. We apologize for any inconvenience.</p>
+        <p class="lead">If you're the site owner</p>
+         <p>This error can only be fixed by server admins, please contact your website provider.</p>
+     </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block footer %}
+{% endblock %}
+{%block scripts %}
+<script type="text/javascript"></script>
+{% endblock %}

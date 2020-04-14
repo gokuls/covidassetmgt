@@ -20,6 +20,8 @@ from django.urls import path
 from django.urls import re_path
 
 from assetmgt import usercreation
+from assetmgt import assetmgt
+
 #from assetmgt import hospital
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
@@ -29,6 +31,8 @@ urlpatterns = [
     path('', usercreation.index, name="index"),
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
+    ## asset management
+    path('assets', assetmgt.AssetsView, name="assetview"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('assetmgt/',include('assetmgt.urls'),name='assetmgt'),
     path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),

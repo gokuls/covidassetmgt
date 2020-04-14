@@ -1,0 +1,20 @@
+<table id="example" class="table table-bordered "  width="100%">
+            <thead>
+              <tr>
+                <th> Script Name </th>
+                <th> Provider </th>
+                <th> Description </th>
+                <th> Creation Date </th>
+              </tr>
+            </thead>
+             {% for i in scriptobj %} 
+             <tr>
+             <td>  {{ i.scriptname}}    </td>  
+             <td> {{ i.provider }}</td>
+             <td>  {{ i.description }} </td>
+
+             <td>  {{ i.creationdate }} </td>             
+                       
+             </tr>
+             {% endfor %}
+</table>

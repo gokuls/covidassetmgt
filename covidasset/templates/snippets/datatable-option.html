@@ -1,0 +1,46 @@
+dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+buttons: [
+            { 
+              extend : 'copyHtml5',  
+              text:      '<i class="fas   text-info fa-file"></i>',          
+              titleAttr: 'Copy'
+            },
+            {
+              extend : 'csvHtml5',
+              title  : 'Devices',
+              text:      '<i class="fas  text-warning fa-file-alt"></i>',
+              titleAttr: 'CSV'
+            },
+            {
+                extend: 'excelHtml5',
+                title: 'Devices',
+                text:      '<i class="fas text-success fa-file-excel"></i>',
+                titleAttr: 'EXCEL'
+            },
+            {
+              extend : 'pdfHtml5',
+              title  : 'Devices',
+              text:      '<i class="fas text-danger fa-file-pdf"></i>',
+              titleAttr: 'PDF'
+            },
+            {
+              extend : 'colvis',
+              title  : 'Column Visiblity',
+              text:      '<span class="custom-button"> Column Visibility </span>',
+              postfixButtons: [ 'colvisRestore' ]
+
+            }
+        ],
+    "language": {
+                "search": '<i class="fas fa-search"></i>',
+                "searchPlaceholder": "search",
+                "paginate": {
+                "previous": '<i class="fas fa-angle-left"></i>',
+                    "next": '<i class="fas fa-angle-right"></i>'
+            }
+          },
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]

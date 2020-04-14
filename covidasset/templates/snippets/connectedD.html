@@ -1,0 +1,28 @@
+{% load app_filters %}
+<table id="example" class="table table-bordered "  width="100%">
+            <thead>
+              <tr>
+                <th> Name </th>
+                <th> MAC ID </th>
+                <th> Registration </th>
+                <th> Status </th>
+                <th> Last communitcated </th>
+                <th> Authorized </th>
+              </tr>
+            </thead>
+             {% for i in devicesconnected %} 
+             <tr>
+             <td> 
+              {{ i.devicename|get_devname}}
+             </td>  
+             <td> {{ i.devicename }}</td>
+             <td>  {{ i.devicename|get_status }} </td>
+
+             <td>  {{ i.devicename|get_curstatus }} </td>
+             <td>  {{ i.devicename|get_lastcommunicated }} </td>
+             <td>  {{ i.authorize | upper }} </td>
+             
+                       
+             </tr>
+             {% endfor %}
+            </table>

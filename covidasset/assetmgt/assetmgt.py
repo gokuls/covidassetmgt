@@ -18,3 +18,19 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate 
 from django.contrib.auth import login
 from django.views.generic.edit import CreateView
+
+
+
+
+def AssetsView(request):
+	'''
+		Page to view the asset and add the Asset 
+	'''
+	assets = Asset.objects.all()
+	context = dict()
+
+	context['assets'] = assets
+
+	return render(request,
+				 'assetmgt/assetview.html',
+				 context)

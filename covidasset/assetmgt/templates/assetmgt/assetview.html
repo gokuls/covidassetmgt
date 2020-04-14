@@ -1,0 +1,130 @@
+{% extends 'assetmgt/base.html' %}
+
+
+
+{% block 'title' %}
+	Asset
+{% endblock %}
+
+{% block 'content' %}
+
+
+<div class="modal fade  modal-new" id="addassetmodel" tabindex="-1" role="dialog" aria-labelledby="clientinfo">
+  <div class="modal-dialog modal-md" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h4 class="modal-title" id="clientinfo"> Add Policy           </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body" >
+
+<form action="." method="post" class="form-horizontal" id="formid" data-url="{% url 'addasset' %}">
+          {% csrf_token %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+
+
+<div id="addasset" >
+
+</div>
+</form>
+</div></div></div></div>
+
+<div class="row">
+<div class="col-md-2">
+<div class="card bg-success text-center">
+<div class="card-body">
+<a  data-toggle='modal' data-target='#addpolicymodel' href='#addpolicymodel' class="text-white"  onclick="addasset('service')"> <i class="fa fa-plus fa-2x"></i> <br/> ADD Asset
+</a>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="table-responsive">
+          <table id="example" class="table table-bordered table-condensed">
+          	
+          </table>
+
+ 
+</div>
+
+{% endblock %}
+
+
+{% block 'customjs' %}
+{% include 'snippets/dataTable.html' %}
+ 
+<script type="text/javascript">
+
+
+function addasset(value){
+  $.ajax({
+            type:"POST",
+            url:"{% url 'serviceform' %}",
+            data : "type="+value,
+            success:function(result){
+              $("#addpolicy").html(result);
+        }
+            })
+};
+
+
+
+ $(document).ready(function() {
+
+    var table = $('#example').DataTable({
+        {% include "snippets/datatable-option.html" %},
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "autoWidth": true,
+        "columnDefs": [ {
+            "searchable": false,
+            "orderable": false,
+            "targets": 0
+        },
+            { "width": "10px", "targets": 0 }
+
+         ],
+        "order": [[ 1, 'asc' ]],
+        "drawCallback": function ( settings ) {
+            var api = this.api();
+            var rows = api.rows( {page:'current'} ).nodes();
+            var last=null;
+ 
+            api.column(3, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="8">'+group+'</td></tr>'
+                    );
+ 
+                    last = group;
+                }
+            } );
+        },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+            } );
+        }
+    });
+
+});
+</script>
+{% endblock %}
