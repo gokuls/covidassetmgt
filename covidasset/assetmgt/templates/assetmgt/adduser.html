@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'assetmgt/base.html' %}
 
-<head>
-</head>
 
-<body>
+{% block 'title' %} Add User {% endblock %}
 
+
+{% block 'content' %}
 	<form method="POST" action="{% url 'register' %}">
 		{% csrf_token %}
 		{{ form.as_p }}
@@ -16,8 +15,10 @@
 
 
 
-
+{% endblock %}
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	{% block 'customjs' %}
+
   <script>
     $("#id_state_id").change(function () {
       var url = "{% url 'ajax_load_districts' %}"  // get the url of the `load_cities` view
@@ -51,6 +52,7 @@
 
     });
   </script>
+  {% endblock %}
 
 	</body>
 	</html>
