@@ -14,12 +14,6 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 
 
-
-
-
-
-
-
 class State(models.Model):
     state_id  			= models.BigAutoField(primary_key=True)
     state_name			= models.CharField(max_length=250,unique=True)
