@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Add Hospital</title>
 
-	</head>
-	<body>
+{% extends 'assetmgt/base.html' %}
+{% block 'title' %} Add Hospital {% endblock %}
+{% block 'content' %}
 		<div ><!-- for row -->
 			<div> <!-- for radio group-->
-				<input type="radio" id="single" name="hospitaldata" value="1"  ><label for="single">Add Hospital</label>
+				<input type="radio" id="single" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Data</label>
 			</div>
 			<br>
@@ -15,14 +12,14 @@
 				<form name="addbulk" id="bulkhospitalform" method="post">
 					{% csrf_token %}
 					<input type="file" >Select CSV file</input>
-					<input type="submit" id="mformsubmit" value='Upload Hospital Datta' ></input>
+					<input type="submit" value='Upload Hospital Datta' ></input>
 					<input type="reset"/>
 
 				</form>
 			</div>
 			<br>
 			<div id="forsingle" > <!-- for Single hospital information -->
-				<form name="addhospital" id="addhospital" method="post">		
+				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
 					{% csrf_token %}
 					<label for="state">State</label><select name="state" id="state" required=true>
 							<option value="0">--select-state--</option>
@@ -44,17 +41,24 @@
 					<label for="haddress"></label>Full Address<input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" /><br>
 					<label for="hpin">Pincode</label><input type="text" placeholder="600001" id="hpin" name="hpin" required=true /><br>
 					<label for="hcontact">Primary Contact Number</label><input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true /><br>
+
+					<label for="nhw">Total Numbers of Doctors Available</label><input type="number" placeholder="E.g 20" id="ndoc" name="ndoc" required=true /><br>
+					<label for="nhw">Total Number of Health Workers Available</label><input type="text" placeholder="100" id="nhw" name="nhw" required=true /><br>
 					   {% for asset in assets %}
-					   <label for="{{asset.asset_id}}">Total Numbers of {{asset.asset_name | title }}(s) available</label><input id="{{asset.asset_id}}" `type="number" name="{{asset.asset_name | lowercase }}" default="0" min=0 required=true /><br>
+					   <label for="{{asset.asset_id}}">Total Numbers of {{asset.asset_name | title }}(s) available </label><input type="number" min=0 required=true value=0 name="{{asset.asset_name}}" /><br>
 					   {% endfor %}
-                                      
-					<input id="sformsubmit" type="submit" value="Add Hospital"></input>
+
+					<input type="submit" value="Add Hospital"></input>
+
 					<input type="reset" />
 				</form>
 			</div>
 		</div>
+		{% endblock %}
 
+		{% block 'customjs' %}
 		<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		
 	<script type="text/javascript">
 $(document).ready(function(){
 	$("#forbulk").hide();
@@ -108,7 +112,7 @@ $("#multiple").change(function(){
 
   </script>
 
-
+  {% endblock %}
 	</body>
 	
 </html>

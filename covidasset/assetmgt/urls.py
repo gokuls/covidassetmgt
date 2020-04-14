@@ -7,5 +7,5 @@ from assetmgt.hospitalviews import AddHospital
 urlpatterns = [
         path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
         path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
-        path('addhospital',GetDistrictByState.as_view(),name='addhospital'),
+        path('addsinglehospital',AddHospital.as_view(),name='addsinglehospital'),
         ]
