@@ -25,7 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', usercreation.index, name="index"),
     path('adduser', usercreation.register, name="register"),
+    path('addhospital', usercreation.addHospital, name="addhospital"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('assetmgt/',include('assetmgt.urls'),name='assetmgt'),
+    path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
 
 ]

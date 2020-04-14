@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
 from .models import District
+from .models import Hospital
 
 
 CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
@@ -26,6 +27,14 @@ class ExtendedUserCreationForm(UserCreationForm):
 			user.save()
 		return user
 
+class HospitalForm(forms.ModelForm):
+	class Meta:
+		model = Hospital
+		fields = ('hospital_id', 'district_id','hospital_name',
+				'hospital_type', 'address', 'contact_number',
+					'city','taluk','pincode', 'doctors', 'healthworkers', 'latitude',
+				'longitude')
+
 class UserProfileForm(forms.ModelForm):
 	adminstate = forms.ChoiceField(choices = CATE)
 
@@ -36,13 +45,29 @@ class UserProfileForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields['district_id'].queryset = District.objects.none()
+		self.fields['hospital_id'].queryset = Hospital.objects.none()
 
 
 		if 'state_id' in self.data:
 			try:
 				state_id = int(self.data.get('state_id'))
-				self.fields['district_id'].queryset = District.objects.filter(state_id=state_id).order_by('district_name')
+				self.fields['district_id'].queryset = District.objects.filter(
+								state_id=state_id).order_by('district_name')
+			except (ValueError, TypeError):
+				pass  # invalid input from the client; ignore and fallback to empty City queryset
+		elif self.instance.pk:
+			self.fields['district_id'].queryset = self.instance.state.district_set.order_by(
+												'district_name')
+
+
+		if 'district_id' in self.data:
+			try:
+				district_id = int(self.data.get('district_id'))
+				self.fields['hospital_id'].queryset = Hospital.objects.filter(
+					district_id=district_id).order_by('hospital_name')
 			except (ValueError, TypeError):
 				pass  # invalid input from the client; ignore and fallback to empty City queryset
 		elif self.instance.pk:
 			self.fields['district_id'].queryset = self.instance.state.district_set.order_by('district_name')
+			self.fields['hospital_id'].queryset = self.instance.district.hospital_set.order_by(
+												'hospital_name')
