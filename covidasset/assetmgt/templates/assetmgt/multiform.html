@@ -1,0 +1,35 @@
+<form action="{% url 'addmultiassetmanagement' %}" method="post" class="form-horizontal" id="updateentry" data-url="{% url 'addmultiassetmanagement' %}">
+	{% csrf_token %}
+	<input type="submit" class="btn btn-primary" name="Add Data" value="Update">
+	<input type="hidden" name="initd" value="{{initdata}}">
+
+<div class="row">
+	<div class="col-sm-3">
+		Asset Name
+	</div>
+	<div class="col-sm-3">
+		Asset Total
+	</div>
+	<div class="col-sm-3">
+		Asset Utilized
+	</div>
+	<div class="col-sm-3">
+		Hospital
+	</div>
+</div>
+{{ formset.management_form }}
+{% for form in formset %}
+{% if form.hospital_id  %}
+	<div class="row">
+	            <div class="col-sm-3">{{ form.asset_id }}</div>
+	            <div class="col-sm-3">{{ form.asset_total }} </div>
+	            <div class="col-sm-3">{{ form.asset_utilized }} </div>
+	            <div class="col-sm-3">{{ form.hospital_id }} </div>
+			</div>
+{% endif %}
+    {% endfor %}
+
+</form>
+
+
+  
