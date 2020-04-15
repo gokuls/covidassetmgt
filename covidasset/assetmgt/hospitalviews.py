@@ -11,7 +11,7 @@ class AddHospitalTemplate(View):
     '''To render a templet to get hospital Information Invidually '''
     def get(self,request):
         #hospitalform = HospitalForm()
-        usr = User.objects.get(username='shivam')#To do user username from request object
+        usr = User.objects.get(id=1)#To do user username from request object
         #usr = User.objects.get(username='boss')#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.filter(author=usr)
@@ -39,7 +39,7 @@ class GetDistrictByState(View):
 
 class AddHospital(View):
     def post(self,request):
-        usr = User.objects.get(username='shivam')#To do user username from request object
+        usr = User.objects.get(id=1)#To do user username from request object
         #usr = User.objects.get(username='boss')#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.filter(author=usr)
