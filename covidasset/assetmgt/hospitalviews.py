@@ -21,7 +21,7 @@ class AddHospitalTemplate(View):
         else:
             usr = User.objects.get(pk=1)   
         states = State.objects.all()#To do to query the State respect to the user permission
-        assets = Asset.objects.filter(author=usr)
+        assets = Asset.objects.all()
         context_dict = {}
         context_dict['states'] = states
         #context_dict['hospitalform'] = hospitalform
