@@ -25,6 +25,8 @@ from assetmgt import assetmgt
 #from assetmgt import hospital
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -51,3 +53,4 @@ urlpatterns = [
     path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
     path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
 ]
+
