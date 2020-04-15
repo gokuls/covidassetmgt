@@ -44,6 +44,11 @@ urlpatterns = [
     path('addasset/', assetmgt.addAsset, name='addasset'),
     path('ajax/addentry/', assetmgt.addAssetManagement, name='addassetmanagement'),
     path('login', assetmgt.LoginMeth, name='login'),
+    #path('', assetmgt.LoginMeth, name='login1'),
     path('logout', assetmgt.Logout_view, name='logout'),
+#K.Karthikeyan
+#    path('add_hospital',hospital.addHospital,name="add_hospital"),
+    path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
+    path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
 ]
 

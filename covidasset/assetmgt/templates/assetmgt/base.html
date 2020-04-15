@@ -42,11 +42,7 @@
 	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p >
       {{ user }}<br/><small>System Administrator</small> </p></div>
       <div class="list-group list-group-flush">
-        <a href="#" class="list-group-item  border-0 list-group-item-action "><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-address-book-o" aria-hidden="true"></i>
- Manage Assets</a>
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-grav" aria-hidden="true"></i>
- Update Daily Status</a>
+        
         <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-american-sign-language-interpreting" aria-hidden="true"></i>
  Reports</a>
       {% if request.user.is_authenticated %}
@@ -55,8 +51,12 @@
             <li><a href="#" class="list-group-item border-0 list-group-item-action"> <i class="fa fa-user"></i> <strong> <abbr title="User Logged in">{{ request.user }} </abbr> </strong> </a></li>
 
             <a href="{% url 'assetmanagementview' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Asset Management</a>
-            <a href="{% url 'addhospitaltemp' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Hospital Management</a>
+            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Asset </a>
 
+            <a href="{% url 'addhospitaltemp' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Add Hospital </a>
+
+
+            <a href="{% url 'register' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Add User </a>
 
             <a href="{% url 'logout' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Logout</a>
             
@@ -82,7 +82,7 @@
               <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <a href="{% url 'logout' %}" class="nav-link"> Logout </a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
