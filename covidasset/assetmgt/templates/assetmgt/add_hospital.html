@@ -12,14 +12,14 @@
 {% endif %}
 			<div> <!-- for radio group-->
 				<input type="radio" id="single" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
-				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Data</label>
+				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
 			</div>
 			<br>
 			<div id="forbulk" > <!-- for render file browser -->
 				<form name="addbulk" id="bulkhospitalform" method="post" action="#" enctype="multipart/form-data" >
 					{% csrf_token %}
-					<label for="#datafile"> Select CSV File </label> <input id="#datafile" type="file" required accept=".csv" ></input>
-					<input type="submit" id="multipliesubmit" value='Upload Hospital Datta' ></input>
+					<label for="#datafile"> Select CSV File : </label> <input id="#datafile" type="file" required accept=".csv" ></input><br />
+					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
 					<input type="reset"/>
 
 				</form>
