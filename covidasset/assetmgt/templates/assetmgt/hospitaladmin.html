@@ -1,0 +1,11 @@
+<form action="." method="post" class="form-horizontal" id="getform" data-url="{% url 'assetmgtform' %}">
+          {% csrf_token %}
+<p><label for="id_hospital_id">Hospital id:</label> <select name="hospital_id" id="id_hospital_id">
+
+  <option value="{{ hospitals.hospital_id }}" selected> {{ hospitals.hospital_name }} </option>
+
+
+</select></p>
+<input type="submit" class="btn btn-primary" name="Add Data" value="ADD Data">
+
+</form>

@@ -4,9 +4,26 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
 from .models import District
 from .models import Hospital
+from .models import Asset
+from .models import AssetMgt
+from django.forms import TextInput
+from django.forms import PasswordInput
+
 
 
 CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
+
+class LoginForm(forms.Form):
+        username = forms.CharField(
+				widget=forms.TextInput(attrs={'class':'form-control'}), 
+				help_text='Enter User Name')
+        password = forms.CharField(
+				label='Password', 
+				widget=forms.PasswordInput(
+					attrs={'class':'form-control','autocomplete':'off'}), 
+				help_text='Enter Password')
+
+
 
 class ExtendedUserCreationForm(UserCreationForm):
 	first_name = forms.CharField(max_length=150)
@@ -27,6 +44,19 @@ class ExtendedUserCreationForm(UserCreationForm):
 			user.save()
 		return user
 
+
+class AssetForm(forms.ModelForm):
+	asset_name = forms.CharField(max_length=150)
+	
+
+
+	class Meta:
+		model = Asset 
+		fields = ('asset_name',)
+		
+
+
+
 class HospitalForm(forms.ModelForm):
 	class Meta:
 		model = Hospital
@@ -34,6 +64,31 @@ class HospitalForm(forms.ModelForm):
 				'hospital_type', 'address', 'contact_number',
 					'city','taluk','pincode', 'doctors', 'healthworkers', 'latitude',
 				'longitude')
+
+
+
+
+class AssetMgtForm(forms.ModelForm):
+	#hospital_id = forms.HiddenInput()
+
+	class Meta:
+		model  = AssetMgt
+		fields = ('asset_id','asset_total','asset_utilized','hospital_id')
+		# widgets = {
+		# 		'hospital_id' :  forms.HiddenInput()
+		# }
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		# print("In Form Creation")
+		# print(kwargs)
+		# self.fields['hospital_id'].queryset = Hospital.objects.get(
+		# 			hospital_id=kwargs['initial']['hospital_id'].hospital_id)
+
+		#print(self.fields['hospital_id'])
+
+
+
 
 class UserProfileForm(forms.ModelForm):
 	adminstate = forms.ChoiceField(choices = CATE)
