@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,FileResponse
 from assetmgt.models import Hospital,Asset,State,District,AssetMgt
 from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
+import os
+
 class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
     login_url = 'login'
@@ -89,5 +92,17 @@ class AddHospital(LoginRequiredMixin,View):
         return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
 
 
-
+class GetHospitalSample(View):
+    def get(self,request):
+        dir_name = settings.MEDIA_ROOT
+        extendsion = ".csv"
+        sample_file = os.path.join(dir_name,"sample","sample_hospital.csv")
+        statobj = os.stat(sample_file)
+        response = FileResponse(open(sample_file,"rb"))
+        #response = HttpResponse(mimetype='application/force-download')
+        response["Accept-Ranges"] = "bytes"
+        response["Content-Length"] = statobj.st_size
+        response['Content-Disposition'] = 'attachment; filename=%s'%(os.path.basename(sample_file))
+        return response
+        
 

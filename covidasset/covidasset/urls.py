@@ -25,6 +25,8 @@ from assetmgt import assetmgt
 #from assetmgt import hospital
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -44,3 +46,4 @@ urlpatterns = [
     path('login', assetmgt.LoginMeth, name='login'),
     path('logout', assetmgt.Logout_view, name='logout'),
 ]
+
