@@ -55,7 +55,7 @@ class AddHospital(View):
             usr = User.objects.get(id=1)
         #usr = User.objects.get(username='boss')#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
-        assets = Asset.objects.filter(author=usr)
+        assets = Asset.objects.all()
         states = State.objects.all()
         try:
             #To do get user's distict,state ids 
@@ -91,4 +91,7 @@ class AddHospital(View):
             messages.error(request,"Hospital not added")
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+
+
+
 
