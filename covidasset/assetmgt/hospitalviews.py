@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.http import HttpResponse,JsonResponse,FileResponse
-from assetmgt.models import Hospital,Asset,State,District,AssetMgt
+from assetmgt.models import Hospital,Asset,State,District,AssetMgt,UserProfile
 from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
 #from assetmgt.hospitalforms import HospitalForm
@@ -98,6 +98,25 @@ class GetHospitalSample(View):
         extendsion = ".csv"
         sample_file = os.path.join(dir_name,"sample","sample_hospital.csv")
         statobj = os.stat(sample_file)
+        usr = UserProfile.objects.get(user__username=request.user.username)
+        state_name = usr.state_id.state_name
+        district_name = usr.district_id.district_name
+        assets_list = Asset.objects.all().values_list('asset_name',flat=True)
+        asset_names = list(map(lambda x: "Total "+x+" available",assets_list))
+        adminstate = usr.adminstate
+        if adminstate == 1:
+            title_row = ["Hospital_Name","Hospital Type(Government/Private)","FullAddress","City","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers"]
+        elif adminstate == 2:
+            title_row = ["District","Hospital_Name","Hospital Type(Government/Private)","FullAddress","City","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers"]
+
+        else:
+            title_row = list()
+
+        title_row.extend(asset_names)
+        print(title_row)
+        sample_csv = open(sample_file,"w")
+        sample_csv.write(",".join(title_row))
+        sample_csv.close()
         response = FileResponse(open(sample_file,"rb"))
         #response = HttpResponse(mimetype='application/force-download')
         response["Accept-Ranges"] = "bytes"
