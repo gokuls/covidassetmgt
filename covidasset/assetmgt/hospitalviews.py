@@ -8,18 +8,16 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib import messages
-
-class AddHospitalTemplate(View):
+from django.contrib.auth.mixins import LoginRequiredMixin
+class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
+    login_url = 'login'
     def get(self,request):
         #hospitalform = HospitalForm()
         #To do user username from request object
-        #usr = User.objects.get(username='boss')#To do user username from request object
-        if not request.user:
-            print("User----------",request.user.id)
-            usr = User.objects.get(username=request.user.username)
-        else:
-            usr = User.objects.get(pk=1)   
+        #if not request.user:
+        #    print("User----------",request.user.id)
+        usr = User.objects.get(username=request.user.username)
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.all()
         context_dict = {}
@@ -44,16 +42,14 @@ class GetDistrictByState(View):
         return render(request,"assetmgt/district_dropdown_list.html",{'dist':districts})
             
 
-class AddHospital(View):
-    @transaction.atomic
+class AddHospital(LoginRequiredMixin,View):
+    login_url = 'login'
+    #@transaction.atomic
     def post(self,request):
         #usr = User.objects.get(username='boss')
         #To do user username from request object
-        if not request.user:
-            usr = User.objects.get(username=request.user.username)#To do user username from request object
-        else:
-            usr = User.objects.get(id=1)
-        #usr = User.objects.get(username='boss')#To do user username from request object
+        #if not request.user:
+        usr = User.objects.get(username=request.user.username)#To do user username from request object
         states = State.objects.all()#To do to query the State respect to the user permission
         assets = Asset.objects.all()
         states = State.objects.all()
@@ -73,18 +69,18 @@ class AddHospital(View):
             #To get State and District Objects
             s = State.objects.get(state_id=stid)
             d = District.objects.get(district_id=did)
-            hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
-            asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
-            for asset in asset_name_list:
-                if asset in request.POST:
-                    total_asset = int(request.POST[asset])
-                    asset_id = Asset.objects.get(asset_name=asset)
-                    AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr,asset_total=total_asset)
-                else:
-                    print("")
-                    continue
-
-            messages.info(request,"Hospital Added successfully")
+            with transaction.atomic():
+                hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
+                asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                for asset in asset_name_list:
+                    if asset in request.POST:
+                        total_asset = int(request.POST[asset])
+                        asset_id = Asset.objects.get(asset_name=asset)
+                        AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr,asset_total=total_asset)
+                        messages.info(request,"Hospital Added successfully")
+                    else:
+                        print("")
+                        continue
             
         except Exception as add_h_err:
             print(add_h_err)
