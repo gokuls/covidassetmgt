@@ -234,4 +234,21 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             print("Exception while add multiple hospital ",er3)
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
- 
+
+
+class GetHospitalData(View):
+    def post(self,request):
+        data = {}
+        try:
+            usr = UserProfile.objects.get(user__username=request.user.username)
+            h_data = Hospital.objects.filter(userprofile=usr).values('state_id','district_id','hospital_name', 'hospital_type','city','taluk','address','pincode','doctors','healthworkers','contact_number')
+            if h_data.exists():
+                data = h_data[0]
+
+        except Exception as get_h_data:
+            print("exception while getting hospital data %s"%(str(get_h_data)))
+
+        return JsonResponse({'data':data})
+            
+
+

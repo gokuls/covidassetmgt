@@ -15,6 +15,7 @@
 				{% if usr.adminstate > 0 %}
 				<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
+				<input type="radio" id="edit" name="hospitaldata" value="2"><label for="multiple">Edit Hospital Data</label>
 				<a class="btn btn-success"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
 				{% endif %}
 			</div>
@@ -109,6 +110,7 @@
     					</div>
                     </div>
 					<div class="form-group row">
+						<input type="hidden" value="0" name="opt" id="opt" />
 					    <input type="submit" value="Add Hospital" id="singlesubmit"></input>
 					    <input type="reset" />
 					</div>
@@ -170,6 +172,36 @@ $("#multiple").change(function(){
 
 	});
 	
+$("#edit").change(function(){
+	if($(this).is(':checked')){
+		console.log("single clicked");
+		$("#forsingle").show();
+		$("#forbulk").hide();
+		$.ajax({
+			$.ajax({                      
+				type:"POST",
+				headers: {
+					'X-CSRFToken':"{{csrf_token}}"
+				},
+				url: "{% url 'gethospitaldata' %}",    
+				data: {'stateid': "{{usr.state_id}}",'district_id':"{{usr.district_id}}"},
+				success: function (data) 
+				{ 				
+					$("#hname").val(data['hospitl_name']);
+					$("#haddress").val(data['address']);
+					$("#htype").val(data['hospital_type']);
+					$("#city").val(data['city']);
+					$("#taluk").val(data['taluk']);
+					$("#hcontact").val(data['contact_number']);
+					$("#ndoc").val(data['doctors']);
+					$("#nhw").val(data['healthworkers']);
+					$("#pin").val(data['pincode']);
+					$("#opt").val("1");
+					$("#singlesubmit").val("Update Hospital");
+				}
+			});
+		}
+	});
 
 	
 });
