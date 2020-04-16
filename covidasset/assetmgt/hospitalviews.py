@@ -15,7 +15,7 @@ import csv
 from django.core.files.storage import FileSystemStorage
 
 
-DATA_CSV_HEADER = [ "District","Hospital_Name","Hospital_Type(Government/Private)","FullAddress","City","Taluk","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers" ]
+DATA_CSV_HEADER = [ "District","Hospital_Name","Hospital_Type(Government/Private)","FullAddress","City","Taluk","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealthWorkers" ]
 
 class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
@@ -146,13 +146,13 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             filename = myfile.name
             #Check uploaded file extention is csv
             if not filename.endswith('.csv'):
-                messages.error(request,"Uploaded file is not csv file")
+                messages.error(request,"Only .csv file allowed, Uploaded file is not csv file")
                 return render(render,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
 
             fs = FileSystemStorage()
             filename = fs.save(myfile.name, myfile)
             uploaded_file_url = fs.url(filename)
-            print("File svae in "+str(uploaded_file_url))
+            print("File save in "+str(uploaded_file_url))
             file_path = os.path.join(settings.MEDIA_ROOT,filename)
             print("File path is "+file_path)
             global DATA_CSV_HEADER
@@ -184,7 +184,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 try:
                                     total_asset = int(row["Total_"+asset+"_available"])
                                 except KeyError as key_not_found:
-                                    print("errorrrrrrrrrrrrrrrrr",key_not_found)
+                                    print("error",key_not_found)
                                     continue
                                 AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
 
@@ -214,7 +214,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                             try:
                                 total_asset = int(row["Total_"+asset+"_available"])
                             except KeyError as key_not_found:
-                                print("errorrrrrrrrrrrrrrrrr",key_not_found)
+                                print("error",key_not_found)
                                 continue
                             AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
                         messages.info(request,"Hospital Added successfully")
