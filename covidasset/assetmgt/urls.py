@@ -4,7 +4,7 @@ from assetmgt.hospitalviews import GetDistrictByState
 from assetmgt.hospitalviews import AddHospital
 from assetmgt.hospitalviews import AddMultipleHospital
 from assetmgt.hospitalviews import GetHospitalSample 
-
+from assetmgt import assetreport
 
 from .views import AssetFileUploadView
 from django.conf import settings
@@ -17,6 +17,7 @@ urlpatterns = [
         path('assetfileupload',AssetFileUploadView.as_view(),name='assetfileupload'),
         path('gethospitalsamplecsv',GetHospitalSample.as_view(),name='gethospitalsample'),
         path('addhospitalcsv',AddMultipleHospital.as_view(),name='addhospitalcsv'),
+        path('assetreport',assetreport.assetReport,name='assetreport'),
         ]
 
 if settings.DEBUG:

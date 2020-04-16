@@ -47,9 +47,9 @@ class AssetFileUploadView(View):
             for row in range(1,(sheet.nrows)):
                 ad = AssetMgt()                
                 ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
-                ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,1)))
-                ad.asset_total=int(sheet.cell_value(row,2))
-                ad.asset_utilized=int(sheet.cell_value(row,3))
+                ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,2)))
+                ad.asset_total=int(sheet.cell_value(row,3))
+                ad.asset_utilized=int(sheet.cell_value(row,4))
                 ad.asset_balance=ad.asset_total-ad.asset_utilized
                 ad.save()
 
@@ -68,16 +68,18 @@ def xlsGenerate(assetmt, username):
     newsheet = wb.add_sheet('asset_details') # sheet name can not be longer than 32 characters
     
     newsheet.write(0,0,'hospital_id') 
-    newsheet.write(0,1,'Asset_name')
-    newsheet.write(0,2,'Total')
-    newsheet.write(0,3,'Utilized')
+    newsheet.write(0,1,'hospital_name')
+    newsheet.write(0,2,'Asset_name')
+    newsheet.write(0,3,'Total')
+    newsheet.write(0,4,'Utilized')
 
     rows=1
     for asset in assetmt:
-        newsheet.write(rows,0,asset.hospital_id.hospital_id) 
-        newsheet.write(rows,1,asset.asset_id.asset_name) 
-        newsheet.write(rows,2,asset.asset_total) 
-        newsheet.write(rows,3,asset.asset_utilized)
+        newsheet.write(rows,0,asset.hospital_id.hospital_id)
+        newsheet.write(rows,1,asset.hospital_id.hospital_name) 
+        newsheet.write(rows,2,asset.asset_id.asset_name) 
+        newsheet.write(rows,3,asset.asset_total) 
+        newsheet.write(rows,4,asset.asset_utilized)
         rows += 1 
 
     
