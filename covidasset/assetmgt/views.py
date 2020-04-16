@@ -18,6 +18,7 @@ from django.conf import settings
 import time
 import xlrd
 import xlwt
+import os
 
 # Create your views here.
 
@@ -80,8 +81,10 @@ def xlsGenerate(assetmt, username):
         rows += 1 
 
     
-    tmpfileName = settings.MEDIA_ROOT+"/tmp/"+"tmp-"+username+".xls"
-    murl = settings.MEDIA_URL+"tmp/"+"tmp-"+username+".xls"
+    #tmpfileName = settings.MEDIA_ROOT+"/tmp/"+"tmp-"+username+".xls"
+    destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
+    tmpfileName = os.path.join(destFolder,'tmp-%s.xls'%username)
+    murl = "assetmgt/temp/tmp-%s.xls"%username
     wb.save(tmpfileName)
     return murl
 

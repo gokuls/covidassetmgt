@@ -39,25 +39,37 @@
   {{ selecthospital | safe }}
 <!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
 </a-->
-<<<<<<< HEAD
-=======
+
+<div class="row mb-3">
+<div class="col-12">
+<div class="card">
+<div class="card-body">
+    <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data"  class="form-inline" >{% csrf_token %}
+
+    <div class="form-group mb-2">
+
+      <label for="#datafile"> Upload xls: </label>
 </div>
+  <div class="form-group mx-sm-3 mb-2">
 
-  <div class="col-md-4">
-    <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data" >{% csrf_token %}
-      <label for="#datafile"> Upload xls: </label> <input name='datafile' id="datafile" type="file" required accept=".csv,.xls" ></input>
+       <input name='datafile' id="datafile" type="file" required accept=".csv,.xls" ></input>
+</div>
+  <div class="form-group mx-sm-3 mb-2">
+          {% load static %}
 
-    
-      <a href="{{sample_tmp}}"> Sample xls: </a> 
+          <!--a href="{{sample_tmp}}"> Download Template File </a--> 
+          <a class="btn btn-primary" href="{% static sample_tmp %}"> <i class="fa fa-download"></i> Download Template File </a>
+</div>
+  <div class="form-group mx-sm-3 mb-2">
 
       <input class="btn btn-primary" type="submit" name="assetupload" id="assetupload" value='Upload ' ></input> 
-      </form>
-    
-
-  </div>
-
 </div>
->>>>>>> 24a31c47bc13581de965c3e894fbf4e8d23dbfee
+      </form>
+    </div></div></div></div>
+
+
+
+ 
 
 
 <div class="row mt-2 mb-2">
