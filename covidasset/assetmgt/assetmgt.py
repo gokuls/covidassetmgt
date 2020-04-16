@@ -205,4 +205,4 @@ def Logout_view(request):
     #addMessage("%s User logged out"%user)
 
     url = reverse('login')
-    return HttpResponseRedirect(url)  
+    return HttpResponseRedirect(url) 

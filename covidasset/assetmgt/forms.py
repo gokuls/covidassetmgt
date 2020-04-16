@@ -9,6 +9,8 @@ from .models import AssetMgt
 from django.forms import TextInput
 from django.forms import PasswordInput
 
+from .models import AssetFiles
+
 
 
 CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
@@ -126,3 +128,9 @@ class UserProfileForm(forms.ModelForm):
 			#self.fields['district_id'].queryset = self.instance.state.district_set.order_by('district_name')
 			self.fields['hospital_id'].queryset = self.instance.district.hospital_set.order_by(
 												'hospital_name')
+
+
+class AssetFilesForm(forms.ModelForm):
+	class Meta:
+		model= AssetFiles
+		fields=('datafile',)

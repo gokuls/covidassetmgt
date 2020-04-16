@@ -26,6 +26,8 @@ from assetmgt import assetmgt
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', usercreation.index, name="index"),
@@ -49,3 +51,5 @@ urlpatterns = [
     path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
     path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
 ]
+
+
