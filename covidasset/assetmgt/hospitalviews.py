@@ -21,17 +21,18 @@ class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
     login_url = 'login'
     def get(self,request):
-        #hospitalform = HospitalForm()
         #To do user username from request object
-        #if not request.user:
-        #    print("User----------",request.user.id)
-        usr = User.objects.get(username=request.user.username)
-        states = State.objects.all()#To do to query the State respect to the user permission
-        assets = Asset.objects.all()
         context_dict = {}
+        print("User----------",request.user.username)
+        try:
+            usr = UserProfile.objects.get(user__username=request.user.username)
+            states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
+            context_dict['usr'] = usr
+        except UserProfile.DoesNotExist as usr_profile_not_found:
+            print("exception while checking user profile %s"%(usr_profile_not_found))
+            states = State.objects.all()#To do to query the State respect to the user permission
+        #assets = Asset.objects.all()
         context_dict['states'] = states
-        #context_dict['hospitalform'] = hospitalform
-        context_dict['assets'] = assets
         return render(request,'assetmgt/add_hospital.html',context=context_dict)
 
 
@@ -57,10 +58,14 @@ class AddHospital(LoginRequiredMixin,View):
         #usr = User.objects.get(username='boss')
         #To do user username from request object
         #if not request.user:
-        usr = User.objects.get(username=request.user.username)#To do user username from request object
-        states = State.objects.all()#To do to query the State respect to the user permission
-        assets = Asset.objects.all()
-        states = State.objects.all()
+        usr = UserProfile.objects.get(username=request.user.username)#To do user username from request object
+        try:
+            usr = UserProfile.objects.get(username=request.user.username)#To do user username from request object
+            states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
+        except UserProfile.DoesNotExist as e:
+            print("exception while add hospital %s"%(str(e)))
+            states = State.objects.all()
+
         try:
             #To do get user's distict,state ids 
             stid = int(request.POST['state'])  
@@ -79,7 +84,7 @@ class AddHospital(LoginRequiredMixin,View):
             d = District.objects.get(district_id=did)
             with transaction.atomic():
                 hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
-                asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
                 for asset in asset_name_list:
                     if asset in request.POST:
                         total_asset = int(request.POST[asset])
@@ -88,13 +93,13 @@ class AddHospital(LoginRequiredMixin,View):
                         messages.info(request,"Hospital Added successfully")
                     else:
                         print("")
-                        continue
+                        continue"""
             
         except Exception as add_h_err:
             print(add_h_err)
             messages.error(request,"Hospital not added")
 
-        return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+        return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
 
 
 class GetHospitalSample(View):
@@ -106,8 +111,8 @@ class GetHospitalSample(View):
         usr = UserProfile.objects.get(user__username=request.user.username)
         state_name = usr.state_id.state_name
         district_name = usr.district_id.district_name
-        assets_list = Asset.objects.all().values_list('asset_name',flat=True)
-        asset_names = list(map(lambda x: "Total_"+x+"_available",assets_list))
+        #assets_list = Asset.objects.all().values_list('asset_name',flat=True)
+        #asset_names = list(map(lambda x: "Total_"+x+"_available",assets_list))
         adminstate = usr.adminstate
         global DATA_CSV_HEADER
         if adminstate == 1:
@@ -118,7 +123,7 @@ class GetHospitalSample(View):
         else:
             title_row = list()
 
-        title_row.extend(asset_names)
+        #title_row.extend(asset_names)
         print(title_row)
         sample_csv = open(sample_file,"w")
         sample_csv.write(",".join(title_row))
@@ -136,10 +141,12 @@ class AddMultipleHospital(LoginRequiredMixin,View):
     login_url = 'login'
     def post(self,request):
         states = State.objects.all()
-        assets = Asset.objects.all()
+        #assets = Asset.objects.all()
+        usr = UserProfile.objects.get(user__username=request.user.username)
         try:
-            usr = UserProfile.objects.get(user__username=request.user.username)
+            #usr = UserProfile.objects.get(user__username=request.user.username)
             state_obj = usr.state_id
+            states = State.objects.filter(state_name=state_obj)
             district_obj = usr.district_id
             myfile = request.FILES['datafile']
             print("---------------------",myfile.name)
@@ -147,7 +154,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             #Check uploaded file extention is csv
             if not filename.endswith('.csv'):
                 messages.error(request,"Only .csv file allowed, Uploaded file is not csv file")
-                return render(render,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+                return render(render,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
 
             fs = FileSystemStorage()
             filename = fs.save(myfile.name, myfile)
@@ -178,7 +185,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     doctors=int(row[DATA_CSV_HEADER[8]]),
                                     healthworkers=int(row[DATA_CSV_HEADER[9]])
                                     )
-                            asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                            """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
                             for asset in asset_name_list:
                                 asset_id = Asset.objects.get(asset_name=asset)
                                 try:
@@ -186,11 +193,15 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 except KeyError as key_not_found:
                                     print("error",key_not_found)
                                     continue
-                                AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
-
+                                AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)"""
                             messages.info(request,"Hospital Added successfully")
+                    except District.DoesNotExist as district_nod_found:
+                        messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
+                    except ValueError as ver:
+                        messages.error(request,"Uploaded file having invalid data for numerical values as \n "+",".join(row.values()))
                     except Exception as er2:
                         print(er2)
+                        messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
                         continue
 
                 else:
@@ -208,7 +219,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 doctors=int(row[DATA_CSV_HEADER[8]]),
                                 healthworkers=int(row[DATA_CSV_HEADER[9]])
                                 )
-                        asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                        """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
                         for asset in asset_name_list:
                             asset_id = Asset.objects.get(asset_name=asset)
                             try:
@@ -216,11 +227,11 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                             except KeyError as key_not_found:
                                 print("error",key_not_found)
                                 continue
-                            AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
+                            AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)"""
                         messages.info(request,"Hospital Added successfully")
 
         except Exception as er3:
             print("Exception while add multiple hospital ",er3)
 
-        return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+        return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
  
