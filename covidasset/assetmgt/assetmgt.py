@@ -14,6 +14,7 @@ from .forms import HospitalForm
 from .forms import AssetForm
 from .forms import AssetMgtForm
 from .forms import AssetMgtForm2
+from .views import xlsGenerate
 
 
 from django.shortcuts import render
@@ -300,6 +301,9 @@ def AssetManagementView(request):
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
+            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+                'asset_id','-creation_date').distinct('asset_id')
+            sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
@@ -313,6 +317,7 @@ def AssetManagementView(request):
 
         context['selecthospital'] = rendered
         context['assetmgt'] = assetmt
+        context['sample_tmp'] = sample_tmp
 
         return render(request,
                 'assetmgt/assetmanagement.html',
