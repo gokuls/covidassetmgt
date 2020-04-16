@@ -17,9 +17,9 @@
 			</div>
 			<br>
 			<div id="forbulk" > <!-- for render file browser -->
-				<form name="addbulk" id="bulkhospitalform" method="post" action="#" enctype="multipart/form-data" >
+				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
 					{% csrf_token %}
-					<label for="#datafile"> Select CSV File : </label> <input id="#datafile" type="file" required accept=".csv" ></input><br />
+					<label for="#datafile"> Select CSV File : </label> <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input><br />
 					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
 					<input type="reset"/>
 

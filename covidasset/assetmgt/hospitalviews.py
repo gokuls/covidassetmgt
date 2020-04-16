@@ -11,6 +11,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 import os
+import csv
+from django.core.files.storage import FileSystemStorage
+
+
+DATA_CSV_HEADER = [ "District","Hospital_Name","Hospital_Type(Government/Private)","FullAddress","City","Taluk","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers" ]
 
 class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
@@ -102,12 +107,13 @@ class GetHospitalSample(View):
         state_name = usr.state_id.state_name
         district_name = usr.district_id.district_name
         assets_list = Asset.objects.all().values_list('asset_name',flat=True)
-        asset_names = list(map(lambda x: "Total "+x+" available",assets_list))
+        asset_names = list(map(lambda x: "Total_"+x+"_available",assets_list))
         adminstate = usr.adminstate
+        global DATA_CSV_HEADER
         if adminstate == 1:
-            title_row = ["Hospital_Name","Hospital Type(Government/Private)","FullAddress","City","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers"]
+            title_row = DATA_CSV_HEADER[1:]
         elif adminstate == 2:
-            title_row = ["District","Hospital_Name","Hospital Type(Government/Private)","FullAddress","City","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealtWorkers"]
+            title_row = DATA_CSV_HEADER 
 
         else:
             title_row = list()
@@ -125,3 +131,96 @@ class GetHospitalSample(View):
         return response
         
 
+
+class AddMultipleHospital(LoginRequiredMixin,View):
+    login_url = 'login'
+    def post(self,request):
+        states = State.objects.all()
+        assets = Asset.objects.all()
+        try:
+            usr = UserProfile.objects.get(user__username=request.user.username)
+            state_obj = usr.state_id
+            district_obj = usr.district_id
+            myfile = request.FILES['datafile']
+            print("---------------------",myfile.name)
+            filename = myfile.name
+            #Check uploaded file extention is csv
+            if not filename.endswith('.csv'):
+                messages.error(request,"Uploaded file is not csv file")
+                return render(render,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+
+            fs = FileSystemStorage()
+            filename = fs.save(myfile.name, myfile)
+            uploaded_file_url = fs.url(filename)
+            print("File svae in "+str(uploaded_file_url))
+            file_path = os.path.join(settings.MEDIA_ROOT,filename)
+            print("File path is "+file_path)
+            global DATA_CSV_HEADER
+            #if os.path.isfile(file_path) and os.path.exists(file_path):i           
+            data = csv.DictReader(open(file_path))
+            print("Data-----",dir(data))
+            for row in data:
+                print("Row->",row)
+                if usr.adminstate == 2:
+                    try:
+                        district_obj = District.objects.get(district_name=row[DATA_CSV_HEADER[0]])
+                        with transaction.atomic():
+                            hospital_obj = Hospital.objects.create(
+                                    state_id=state_obj,
+                                    district_id=district_obj,
+                                    hospital_name=row[DATA_CSV_HEADER[1]],
+                                    hospital_type=row[DATA_CSV_HEADER[2]],
+                                    city=row[DATA_CSV_HEADER[4]],
+                                    taluk=row[DATA_CSV_HEADER[5]],
+                                    address=row[DATA_CSV_HEADER[3]],
+                                    contact_number=row[DATA_CSV_HEADER[7]],
+                                    pincode=row[DATA_CSV_HEADER[6]],
+                                    doctors=int(row[DATA_CSV_HEADER[8]]),
+                                    healthworkers=int(row[DATA_CSV_HEADER[9]])
+                                    )
+                            asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                            for asset in asset_name_list:
+                                asset_id = Asset.objects.get(asset_name=asset)
+                                try:
+                                    total_asset = int(row["Total_"+asset+"_available"])
+                                except KeyError as key_not_found:
+                                    print("errorrrrrrrrrrrrrrrrr",key_not_found)
+                                    continue
+                                AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
+
+                            messages.info(request,"Hospital Added successfully")
+                    except Exception as er2:
+                        print(er2)
+                        continue
+
+                else:
+                    with transaction.atomic():
+                        hospital_obj = Hospital.objects.create(
+                                state_id=state_obj,
+                                district_id=district_obj,
+                                hospital_name=row[DATA_CSV_HEADER[1]],
+                                hospital_type=row[DATA_CSV_HEADER[2]],
+                                city=row[DATA_CSV_HEADER[4]],
+                                taluk=row[DATA_CSV_HEADER[5]],
+                                address=row[DATA_CSV_HEADER[3]],
+                                contact_number=row[DATA_CSV_HEADER[7]],
+                                pincode=row[DATA_CSV_HEADER[6]],
+                                doctors=int(row[DATA_CSV_HEADER[8]]),
+                                healthworkers=int(row[DATA_CSV_HEADER[9]])
+                                )
+                        asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
+                        for asset in asset_name_list:
+                            asset_id = Asset.objects.get(asset_name=asset)
+                            try:
+                                total_asset = int(row["Total_"+asset+"_available"])
+                            except KeyError as key_not_found:
+                                print("errorrrrrrrrrrrrrrrrr",key_not_found)
+                                continue
+                            AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)
+                        messages.info(request,"Hospital Added successfully")
+
+        except Exception as er3:
+            print("Exception while add multiple hospital ",er3)
+
+        return render(request,'assetmgt/add_hospital.html',{'states':states,'assets':assets})
+ 
