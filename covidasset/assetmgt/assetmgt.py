@@ -293,6 +293,7 @@ def AssetManagementView(request):
             rendered = render_to_string('assetmgt/hospitaladmin.html', {'hospitals': hosp})
 
             assetmt = AssetMgt.objects.filter(hospital_id=user.userprofile.hospital_id.hospital_id)
+            sample_tmp=xlsGenerate(assetmt,user.username)
         elif user.userprofile.adminstate == 1:
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
@@ -312,6 +313,8 @@ def AssetManagementView(request):
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
             assetmt = AssetMgt.objects.all()
+            sample_tmp=xlsGenerate(assetmt,user.username)
+            
         context = dict()
         
 
