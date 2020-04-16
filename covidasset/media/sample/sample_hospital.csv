@@ -1,1 +1,1 @@
-Hospital_Name,Hospital_Type(Government/Private),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealtWorkers,Total_Bed_available,Total_Ventilator_available,Total_PCR Test Kit_available,Total_Rapit Test Kit_available,Total_PP Cloth_available,Total_Chiranji_available
+District,Hospital_Name,Hospital_Type(Government/Private),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealthWorkers
