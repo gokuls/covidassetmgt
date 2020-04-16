@@ -2,16 +2,16 @@
           {% csrf_token %}
 
 <p><label for="id_district_id">District id:</label> <select name="district_id" required id="id_district_id">
-  <option value="" selected>---------</option>
+  <option value="" selected>--Select District--</option>
   {% for ds in dist %}
   <option value="{{ ds.district_id }}"> {{ ds.district_name }}</option>
 {% endfor%}
 
 </select></p>
 <p><label for="id_hospital_id">Hospital id:</label> <select name="hospital_id" id="id_hospital_id">
-  <option value="" selected>---------</option>
+  <option value="" selected>--Select Hospital--</option>
 
 </select></p>
 
-<input type="submit" class="btn btn-primary" name="Add Data" value="ADD Data">
+<input type="submit" class="btn btn-primary" name="Add Data" value="Update Data">
 </form>

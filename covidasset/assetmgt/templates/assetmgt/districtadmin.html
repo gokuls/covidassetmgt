@@ -2,12 +2,12 @@
           {% csrf_token %}
 
 <p><label for="id_hospital_id">Hospital id:</label> <select name="hospital_id" id="id_hospital_id">
-  <option value="" selected>---------</option> 
+  <option value="" selected>--Select Hospital--</option> 
   {% for hosp in hospitals %}
   <option value="{{ hosp.hospital_id }}"> {{ hosp.hospital_name }} </option>
 {% endfor%}
 
 </select></p>
-<input type="submit" class="btn btn-primary" name="Add Data" value="ADD Data">
+<input type="submit" class="btn btn-primary" name="Add Data" value="Update Data">
 
 </form>
