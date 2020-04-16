@@ -15,47 +15,112 @@
 				<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
 				<a class="btn btn-success"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
-				{% endif %}
-			</div>
-			<br>
-			<div id="forbulk" > <!-- for render file browser -->
-				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
-					{% csrf_token %}
-					<label for="#datafile"> Select CSV File : </label> <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input><br />
-					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
-					<input type="reset"/>
+				<br /><br /><br /><br />
+    			<div id="forbulk" > <!-- for render file browser -->
+    				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
+    					{% csrf_token %}
+    					<div class="form-group row">
+        					<label for="#datafile" class="col-sm-2 col-form-label"> Select CSV File : </label> 
+        					<div class="col-sm-10">
+        					    <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input>
+        					</div>
+        				</div>
+        				<div class="form-group row">
+	   				    <div class="col-sm-10">
+        					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
+        					<input type="reset"/>
+        				</div>
+        				</div>
+    				</form>
+    			</div>
+    			{% endif %}
+   			 </div>
 
-				</form>
-			</div>
-			<br>
 			<div id="forsingle" > <!-- for Single hospital information -->
 				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
 					{% csrf_token %}
-					<label for="state">State</label><select name="state" id="state" required=true>
-							<option value="0">--select-state--</option>
-							{% for state in states %}
-							 <option value="{{state.state_id}}">{{state.state_name}}</option>
-							 {% endfor %}
-					</select><br>
-					<label for="district">District</label><select name="district" id="district" required=true >
-						<option value="0">--Select-District--</option>
-					</select><br>
-					<label for="taluk">Taluk</label><input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true /><br>
-					<label for="city">City</label><input type="text" name="city" id="city" placeholder="Enter City Name" required=true /><br>
-					<label for="htype">Type</label><select id="htype" name="htype">
-						<option value="Government">Government</option>
-						<option value="Private">Private</option>
-
-					</select><br>
-					<label for="hname">Hospital Name</label><input type="text" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" /><br>
-					<label for="haddress"></label>Full Address<input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" /><br>
-					<label for="hpin">Pincode</label><input type="text" placeholder="600001" id="hpin" name="hpin" required=true /><br>
-					<label for="hcontact">Primary Contact Number</label><input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true /><br>
-
-					<label for="nhw">Total Numbers of Doctors Available</label><input type="number" value=0 id="ndoc" name="ndoc" required=true /><br>
-					<label for="nhw">Total Number of Health Workers Available</label><input type="number" value=0 id="nhw" name="nhw" required=true /><br>
-					<input type="submit" value="Add Hospital" id="singlesubmit"></input>
-					<input type="reset" />
+					<div class="form-group row">
+					    <label for="state" class="col-sm-2 col-form-label">State</label>
+					    <div class="col-sm-10">
+					        <select name="state" id="state" required=true>
+							    <option value="0">--select-state--</option>
+							    {% for state in states %}
+							     <option value="{{state.state_id}}">{{state.state_name}}</option>
+							    {% endfor %}
+    					    </select>
+    					</div>
+					</div>
+					<div class="form-group row">
+					    <label for="district" class="col-sm-2 col-form-label">District</label>
+					    <div class="col-sm-10">
+					        <select name="district" id="district" required=true >
+						        <option value="0">--Select-District--</option>
+					        </select>
+					    </div>
+					</div>
+					<div class="form-group row">
+					    <label for="htype" class="col-sm-2 col-form-label">Hospital Type</label>
+					    <div class="col-sm-10">
+					        <select id="htype" name="htype">
+						        <option value="Government">Government</option>
+						        <option value="Private">Private</option>
+    					    </select>
+    					</div>
+					</div>
+					<div class="form-group row">
+					    <label for="hname" class="col-sm-2 col-form-label">Hospital Name</label>
+					    <div class="col-sm-10">
+					        <input type="text" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" />
+					    </div>
+					</div>
+					<div class="form-group row">
+				    	<label for="haddress" class="col-sm-2 col-form-label">Full Address</label>
+				    	<div class="col-sm-10">
+				    	    <input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" />
+				    	</div>
+					</div>
+					<div class="form-group row">
+					    <label for="taluk" class="col-sm-2 col-form-label">Taluk</label>
+					    <div class="col-sm-10">
+					        <input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true />
+					    </div>
+					</div>
+					<div class="form-group row">
+					    <label for="city" class="col-sm-2 col-form-label">City</label>
+					    <div class="col-sm-10">
+					        <input type="text" name="city" id="city" placeholder="Enter City Name" required=true />
+					    </div>
+					</div>					
+					<div class="form-group row">
+					    <label for="hpin" class="col-sm-2 col-form-label">Pincode</label>
+					    <div class="col-sm-10">
+					        <input type="text" placeholder="600001" id="hpin" name="hpin" required=true />
+					    </div>
+					</div>
+					<div class="form-group row">
+					    <label for="hcontact" class="col-sm-2 col-form-label">Contact Number</label>
+					    <div class="col-sm-10">
+					        <input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true />
+					    </div>
+                    </div>
+                    <div class="form-group row">
+					    <label for="nhw" class="col-sm-2 col-form-label">Total No., of Doctors</label>
+					    <div class="col-sm-10">
+					        <input type="number" value=0 id="ndoc" name="ndoc" required=true />
+					    </div>
+					</div>
+					<div class="form-group row">
+    					<label for="nhw" class="col-sm-2 col-form-label">Total Health Workers</label>
+    					<div class="col-sm-10">
+    					    <input type="number" value=0 id="nhw" name="nhw" required=true />
+    					</div>
+                    </div>
+					<div class="form-group row">
+	   				    <div class="col-sm-10">
+	    				    <input type="submit" value="Add Hospital" id="singlesubmit"></input>
+    					    <input type="reset" />
+					    </div>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -66,9 +131,10 @@
 		
 	<script type="text/javascript">
 $(document).ready(function(){
-
-	$("#forbulk").hide();
-	document.getElementById("single").checked = true;
+	{% if usr.adminstate > 0 %}
+    	$("#forbulk").hide();
+	    document.getElementById("single").checked = true;
+	{% endif %}
 	$("#state").change(function () {
 		var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
 		var stateid = $(this).val();  // get the selected country ID from the HTML input
@@ -92,7 +158,6 @@ $(document).ready(function(){
 	});
 $("#single").change(function(){
 	if($(this).is(':checked')){
-		console.log("single clicked");
 		$("#forsingle").show();
 		$("#forbulk").hide();
 	}
@@ -104,7 +169,6 @@ $("#single").change(function(){
 
 $("#multiple").change(function(){
 	if($(this).is(':checked')){
-		console.log("multiple clicked");
 		$("#forbulk").show();
 		$("#forsingle").hide();
 	}
