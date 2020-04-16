@@ -1,13 +1,26 @@
-<form action="." method="post" class="form-horizontal" id="getform" data-url="{% url 'assetmgtform' %}">
-          {% csrf_token %}
+<div class="row mb-3">
+<div class="col-12">
+<div class="card">
+<div class="card-body">
 
-<p><label for="id_hospital_id">Hospital id:</label> <select name="hospital_id" id="id_hospital_id">
-  <option value="" selected>--Select Hospital--</option> 
-  {% for hosp in hospitals %}
-  <option value="{{ hosp.hospital_id }}"> {{ hosp.hospital_name }} </option>
-{% endfor%}
+	<form action="." method="post" class="form-inline" id="getform" data-url="{% url 'assetmgtform' %}">
+	          {% csrf_token %}
+    <div class="form-group mb-2">
+		<label for="id_hospital_id">Hospital id:</label> 
+	</div>
+	  <div class="form-group mx-sm-3 mb-2">
 
-</select></p>
-<input type="submit" class="btn btn-primary" name="Add Data" value="Update Data">
+	<select class="form-control" name="hospital_id" id="id_hospital_id">
+	  <option value="" selected>--Select Hospital--</option> 
+	  {% for hosp in hospitals %}
+	  <option value="{{ hosp.hospital_id }}"> {{ hosp.hospital_name }} </option>
+	{% endfor%}
 
-</form>
+	</select>
+</div>
+  <div class="form-group mx-sm-3 mb-2">
+
+	<input type="submit" class="btn btn-primary" name="Add Data" value="Update Data">
+</div>
+	</form>
+</div></div></div></div>

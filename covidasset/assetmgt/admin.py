@@ -10,4 +10,5 @@ admin.site.register(Hospital)
 admin.site.register(Asset)
 admin.site.register(AssetMgt)
 admin.site.register(PatientStat)
+admin.site.register(UserProfile)
 

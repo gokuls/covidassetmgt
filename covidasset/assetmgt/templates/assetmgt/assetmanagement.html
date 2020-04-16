@@ -36,21 +36,34 @@
 </div></div></div></div>
 
 
-
-<div class="row">
-<div class="col-md-4">
   {{ selecthospital | safe }}
 <!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
 </a-->
-</div>
+<<<<<<< HEAD
+=======
 </div>
 
-<p> </p>
-<br/>
-<div class="row">
-  <div class="col-md-12">
-      <div id='mforms'>
+  <div class="col-md-4">
+    <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data" >{% csrf_token %}
+      <label for="#datafile"> Upload xls: </label> <input name='datafile' id="datafile" type="file" required accept=".csv,.xls" ></input>
+
+    
+      <a href="{{sample_tmp}}"> Sample xls: </a> 
+
+      <input class="btn btn-primary" type="submit" name="assetupload" id="assetupload" value='Upload ' ></input> 
+      </form>
+    
+
   </div>
+
+</div>
+>>>>>>> 24a31c47bc13581de965c3e894fbf4e8d23dbfee
+
+
+<div class="row mt-2 mb-2">
+  <div class="col-md-12">
+     <div id='mforms'>   </div>
+  
   </div>
 
 </div>
@@ -107,6 +120,9 @@
 
 
 {% block 'customjs' %}
+
+
+
  
 <script type="text/javascript">
 
@@ -273,7 +289,11 @@ var $myForm2 = $('#getform')
  $(document).ready(function() {
 
     var table = $('#example').DataTable({
-    		dom: 'Blrftip',
+    		dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
 			buttons: [
             { 
               extend : 'copyHtml5',  
@@ -350,4 +370,5 @@ var $myForm2 = $('#getform')
 
 
 </script>
+
 {% endblock %}

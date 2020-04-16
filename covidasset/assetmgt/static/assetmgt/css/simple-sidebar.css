@@ -4,10 +4,12 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
 body {
-  overflow-x: hidden;  background-color:#eff1f4; font-family: 'Open Sans', sans-serif;     font-size: 0.9rem !important;
+  overflow-x: hidden;  background-color:#eff1f4; font-family: 'Open Sans', sans-serif;     
 
 
 }
+.list-group-item .fa  {font-size: 22px;}
+
 .bg-gradient-danger {
     background: -webkit-gradient(linear, left top, right top, from(#ffbf96), to(#fe7096)) !important;
     background: linear-gradient(to right, #ffbf96, #fe7096) !important;
@@ -49,19 +51,29 @@ transition: opacity 0.3s ease; color:#fff;}
 
 #sidebar-wrapper .sidebar-heading {
   padding: 0.8rem 1.25rem;
-  font-size: 1rem;
+  font-size: 1.25rem; color: #fafafa; font-weight: bold;
+}
+#sidebar-wrapper .sidebar-heading p{
+  padding: 0.8rem 0;
+  font-size: 1rem; color: #fafafa; font-weight: bold;
 }
 
 #sidebar-wrapper .list-group {
   width: 15rem;
 }
 
-.footer {
-    background: #f2edf3;
 
-    padding: 30px 1rem;
+#footer {
+    background-color: #f2edf3;
+clear:both;
+margin-top:50px;
+height:50px;
+position:relative;
+   
 
 }
+
+#main {padding-bottom:50px; min-height:80vh;}
 .custom-bg {background-color:#1c0148;}
 .border-light {border-color:#6c509d !important;}
 
