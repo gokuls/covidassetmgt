@@ -14,6 +14,7 @@ from .forms import HospitalForm
 from .forms import AssetForm
 from .forms import AssetMgtForm
 from .forms import AssetMgtForm2
+from .views import xlsGenerate
 
 
 from django.shortcuts import render
@@ -292,6 +293,7 @@ def AssetManagementView(request):
             rendered = render_to_string('assetmgt/hospitaladmin.html', {'hospitals': hosp})
 
             assetmt = AssetMgt.objects.filter(hospital_id=user.userprofile.hospital_id.hospital_id)
+            sample_tmp=xlsGenerate(assetmt,user.username)
         elif user.userprofile.adminstate == 1:
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
@@ -300,6 +302,9 @@ def AssetManagementView(request):
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
+            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+                'asset_id','-creation_date').distinct('asset_id')
+            sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
@@ -308,11 +313,14 @@ def AssetManagementView(request):
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
             assetmt = AssetMgt.objects.all()
+            sample_tmp=xlsGenerate(assetmt,user.username)
+            
         context = dict()
         
 
         context['selecthospital'] = rendered
         context['assetmgt'] = assetmt
+        context['sample_tmp'] = sample_tmp
 
         return render(request,
                 'assetmgt/assetmanagement.html',
@@ -324,4 +332,4 @@ def Logout_view(request):
     #addMessage("%s User logged out"%user)
 
     url = reverse('login')
-    return HttpResponseRedirect(url)  
+    return HttpResponseRedirect(url) 

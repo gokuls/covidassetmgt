@@ -24,6 +24,10 @@
 
 
     <link rel="stylesheet" href="{% static  'assetmgt/css/simple-sidebar.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static  'assetmgt/css/dataTables.bootstrap.min.css' %}" type="text/css" />
+
+    <link rel="stylesheet" href="{% static  'assetmgt/css/buttons.dataTables.min.css' %}" type="text/css" />
+
   <link rel="stylesheet" href="{% static  'assetmgt/css/font-awesome.min.css' %}" type="text/css" />
 
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -39,26 +43,26 @@
     <!-- Sidebar -->
     <div  id="sidebar-wrapper">
          <div class="sidebar-heading  shadow-sm "><!--<img width="120px" src="{% static 'assetmgt/images/logo.svg' %}" alt="logo"> --> Asset Managment </div>
-	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p >
+	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p > <i class="fa  fa-user  mr-1" aria-hidden="true"></i>
       {{ user }}<br/><small>System Administrator</small> </p></div>
       <div class="list-group list-group-flush">
         
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-american-sign-language-interpreting" aria-hidden="true"></i>
- Reports</a>
+        
       {% if request.user.is_authenticated %}
 
 
-            <li><a href="#" class="list-group-item border-0 list-group-item-action"> <i class="fa fa-user"></i> <strong> <abbr title="User Logged in">{{ request.user }} </abbr> </strong> </a></li>
+            <!--li><a href="#" class="list-group-item border-0 list-group-item-action"> <i class="fa fa-user"></i> <strong> <abbr title="User Logged in">{{ request.user }} </abbr> </strong> </a></li-->
 
-            <a href="{% url 'assetmanagementview' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Asset Management</a>
-            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Asset </a>
+            <a href="{% url 'assetmanagementview' %}" class="list-group-item border-0 list-group-item-action "> Asset Management <i class="fa  fa-sliders pull-right mr-2" aria-hidden="true"></i></a>
+            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action ">Asset <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
 
-            <a href="{% url 'addhospitaltemp' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Add Hospital </a>
+            <a href="{% url 'addhospitaltemp' %}" class="list-group-item border-0 list-group-item-action "> Add Hospital <i class="fa  fa-hospital-o pull-right mr-2" aria-hidden="true"></i>
+</a>
 
 
-            <a href="{% url 'register' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Add User </a>
+            <a href="{% url 'register' %}" class="list-group-item border-0 list-group-item-action ">Add User  <i class="fa  fa-user-plus pull-right mr-2" aria-hidden="true"></i></a>
 
-            <a href="{% url 'logout' %}" class="list-group-item border-0 list-group-item-action "><i class="fas fa-sign-out-alt" aria-hidden="true"> </i> Logout</a>
+            <a href="{% url 'logout' %}" class="list-group-item border-0 list-group-item-action ">Logout <i class="fa  fa-sign-out pull-right mr-2" aria-hidden="true"></i></a>
             
       {% endif %}
       </div>
@@ -100,6 +104,7 @@
       </nav>
 
       <div class="container-fluid"   >
+        <div id="main">
 	  <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -107,246 +112,34 @@
     <li class="breadcrumb-item active" aria-current="page">Data</li>
   </ol>
 </nav>
-    
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
 {% endblock %}		
 
 		{% block 'content' %}
-		<div class="row">
-              <div class="col-md-3  ">
-                <div class="card  ">
-                  <div class="card-body">
-                    
-                    <h4 class="font-weight-normal mb-3">Weekly Sales <i class="fa fa-3x fa-line-chart float-right" aria-hidden="true"></i> 
-                    </h4>
-                    <h2 class="mb-5">$ 15,0000</h2>
-                    
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3  ">
-                <div class="card bg-danger card-img-holder text-white">
-                  <div class="card-body">
-                    
-                    <h4 class="font-weight-normal mb-3">Weekly Orders  <i class="fa float-right fa-3x fa-snowflake-o" aria-hidden="true"></i>
-                    </h4>
-                    <h2 class="mb-5">45,6334</h2>
-                    
-                  </div>
-                </div>
-              </div>
-			  
-			  <div class="col-md-3  ">
-                <div class="card bg-primary card-img-holder text-white">
-                  <div class="card-body">
-                    
-                    <h4 class="font-weight-normal mb-3">Weekly Orders <i class="fa float-right fa-3x fa-users" aria-hidden="true"></i>
-
-                    </h4>
-                    <h2 class="mb-5">45,6334</h2>
-                    
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3  ">
-                <div class="card bg-success card-img-holder text-white">
-                  <div class="card-body">
-                 
-                    <h4 class="font-weight-normal mb-3">Visitors Online <i class="fa fa-futbol-o float-right fa-3x " aria-hidden="true"></i>
-
-                    </h4>
-                    <h2 class="mb-5">95,5741</h2>
-                   
-                  </div>
-                </div>
-              </div>
-            </div>
 		
-		<div class="row mt-3">
-              <div class="col-md-7  ">
-                <div class="card">
-                  <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                    <div class="clearfix">
-                      <h4 class="card-title float-left">Visit And Sales Statistics</h4>
-                      <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"><ul><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(218, 140, 255, 1), rgba(154, 85, 255, 1))"></span>CHN</li><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(255, 191, 150, 1), rgba(254, 112, 150, 1))"></span>USA</li><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(54, 215, 232, 1), rgba(177, 148, 250, 1))"></span>UK</li></ul></div>
-                    </div>
-                    <canvas id="visit-sale-chart" class="mt-4 chartjs-render-monitor" style="display: block; width: 633px; height: 316px;" width="633" height="316"></canvas>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-5  ">
-                <div class="card">
-                  <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                    <h4 class="card-title">Traffic Sources</h4>
-                    <canvas id="traffic-chart" width="418" height="209" class="chartjs-render-monitor" style="display: block; width: 418px; height: 209px;"></canvas>
-                    <div id="traffic-chart-legend" class="rounded-legend legend-vertical legend-bottom-left pt-4"><ul><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(54, 215, 232, 1), rgba(177, 148, 250, 1))"></span>Search Engines<span class="float-right">30%</span></li><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(6, 185, 157, 1), rgba(132, 217, 210, 1))"></span>Direct Click<span class="float-right">30%</span></li><li><span class="legend-dots" style="background:linear-gradient(to right, rgba(255, 191, 150, 1), rgba(254, 112, 150, 1))"></span>Bookmarks Click<span class="float-right">40%</span></li></ul></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-			
-			<div class="row mt-3">
-              <div class="col-12 ">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Recent Tickets</h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th> Assignee </th>
-                            <th> Subject </th>
-                            <th> Status </th>
-                            <th> Last Update </th>
-                            <th> Tracking ID </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              David Grey </td>
-                            <td> Fund is not recieved </td>
-                            <td>
-                              <label class="badge badge-success">DONE</label>
-                            </td>
-                            <td> Dec 5, 2017 </td>
-                            <td> WD-12345 </td>
-                          </tr>
-                          <tr>
-                            <td>
-                       Stella Johnson </td>
-                            <td> High loading time </td>
-                            <td>
-                              <label class="badge badge-warning">PROGRESS</label>
-                            </td>
-                            <td> Dec 12, 2017 </td>
-                            <td> WD-12346 </td>
-                          </tr>
-                          <tr>
-                            <td>
-                               Marina Michel </td>
-                            <td> Website down for one week </td>
-                            <td>
-                              <label class="badge badge-info">ON HOLD</label>
-                            </td>
-                            <td> Dec 16, 2017 </td>
-                            <td> WD-12347 </td>
-                          </tr>
-                          <tr>
-                            <td>
-                               John Doe </td>
-                            <td> Loosing control on server </td>
-                            <td>
-                              <label class="badge badge-danger">REJECTED</label>
-                            </td>
-                            <td> Dec 3, 2017 </td>
-                            <td> WD-12348 </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-			
-			
-			<div class="row mt-3">
-              <div class="col-md-12  ">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Project Status</h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th> # </th>
-                            <th> Name </th>
-                            <th> Due Date </th>
-                            <th> Progress </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td> 1 </td>
-                            <td> Herman Beck </td>
-                            <td> May 15, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td> 2 </td>
-                            <td> Messsy Adam </td>
-                            <td> Jul 01, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td> 3 </td>
-                            <td> John Richards </td>
-                            <td> Apr 12, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td> 4 </td>
-                            <td> Peter Meggik </td>
-                            <td> May 15, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td> 5 </td>
-                            <td> Edward </td>
-                            <td> May 03, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td> 5 </td>
-                            <td> Ronald </td>
-                            <td> Jun 05, 2015 </td>
-                            <td>
-                              <div class="progress">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-      </div>
+            
 	  {% endblock %}
-	  <footer class="footer">
+	    </div><footer id="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
               <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright &copy; 2020 <a href="@" target="_blank">CDAC</a>. All rights reserved.</span>
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Designed by K </span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://www.freepik.com/free-photos-vectors/business">Business vector created by freepik - www.freepik.com</a> </span>
             </div>
           </footer>
-    </div>
+  
     <!-- /#page-content-wrapper -->
 
   </div>
   <!-- /#wrapper -->
-
+</div> </div>
   <!-- Bootstrap core JavaScript -->
       <script src="{% static 'assetmgt/js/jquery.min.js' %}"></script>
       <script src="{% static 'assetmgt/js/bootstrap.bundle.min.js' %}"></script>
