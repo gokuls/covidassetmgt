@@ -58,9 +58,9 @@ class AddHospital(LoginRequiredMixin,View):
         #usr = User.objects.get(username='boss')
         #To do user username from request object
         #if not request.user:
-        usr = UserProfile.objects.get(username=request.user.username)#To do user username from request object
+        usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
         try:
-            usr = UserProfile.objects.get(username=request.user.username)#To do user username from request object
+            usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
             states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
         except UserProfile.DoesNotExist as e:
             print("exception while add hospital %s"%(str(e)))
@@ -94,7 +94,7 @@ class AddHospital(LoginRequiredMixin,View):
                     else:
                         print("")
                         continue"""
-            
+                messages.info(request,"Hospital added successfully") 
         except Exception as add_h_err:
             print(add_h_err)
             messages.error(request,"Hospital not added")
