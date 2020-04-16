@@ -13,6 +13,8 @@ from .forms import UserProfileForm
 from .forms import HospitalForm
 from .forms import AssetForm
 from .forms import AssetMgtForm
+from .forms import AssetMgtForm2
+
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -30,6 +32,8 @@ from django.db import IntegrityError
 
 from django.template.loader import render_to_string
 from django.contrib.auth import logout
+from django.forms import formset_factory
+
 
 
 def LoginMeth(request):
@@ -87,6 +91,82 @@ def returnAssetForm(request):
                   'form':form
                   })
 
+# def returnAssetMgtMultiForm(request):
+#     """
+#     Method returns Service Form
+#     """
+#     if request.method == 'POST':
+#         if 'hospital_id' in request.POST:
+#             hid = request.POST['hospital_id']
+#             try:
+#                 inidict = {}
+#                 inidict['hospital_id'] = Hospital.objects.get(hospital_id=hid)
+#                 inidict['asset_id'] = ''
+#                 assets = Asset.objects.all()
+#                 context = {}
+#                 context['forms'] = {}
+#                 for ast in assets:
+#                     try:
+#                         objast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+#                         total = objast.asset_total
+#                     except:
+#                         total = 0
+#                         pass
+#                     inidict['asset_id'] = ast
+#                     inidict['asset_total'] = total  
+#                     context['forms'][ast.asset_name] = AssetMgtForm2(
+#                         initial=inidict,prefix=ast.asset_name)
+#                 print(context)
+#                 return render(request, 'assetmgt/multiform.html', context)
+#             except Exception as details:
+#                 print(details)
+#                 return HttpResponse("Select Hospital")
+#         else:
+#             return HttpResponse("Select Hospital")
+#     else:
+#         return HttpResponse("Select Hospital")
+
+
+def returnAssetMgtMultiForm(request):
+    """
+    Method returns Service Form
+    """
+    if request.method == 'POST':
+        if 'hospital_id' in request.POST:
+            hid = request.POST['hospital_id']
+            try:
+                AssetMgtFormset = formset_factory(AssetMgtForm2,extra=0)
+                initopass = []                
+                assets = Asset.objects.all()
+                context = {}
+                
+                for ast in assets:
+                    inidict = {}
+                    inidict['hospital_id'] = Hospital.objects.get(hospital_id=hid)
+                    inidict['asset_id'] = ''
+                    try:
+                        objast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                        total = objast.asset_total
+                    except:
+                        total = 0
+                        pass
+                    inidict['asset_id'] = ast
+                    inidict['asset_total'] = total  
+                    initopass.append(inidict)
+                    print(initopass)
+
+                formset = AssetMgtFormset(initial=initopass)
+                print(dir(formset))
+                
+                return render(request, 'assetmgt/multiform.html', {'formset':formset,'initdata':initopass})
+            except Exception as details:
+                print(details)
+                return HttpResponse("Select Hospital")
+        else:
+            return HttpResponse("Select Hospital")
+    else:
+        return HttpResponse("Select Hospital")
+
 
 def returnAssetMgtForm(request):
     """
@@ -135,6 +215,45 @@ def addAsset(request):
             print("adding policy "+details)
             return HttpResponse("Error")
     return HttpResponse("Done")
+
+
+
+
+@login_required
+def addMultipleAssetManagement(request):
+    if request.method == 'POST':
+        #print(request.POST)
+        try:
+            AssetMgtFormset = formset_factory(AssetMgtForm2)
+            inid = request.POST['initd']
+            formset = AssetMgtFormset(request.POST)
+            if formset.is_valid():
+                print("Form is valid")
+        
+                for form in formset:
+                    print(form)
+                    obj = form.save(commit=False)
+                    if obj.asset_total:
+                        obj.author = request.user
+                        obj.asset_balance = obj.asset_total - obj.asset_utilized
+                        obj.save()
+            else:
+                print(formset.errors)
+                print("Some Issue")
+            
+                #messages.info(request,'Asset Added')
+            url = reverse('assetmanagementview')
+            return HttpResponseRedirect(url)
+            return HttpResponse("Done")
+        except IntegrityError as ie:
+            print("Asset already exists")
+            return HttpResponse("AE")
+
+        except Exception as details:
+            print("adding policy "+str(details))
+            return HttpResponse("Error")
+    return HttpResponse("Done")
+
 
 
 
