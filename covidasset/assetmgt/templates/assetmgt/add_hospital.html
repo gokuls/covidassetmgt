@@ -11,9 +11,9 @@
 </ul>
 {% endif %}
 			<div> <!-- for radio group-->
-				<input type="radio" id="single" class="form-control" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 				{% if usr.adminstate > 0 %}
-				<input type="radio" id="multiple" class="form-control" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
+				<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
+				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
 				<a class="btn btn-success"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
 				{% endif %}
 			</div>
