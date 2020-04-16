@@ -11,9 +11,11 @@
 </ul>
 {% endif %}
 			<div> <!-- for radio group-->
-				<input type="radio" id="single" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
-				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
+				<input type="radio" id="single" class="form-control" name="hospitaldata" value="1"><label for="single">Add Hospital</label>
+				{% if usr.adminstate > 0 %}
+				<input type="radio" id="multiple" class="form-control" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
 				<a class="btn btn-success"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
+				{% endif %}
 			</div>
 			<br>
 			<div id="forbulk" > <!-- for render file browser -->
@@ -52,12 +54,7 @@
 
 					<label for="nhw">Total Numbers of Doctors Available</label><input type="number" value=0 id="ndoc" name="ndoc" required=true /><br>
 					<label for="nhw">Total Number of Health Workers Available</label><input type="number" value=0 id="nhw" name="nhw" required=true /><br>
-					   {% for asset in assets %}
-					   <label for="{{asset.asset_id}}">Total Numbers of {{asset.asset_name | title }}(s) available </label><input type="number" min=0 required=true value=0 name="{{asset.asset_name}}" /><br>
-					   {% endfor %}
-
 					<input type="submit" value="Add Hospital" id="singlesubmit"></input>
-
 					<input type="reset" />
 				</form>
 			</div>
@@ -69,8 +66,9 @@
 		
 	<script type="text/javascript">
 $(document).ready(function(){
-	document.getElementById("single").checked = true;
+
 	$("#forbulk").hide();
+	document.getElementById("single").checked = true;
 	$("#state").change(function () {
 		var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
 		var stateid = $(this).val();  // get the selected country ID from the HTML input
