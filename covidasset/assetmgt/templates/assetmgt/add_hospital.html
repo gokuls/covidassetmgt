@@ -15,7 +15,7 @@
 	</div><br />
 
 	<div id="forbulk" > <!-- for render file browser -->
-    				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
+		<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
     					{% csrf_token %}
     					<div class="form-group row">
         					<label for="#datafile" class="col-sm-2 col-form-label"> Select CSV File : </label> 
@@ -30,9 +30,7 @@
         				</div>
         				</div>
     				</form>
-    			</div>
-    			
-   			 </div>
+    		</div> 
 
 			<div id="forsingle" > <!-- for Single hospital information -->
 				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
