@@ -1,0 +1,60 @@
+{% extends 'assetmgt/base.html' %}
+{% block 'title' %} Asset Report {% endblock %}
+{% block 'content' %}
+        Report Page
+{% endblock %}
+
+{% block 'customjs' %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    document.getElementById("single").checked = true;
+	    $("#forbulk").hide();
+	    $("#state").change(function () {
+		    var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
+		    var stateid = $(this).val();  // get the selected country ID from the HTML input
+		    var token = "{{csrf_token}}";
+		    $.ajax({                       // initialize an AJAX request
+			    type:"POST",
+			    headers: {
+				    'X-CSRFToken':"{{csrf_token}}"
+			    },
+			    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+			    data: {
+				    'stateid': stateid       // add the country id to the GET parameters
+			    },
+			    success: function (data) { // `data` is the return of the `load_cities` view function
+				    
+				    $("#district").html(data);
+				    //console.log(data);
+			    }
+		    });
+
+	    });
+    $("#single").change(function(){
+	    if($(this).is(':checked')){
+		    console.log("single clicked");
+		    $("#forsingle").show();
+		    $("#forbulk").hide();
+	    }
+	    else{$("#forsingle").hide();
+		    $("#forbulk").show();
+	    }
+
+    });
+
+    $("#multiple").change(function(){
+	    if($(this).is(':checked')){
+		    console.log("multiple clicked");
+		    $("#forbulk").show();
+		    $("#forsingle").hide();
+	    }
+	    else{
+		    $("#forbulk").hide();
+		    $("#forsingle").show();
+	    }
+	    });
+    });
+    </script>
+{% endblock %}
+

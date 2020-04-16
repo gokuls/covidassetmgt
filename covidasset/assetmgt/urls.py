@@ -4,7 +4,7 @@ from assetmgt.hospitalviews import GetDistrictByState
 from assetmgt.hospitalviews import AddHospital
 from assetmgt.hospitalviews import AddMultipleHospital
 from assetmgt.hospitalviews import GetHospitalSample 
-
+from assetmgt import assetreport
 
 urlpatterns = [
         path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
@@ -12,5 +12,5 @@ urlpatterns = [
         path('addsinglehospital',AddHospital.as_view(),name='addsinglehospital'),
         path('gethospitalsamplecsv',GetHospitalSample.as_view(),name='gethospitalsample'),
         path('addhospitalcsv',AddMultipleHospital.as_view(),name='addhospitalcsv'),
-
+        path('assetreport',assetreport.assetReport,name='assetreport'),
         ]
