@@ -99,3 +99,11 @@ class UserProfile(models.Model):
 
 	def __str__(self):
 		return self.user.username
+
+class AssetFiles(models.Model):
+	file_name = models.CharField(max_length=250,blank=True)	
+	datafile=models.FileField(upload_to='assetfiles/')	
+	uploaded_at=models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return self.file_name

@@ -39,6 +39,25 @@
   {{ selecthospital | safe }}
 <!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
 </a-->
+<<<<<<< HEAD
+=======
+</div>
+
+  <div class="col-md-4">
+    <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data" >{% csrf_token %}
+      <label for="#datafile"> Upload xls: </label> <input name='datafile' id="datafile" type="file" required accept=".csv,.xls" ></input>
+
+    
+      <a href="{{sample_tmp}}"> Sample xls: </a> 
+
+      <input class="btn btn-primary" type="submit" name="assetupload" id="assetupload" value='Upload ' ></input> 
+      </form>
+    
+
+  </div>
+
+</div>
+>>>>>>> 24a31c47bc13581de965c3e894fbf4e8d23dbfee
 
 
 <div class="row mt-2 mb-2">
@@ -101,6 +120,9 @@
 
 
 {% block 'customjs' %}
+
+
+
  
 <script type="text/javascript">
 
@@ -348,4 +370,5 @@ var $myForm2 = $('#getform')
 
 
 </script>
+
 {% endblock %}
