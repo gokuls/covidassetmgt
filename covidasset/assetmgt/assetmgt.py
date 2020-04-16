@@ -16,6 +16,7 @@ from .forms import AssetMgtForm
 from .forms import AssetMgtForm2
 from .views import xlsGenerate
 
+from django.contrib import messages
 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -159,7 +160,10 @@ def returnAssetMgtMultiForm(request):
                 formset = AssetMgtFormset(initial=initopass)
                 print(dir(formset))
                 
-                return render(request, 'assetmgt/multiform.html', {'formset':formset,'initdata':initopass})
+                return render(request, 'assetmgt/multiform.html', {
+                    'formset':formset,'initdata':initopass,
+                    'hospitaln':inidict['hospital_id']
+                    })
             except Exception as details:
                 print(details)
                 return HttpResponse("Select Hospital")
@@ -222,12 +226,15 @@ def addAsset(request):
 
 @login_required
 def addMultipleAssetManagement(request):
+    print("Request has come")
     if request.method == 'POST':
         #print(request.POST)
         try:
             AssetMgtFormset = formset_factory(AssetMgtForm2)
             inid = request.POST['initd']
             formset = AssetMgtFormset(request.POST)
+            # for forms in formset:
+            #     forms.full_clean()
             if formset.is_valid():
                 print("Form is valid")
         
@@ -243,17 +250,23 @@ def addMultipleAssetManagement(request):
                 print("Some Issue")
             
                 #messages.info(request,'Asset Added')
+            messages.info(request,"Data has been Updated")
             url = reverse('assetmanagementview')
             return HttpResponseRedirect(url)
-            return HttpResponse("Done")
         except IntegrityError as ie:
             print("Asset already exists")
-            return HttpResponse("AE")
+            url = reverse('assetmanagementview')
+            messages.info(request,"Issue in Updating ")
+            return HttpResponseRedirect(url)
+            # return HttpResponse("AE")
 
         except Exception as details:
             print("adding policy "+str(details))
-            return HttpResponse("Error")
-    return HttpResponse("Done")
+            messages.info(request,"Issue in Updating ")
+            url = reverse('assetmanagementview')
+            return HttpResponseRedirect(url)
+    url = reverse('assetmanagementview')
+    return HttpResponseRedirect(url)
 
 
 
@@ -314,7 +327,7 @@ def AssetManagementView(request):
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
             assetmt = AssetMgt.objects.all()
             sample_tmp=xlsGenerate(assetmt,user.username)
-            
+
         context = dict()
         
 

@@ -7,6 +7,7 @@ from .models import Hospital
 from .models import Asset
 from .models import AssetMgt
 from django.forms import TextInput
+from django.forms import Select
 from django.forms import PasswordInput
 
 from .models import AssetFiles
@@ -90,12 +91,10 @@ class AssetMgtForm(forms.ModelForm):
 		#print(self.fields['hospital_id'])
 
 class AssetMgtForm2(forms.ModelForm):
-	# asset_total 		= forms.TextField(
-	# 					widget=TextInput(attrs={'class':'form-control'})
-	# 					)
-	# asset_utilized 			= forms.TextField(
-	# 					widget=TextInput(attrs={'class':'form-control'})
-	# 					)
+	asset_id 		= forms.CharField(
+							widget=TextInput(attrs={'class':'form-control',
+								'readonly':'readonly'})
+					)
 
 	class Meta:
 		model  = AssetMgt
@@ -103,14 +102,17 @@ class AssetMgtForm2(forms.ModelForm):
 		widgets = {
 				'asset_total': forms.TextInput(attrs={'class':'form-control'}),
 				'asset_utilized' : forms.TextInput(attrs={'class':'form-control'}),
-				'asset_id': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
-				'hospital_id': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+				#'asset_id': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+				'hospital_id': forms.HiddenInput(attrs={'class':'form-control','readonly':'readonly'}),
 			}
 
-			
-		# widgets = {
-		# 		'hospital_id' :  forms.HiddenInput()
-		# }
+	def clean_asset_id(self):
+		print('in cleanfunction')
+		data = self.cleaned_data['asset_id']
+		print(data)
+		data = Asset.objects.get(asset_name=data)
+		return data
+
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -123,7 +125,6 @@ class AssetMgtForm2(forms.ModelForm):
 			self.fields['asset_id'].queryset = Asset.objects.filter(
 						asset_id=kwargs['initial']['asset_id'].asset_id)
 
-		#print(self.fields['hospital_id'])
 
 
 class UserProfileForm(forms.ModelForm):
