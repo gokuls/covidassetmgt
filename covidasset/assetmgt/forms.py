@@ -84,12 +84,38 @@ class AssetMgtForm(forms.ModelForm):
 		super().__init__(*args, **kwargs)
 		# print("In Form Creation")
 		# print(kwargs)
-		# self.fields['hospital_id'].queryset = Hospital.objects.get(
-		# 			hospital_id=kwargs['initial']['hospital_id'].hospital_id)
+		self.fields['hospital_id'].queryset = Hospital.objects.filter(
+					hospital_id=kwargs['initial']['hospital_id'].hospital_id)
 
 		#print(self.fields['hospital_id'])
 
+class AssetMgtForm2(forms.ModelForm):
+	# hospital_id 		= forms.CharField(
+	# 					widget=TextInput(attrs={'readonly':'readonly'})
+	# 					)
+	# asset_id 			= forms.CharField(
+	# 					widget=TextInput(attrs={'readonly':'readonly'})
+	# 					)
 
+	class Meta:
+		model  = AssetMgt
+		fields = ('asset_id','asset_total','asset_utilized','hospital_id')
+		# widgets = {
+		# 		'hospital_id' :  forms.HiddenInput()
+		# }
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		# print("In Form Creation")
+		# print(kwargs)
+		if 'initial' in kwargs:
+			self.fields['hospital_id'].queryset = Hospital.objects.filter(
+						hospital_id=kwargs['initial']['hospital_id'].hospital_id)
+
+			self.fields['asset_id'].queryset = Asset.objects.filter(
+						asset_id=kwargs['initial']['asset_id'].asset_id)
+
+		#print(self.fields['hospital_id'])
 
 
 class UserProfileForm(forms.ModelForm):
