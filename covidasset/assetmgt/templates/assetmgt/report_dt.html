@@ -1,0 +1,31 @@
+<table id="hospital_list" class="table table-bordered table-striped" >
+	<thead>
+		<tr>
+			{% if usr.adminsate > 0 %}
+			<th> District </th>
+			{% endif %}
+			<th>Hospital Name</th>
+			<th>Asset</th>
+			<th>Total Count</th>
+			<th>Total Utilized</th>
+			<th>Total Available</th>
+			<th>Last Updated On</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for assetmgt in assets %}
+	<tr>    
+		{% if usr.adminstate > 0 %}
+		<td> {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
+		{% endif %}
+		<td>{{assetmgt.hospital_id.hospital_name | safe }}</td>
+		<td>{{assetmgt.asset_id.asset_name | safe }}</td>
+		<td>{{assetmgt.asset_total | safe }}</td>
+		<td>{{assetmgt.asset_utilized | safe }}</td>
+		<td>{{assetmgt.asset_balance | safe }}</td>
+		<td>{{assetmgt.creation_date}}</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+

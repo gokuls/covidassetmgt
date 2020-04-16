@@ -1,0 +1,115 @@
+{% extends 'assetmgt/base.html' %}
+{% block 'title' %} Asset Report {% endblock %}
+{% block 'content' %}
+        Report Page for user : {{user.username}} admin state : {{ userstate }} userdistrict: {{ userdistrict }} userhospital: {{ userhospital }}
+        <br /><br />
+        
+		<div class="form-group row">
+		    <label for="state" class="col-sm-2 col-form-label">State</label>
+		    <div class="col-sm-10">
+		        <select name="state" id="state" required=true>
+				    <option value="0">--select-state--</option>
+				    {% for state in states %}
+				     <option value="{{state.state_id}}">{{state.state_name}}</option>
+				    {% endfor %}
+			    </select>
+			</div>
+		</div>
+
+		<div class="form-group row">
+		    <label for="district" class="col-sm-2 col-form-label">District</label>
+		    <div class="col-sm-10">
+		        <select name="district" id="district" required=true >
+			        <option value="0">--Select-District--</option>
+		        </select>
+		    </div>
+		</div>
+		
+		<div class="form-group row">
+		    <label for="hospital" class="col-sm-2 col-form-label">Hospital</label>
+		    <div class="col-sm-10">
+		        <select name="hospital" id="hospital" required=true >
+			        <option value="0">--Select-Hospital--</option>
+		        </select>
+		    </div>
+		</div>
+
+		<div id="dt">
+		</div>
+
+        
+{% endblock %}
+
+{% block 'customjs' %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+	    //document.getElementById("single").checked = true;
+	    $("#forbulk").hide();
+	    $("#state").change(function () {
+		    var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
+		    var stateid = $(this).val();  // get the selected country ID from the HTML input
+		    var token = "{{csrf_token}}";
+		    $.ajax({                       // initialize an AJAX request
+			    type:"POST",
+			    headers: {
+				    'X-CSRFToken':"{{csrf_token}}"
+			    },
+			    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+			    data: {
+				    'stateid': stateid       // add the country id to the GET parameters
+			    },
+			    success: function (data) { // `data` is the return of the `load_cities` view function
+				    
+				    $("#district").html(data);
+				    //console.log(data);
+			    }
+		    });
+
+	    });
+	    
+    $("#district").change(function () {
+      var url = "{% url 'ajax_load_hospital' %}"  // get the url of the `load_cities` view
+      var distid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'distid': distid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#hospital").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+	    
+	    
+	    
+    $("#single").change(function(){
+	    if($(this).is(':checked')){
+		    console.log("single clicked");
+		    $("#forsingle").show();
+		    $("#forbulk").hide();
+	    }
+	    else{$("#forsingle").hide();
+		    $("#forbulk").show();
+	    }
+
+    });
+
+    $("#multiple").change(function(){
+	    if($(this).is(':checked')){
+		    console.log("multiple clicked");
+		    $("#forbulk").show();
+		    $("#forsingle").hide();
+	    }
+	    else{
+		    $("#forbulk").hide();
+		    $("#forsingle").show();
+	    }
+	    });
+    });
+    </script>
+{% endblock %}
+
