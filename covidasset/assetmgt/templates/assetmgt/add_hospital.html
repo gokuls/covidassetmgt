@@ -10,25 +10,32 @@
     {% endfor %}
 </ul>
 {% endif %}
-            			    Admin state is : {{ usr.adminstate }}
 			<div> <!-- for radio group-->
 				{% if usr.adminstate > 0 %}
 				<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 				<input type="radio" id="multiple" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
 				<a class="btn btn-success"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
-				{% endif %}
-			</div>
-			<br>
-			<div id="forbulk" > <!-- for render file browser -->
-				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
-					{% csrf_token %}
-					<label for="#datafile"> Select CSV File : </label> <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input><br />
-					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
-					<input type="reset"/>
+				<br /><br /><br /><br />
+    			<div id="forbulk" > <!-- for render file browser -->
+    				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
+    					{% csrf_token %}
+    					<div class="form-group row">
+        					<label for="#datafile" class="col-sm-2 col-form-label"> Select CSV File : </label> 
+        					<div class="col-sm-10">
+        					    <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input>
+        					</div>
+        				</div>
+        				<div class="form-group row">
+	   				    <div class="col-sm-10">
+        					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
+        					<input type="reset"/>
+        				</div>
+        				</div>
+    				</form>
+    			</div>
+    			{% endif %}
+   			 </div>
 
-				</form>
-			</div>
-			<br>
 			<div id="forsingle" > <!-- for Single hospital information -->
 				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
 					{% csrf_token %}
@@ -52,19 +59,7 @@
 					    </div>
 					</div>
 					<div class="form-group row">
-					    <label for="taluk" class="col-sm-2 col-form-label">Taluk</label>
-					    <div class="col-sm-10">
-					        <input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true />
-					    </div>
-					</div>
-					<div class="form-group row">
-					    <label for="city" class="col-sm-2 col-form-label">City</label>
-					    <div class="col-sm-10">
-					        <input type="text" name="city" id="city" placeholder="Enter City Name" required=true />
-					    </div>
-					</div>
-					<div class="form-group row">
-					    <label for="htype" class="col-sm-2 col-form-label">Type</label>
+					    <label for="htype" class="col-sm-2 col-form-label">Hospital Type</label>
 					    <div class="col-sm-10">
 					        <select id="htype" name="htype">
 						        <option value="Government">Government</option>
@@ -85,13 +80,25 @@
 				    	</div>
 					</div>
 					<div class="form-group row">
+					    <label for="taluk" class="col-sm-2 col-form-label">Taluk</label>
+					    <div class="col-sm-10">
+					        <input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true />
+					    </div>
+					</div>
+					<div class="form-group row">
+					    <label for="city" class="col-sm-2 col-form-label">City</label>
+					    <div class="col-sm-10">
+					        <input type="text" name="city" id="city" placeholder="Enter City Name" required=true />
+					    </div>
+					</div>					
+					<div class="form-group row">
 					    <label for="hpin" class="col-sm-2 col-form-label">Pincode</label>
 					    <div class="col-sm-10">
 					        <input type="text" placeholder="600001" id="hpin" name="hpin" required=true />
 					    </div>
 					</div>
 					<div class="form-group row">
-					    <label for="hcontact" class="col-sm-2 col-form-label">Primary Contact Number</label>
+					    <label for="hcontact" class="col-sm-2 col-form-label">Contact Number</label>
 					    <div class="col-sm-10">
 					        <input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true />
 					    </div>
@@ -109,8 +116,10 @@
     					</div>
                     </div>
 					<div class="form-group row">
-					    <input type="submit" value="Add Hospital" id="singlesubmit"></input>
-					    <input type="reset" />
+	   				    <div class="col-sm-10">
+	    				    <input type="submit" value="Add Hospital" id="singlesubmit"></input>
+    					    <input type="reset" />
+					    </div>
 					</div>
 				</form>
 			</div>
@@ -122,8 +131,10 @@
 		
 	<script type="text/javascript">
 $(document).ready(function(){
-	$("#forbulk").hide();
-	//document.getElementById("single").checked = true;
+	{% if usr.adminstate > 0 %}
+    	$("#forbulk").hide();
+	    document.getElementById("single").checked = true;
+	{% endif %}
 	$("#state").change(function () {
 		var url = "{% url 'getdistrict' %}"  // get the url of the `load_cities` view
 		var stateid = $(this).val();  // get the selected country ID from the HTML input
@@ -147,7 +158,6 @@ $(document).ready(function(){
 	});
 $("#single").change(function(){
 	if($(this).is(':checked')){
-		console.log("single clicked");
 		$("#forsingle").show();
 		$("#forbulk").hide();
 	}
@@ -159,7 +169,6 @@ $("#single").change(function(){
 
 $("#multiple").change(function(){
 	if($(this).is(':checked')){
-		console.log("multiple clicked");
 		$("#forbulk").show();
 		$("#forsingle").hide();
 	}
