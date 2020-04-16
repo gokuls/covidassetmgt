@@ -36,21 +36,15 @@
 </div></div></div></div>
 
 
-
-<div class="row">
-<div class="col-md-4">
   {{ selecthospital | safe }}
 <!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
 </a-->
-</div>
-</div>
 
-<p> </p>
-<br/>
-<div class="row">
+
+<div class="row mt-2 mb-2">
   <div class="col-md-12">
-      <div id='mforms'>
-  </div>
+     <div id='mforms'>   </div>
+  
   </div>
 
 </div>
@@ -273,7 +267,11 @@ var $myForm2 = $('#getform')
  $(document).ready(function() {
 
     var table = $('#example').DataTable({
-    		dom: 'Blrftip',
+    		dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
 			buttons: [
             { 
               extend : 'copyHtml5',  

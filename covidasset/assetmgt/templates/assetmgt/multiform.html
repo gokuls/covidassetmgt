@@ -1,35 +1,47 @@
-<form action="{% url 'addmultiassetmanagement' %}" method="post" class="form-horizontal" id="updateentry" data-url="{% url 'addmultiassetmanagement' %}">
-	{% csrf_token %}
-	<input type="submit" class="btn btn-primary" name="Add Data" value="Update">
-	<input type="hidden" name="initd" value="{{initdata}}">
-
 <div class="row">
-	<div class="col-sm-3">
-		Asset Name
-	</div>
-	<div class="col-sm-3">
-		Asset Total
-	</div>
-	<div class="col-sm-3">
-		Asset Utilized
-	</div>
-	<div class="col-sm-3">
-		Hospital
-	</div>
+<div class="col-md-12">
+<div class="card">
+
+<div class="card-body">
+
+
+<form action="{% url 'addmultiassetmanagement' %}" method="post"  id="updateentry" data-url="{% url 'addmultiassetmanagement' %}">
+	{% csrf_token %}
+<div class="row mt-2 mb-2">
+<div class="col-md-12 d-flex justify-content-center">	<input type="submit" class="btn btn-primary " name="Add Data" value="Update"> </div>
 </div>
-{{ formset.management_form }}
+	<input type="hidden" name="initd" value="{{initdata}}">
+<table id="" class="table table-bordered mt-2">
+<thead>	<th>
+		Asset Name
+	</th>
+	<th>
+		Asset Total
+	</th>
+	<th>
+		Asset Utilized
+	</th>
+	<th>
+		Hospital
+	</th>
+</thead>	
+<tbody>{{ formset.management_form }}
 {% for form in formset %}
 {% if form.hospital_id  %}
-	<div class="row">
-	            <div class="col-sm-3">{{ form.asset_id }}</div>
-	            <div class="col-sm-3">{{ form.asset_total }} </div>
-	            <div class="col-sm-3">{{ form.asset_utilized }} </div>
-	            <div class="col-sm-3">{{ form.hospital_id }} </div>
-			</div>
+	<tr>
+	            <td> {{ form.asset_id }} </td>
+	            <td>{{ form.asset_total }} </td>
+	            <td>{{ form.asset_utilized }} </td>
+	            <td>{{ form.hospital_id }} </td>
+			</tr>
 {% endif %}
     {% endfor %}
-
+</tbody>
 </form>
 
-
+</table>
   
+</div>
+</div>
+</div>
+</div>

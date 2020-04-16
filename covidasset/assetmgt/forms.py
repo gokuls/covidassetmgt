@@ -88,16 +88,24 @@ class AssetMgtForm(forms.ModelForm):
 		#print(self.fields['hospital_id'])
 
 class AssetMgtForm2(forms.ModelForm):
-	# hospital_id 		= forms.CharField(
-	# 					widget=TextInput(attrs={'readonly':'readonly'})
+	# asset_total 		= forms.TextField(
+	# 					widget=TextInput(attrs={'class':'form-control'})
 	# 					)
-	# asset_id 			= forms.CharField(
-	# 					widget=TextInput(attrs={'readonly':'readonly'})
+	# asset_utilized 			= forms.TextField(
+	# 					widget=TextInput(attrs={'class':'form-control'})
 	# 					)
 
 	class Meta:
 		model  = AssetMgt
 		fields = ('asset_id','asset_total','asset_utilized','hospital_id')
+		widgets = {
+				'asset_total': forms.TextInput(attrs={'class':'form-control'}),
+				'asset_utilized' : forms.TextInput(attrs={'class':'form-control'}),
+				'asset_id': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+				'hospital_id': forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}),
+			}
+
+			
 		# widgets = {
 		# 		'hospital_id' :  forms.HiddenInput()
 		# }
