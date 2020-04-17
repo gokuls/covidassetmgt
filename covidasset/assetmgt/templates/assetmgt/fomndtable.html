@@ -1,47 +1,7 @@
+{% extends 'assetmgt/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>Asset Management</title>
-
-  <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="css/simple-sidebar.css" rel="stylesheet">
-      <link href="css/font-awesome.min.css" rel="stylesheet">
-
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
-</head>
-
-<body>
-
-  <div class="d-flex" id="wrapper">
-
-    <!-- Sidebar -->
-    <div  id="sidebar-wrapper">
-      <div class="sidebar-heading  shadow-sm "><img width="120px" src="images/logo.svg" alt="logo"> </div>
-	  <div class="sidebar-heading bg-prim text-white border-top border-bottom border-light custom-bg"><p >Ramkumar<br/><small>System Administrator</small> </p></div>
-      <div class="list-group list-group-flush">
-        <a href="#" class="list-group-item  border-0 list-group-item-action "><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a>
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-address-book-o" aria-hidden="true"></i>
- Manage Assets</a>
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-grav" aria-hidden="true"></i>
- Update Daily Status</a>
-        <a href="#" class="list-group-item border-0 list-group-item-action "><i class="fa fa-american-sign-language-interpreting" aria-hidden="true"></i>
- Reports</a>
-      
-      </div>
-    </div>
-    <!-- /#sidebar-wrapper -->
-
+{% block 'content' %}
     <!-- Page Content -->
     <div id="page-content-wrapper">
 
@@ -355,19 +315,4 @@
 
   </div>
   <!-- /#wrapper -->
-
-  <!-- Bootstrap core JavaScript -->
-  <script src="js/jquery.min.js"></script>
-  <script src="js/bootstrap.bundle.min.js"></script>
-
-  <!-- Menu Toggle Script -->
-  <script>
-    $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-    });
-  </script>
-
-</body>
-
-</html>
+{% endblock %}

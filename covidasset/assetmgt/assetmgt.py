@@ -310,7 +310,7 @@ def AssetManagementView(request):
 
             assetmt = AssetMgt.objects.filter(
                 hospital_id=user.userprofile.hospital_id.hospital_id
-                ).order_by('asset_id','-creation_date').distinct('asset_id')
+                ).order_by('asset_id','hospital_id','-creation_date').distinct('asset_id')
             sample_tmp=xlsGenerate(assetmt,user.username)
         elif user.userprofile.adminstate == 1:
             print("District admin")
@@ -322,7 +322,7 @@ def AssetManagementView(request):
             #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
@@ -331,7 +331,7 @@ def AssetManagementView(request):
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
-                'asset_id','-creation_date').distinct('asset_id')
+                'asset_id','hospital_id','-creation_date').distinct('asset_id')
             sample_tmp=xlsGenerate(assetmt,user.username)
 
         context = dict()

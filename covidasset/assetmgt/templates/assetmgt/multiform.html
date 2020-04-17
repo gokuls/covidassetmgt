@@ -25,6 +25,7 @@
 <thead>	<th>
 		Asset Name
 	</th>
+
 	<th>
 		Asset Total
 	</th>
@@ -35,11 +36,16 @@
 		Hospial
 	</th> -->
 </thead>	
+{% load app_filters %}
+{% load static %}
 <tbody>{{ formset.management_form }}
 {% for form in formset %}
 {% if form.hospital_id  %}
 	<tr>
-	            <td> {{ form.asset_id }} </td>
+	            <td> {{ form.asset_id }} 
+	            	
+	            </td>
+	            
 	            <td>{{ form.asset_total }} </td>
 	            <td>{{ form.asset_utilized }} 
 	            {{ form.hospital_id }} </td>

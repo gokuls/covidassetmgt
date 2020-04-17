@@ -1,19 +1,60 @@
 {% extends 'assetmgt/base.html' %}
 
+
+{% block 'title' %} Add User {% endblock %}
+
+{% load app_filters %}
+
+{% block 'content' %}
   <div class="row mb-3">
   <div class="col-12">
   <div class="card">
   <div class="card-body">
-{% block 'title' %} Add User {% endblock %}
-
-
-{% block 'content' %}
+ <h4 class="card-title">User registration</h4> 
 	<form method="POST" action="{% url 'register' %}">
 		{% csrf_token %}
-		{{ form.as_p }}
-		{{ profile_form.as_p }}
-		<input type="submit" value="Create User" />
-		<input type="reset" value="Reset" />
+<div class="row">
+  <div class="col-md-6">
+    {% for form_field in form.visible_fields %}
+    <div class="row">
+
+    <div class="col-md-12">
+    <div class ="form-group row">
+    <label class="col-sm-3 col-form-label"> {{ form_field.label  }}</label>
+       <div class="col-sm-9" >
+          {{ form_field | addclass:"form-control" }}
+       </div>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+<div class="col-md-6">
+{% for form_field2 in profile_form.visible_fields %}
+    <div class="row">
+
+      <div class="col-md-12">
+
+<div class ="form-group row">
+   <label class="col-sm-3 col-form-label"> {{ form_field2.label }}</label>
+   <div class="col-sm-9" >
+      {{ form_field2 | addclass:"form-control" }}
+   </div>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+<div class="row">
+ <div class="col-md-6">
+
+          <div class="form-group row">
+              <label for="nhw" class="col-sm-3 col-form-label"> &nbsp;</label>
+	 <div class="col-sm-9">	<input type="submit" class="btn btn-primary" value="Create User" />
+		<input type="reset" class="btn btn-warning ml-2" value="Reset" /> </div> </div>
+  </div>
+</div>
 	</form>
 </div>
 </div>

@@ -26,7 +26,7 @@ def index(request):
 		user = 'not logged in'
 
 	context = {'user':user}
-	return render(request,'assetmgt/index.html',context)
+	return render(request,'assetmgt/fomndtable.html',context)
 
 
 def register(request):
