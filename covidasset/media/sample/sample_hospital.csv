@@ -1,1 +1,1 @@
-Hospital_Name,Hospital_Type(Government/Private),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealthWorkers
+District,Hospital_Name,Hospital_Type(Government/Private),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealthWorkers

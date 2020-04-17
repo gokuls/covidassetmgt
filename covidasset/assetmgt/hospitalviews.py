@@ -79,25 +79,34 @@ class AddHospital(LoginRequiredMixin,View):
             nhw = int(request.POST['nhw'])
             hcontact = request.POST['hcontact']
             hname = request.POST['hname']
+            opt = int(request.POST['opt'])
             #To get State and District Objects
             s = State.objects.get(state_id=stid)
             d = District.objects.get(district_id=did)
-            with transaction.atomic():
-                hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
-                """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
-                for asset in asset_name_list:
-                    if asset in request.POST:
-                        total_asset = int(request.POST[asset])
-                        asset_id = Asset.objects.get(asset_name=asset)
-                        AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr,asset_total=total_asset)
-                        messages.info(request,"Hospital Added successfully")
-                    else:
-                        print("")
-                        continue"""
-                messages.info(request,"Hospital added successfully") 
+            if opt == 0:
+                with transaction.atomic():
+                    hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
+                    messages.info(request,hname+" added successfully") 
+            else:
+                with transaction.atomic():
+                    hid = int(request.POST['hid'])
+                    h = Hospital.objects.get(hospital_id=hid)
+                    h.hospital_name = hname
+                    h.hospital_type=ht
+                    h.city = city
+                    h.taluk = tk
+                    h.address = addr
+                    h.contact_number = hcontact
+                    h.doctors = nd
+                    h.healthworkers = nhw
+                    h.pincode = pin
+                    h.save()
+                    messages.info(request,hname+" details updated successfully")
+                    print("hospital updated")
+
         except Exception as add_h_err:
-            print(add_h_err)
-            messages.error(request,"Hospital not added")
+            print("exception in adding single hospital %s"%(str(add_h_err)))
+            messages.error(request,hname+" not added")
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
 
@@ -164,8 +173,9 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             print("File path is "+file_path)
             global DATA_CSV_HEADER
             #if os.path.isfile(file_path) and os.path.exists(file_path):i           
-            data = csv.DictReader(open(file_path))
+            data = csv.DictReader(open(file_path),fieldnames=DATA_CSV_HEADER)
             print("Data-----",dir(data))
+            print("number of lines ",data.line_num)
             for row in data:
                 print("Row->",row)
                 if usr.adminstate == 2:
@@ -185,16 +195,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     doctors=int(row[DATA_CSV_HEADER[8]]),
                                     healthworkers=int(row[DATA_CSV_HEADER[9]])
                                     )
-                            """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
-                            for asset in asset_name_list:
-                                asset_id = Asset.objects.get(asset_name=asset)
-                                try:
-                                    total_asset = int(row["Total_"+asset+"_available"])
-                                except KeyError as key_not_found:
-                                    print("error",key_not_found)
-                                    continue
-                                AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)"""
-                            messages.info(request,"Hospital Added successfully")
+                            messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
                     except District.DoesNotExist as district_nod_found:
                         messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
                     except ValueError as ver:
@@ -219,19 +220,77 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 doctors=int(row[DATA_CSV_HEADER[8]]),
                                 healthworkers=int(row[DATA_CSV_HEADER[9]])
                                 )
-                        """asset_name_list = Asset.objects.all().values_list('asset_name',flat=True)
-                        for asset in asset_name_list:
-                            asset_id = Asset.objects.get(asset_name=asset)
-                            try:
-                                total_asset = int(row["Total_"+asset+"_available"])
-                            except KeyError as key_not_found:
-                                print("error",key_not_found)
-                                continue
-                            AssetMgt.objects.create(asset_id=asset_id,hospital_id=hospital_obj,author=usr.user,asset_total=total_asset)"""
-                        messages.info(request,"Hospital Added successfully")
+                        messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
 
         except Exception as er3:
             print("Exception while add multiple hospital ",er3)
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
- 
+
+
+class GetHospitalData(View):
+    def post(self,request):
+        data = {}
+        try:
+            usr = UserProfile.objects.get(user__username=request.user.username)
+            h_data = Hospital.objects.filter(hospital_id=usr.hospital_id.hospital_id,state_id__state_id=usr.state_id.state_id,district_id__district_id=usr.district_id.district_id).values('hospital_id','state_id','district_id','hospital_name', 'hospital_type','city','taluk','address','pincode','doctors','healthworkers','contact_number')
+            print(h_data)
+            if h_data.exists():
+                data = h_data[0]
+                district_name = District.objects.get(district_id=data['district_id']).district_name
+                data['dist_name'] = district_name
+        except Exception as get_h_data:
+            print("exception while getting hospital data %s"%(str(get_h_data)))
+
+        return JsonResponse(data)
+            
+
+class GetReport(View):
+    def post(self,request):
+        state=hospital=dist=asset=report_option=0
+        assetmgt_obj = AssetMgt.objects.all()
+
+        if 'state' in request.POST:
+            state = int(request.POST['state'])
+            if state:
+                assetmgt_obj = AssetMgt.objects.filter(hospital_id__state_id=state)
+
+        if 'dist' in request.POST:
+            dist = int(request.POST['district'])
+            if dist:
+                assetmgt_obj = AssetMgt.objects.filter(hospital_id__district_id=dist)
+
+        if 'opt' in request.POST:
+            report_option = request.POST['opt']
+
+        if 'hospital' in request.POST:
+            hospital = int(request.POST['hospital'])
+
+        if 'asset' in request.POST:
+            asset = int(request.POST['asset'])
+        
+        if report_option == 1:
+            if asset:
+                assetmgt_obj = AssetMgt.objects.filter(asset_id=asset)
+        elif report_option == 2:
+            if hospital:
+                assetmgt_obj = AssetMgt.objects.filter(hospital_id=hospital)
+        
+        userprofile = UserProfile.objects.get(user__username=request.user.username)
+        states = State.objects.filter(state_id=userprofile.state_id.state_id)
+        districts = District.objects.filter(state_id=userprofile.state_id)
+        hospitals = Hospital.objects.filter(state_id=userprofile.state_id,district_id=userprofile.district_id)
+        assets = Asset.objects.all()
+        context={}
+        context['states'] = states
+        context['districts'] = districts
+        context['hospitals'] = hospitals    
+        context['assets'] = assets
+        context['user'] = userprofile.user
+        context['userprofile'] = userprofile
+        context['userstate'] = State.objects.get(state_id=userprofile.state_id_id)
+        context['userdistrict'] = District.objects.get(district_id=userprofile.district_id_id)
+        context['assetmgts'] = assetmgt_obj
+
+
+        return render(request,'assetmgt/assetreport.html',{'assets':assetmgt_obj})
