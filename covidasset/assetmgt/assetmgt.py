@@ -31,7 +31,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from .forms import LoginForm
 from django.db import IntegrityError
-
+from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.contrib.auth import logout
 from django.forms import formset_factory
@@ -387,10 +387,82 @@ def addAssetManagement(request):
             return HttpResponse("Error")
     return HttpResponse("Done")
 
+def returnData(userobj):
+    '''
+        return data for constructing Excel
+    '''
+    # userobj = request.user
+    datatowrite = []
+    assetobj = Asset.objects.all()
+    hids = []
 
+    if userobj.userprofile.adminstate == 0:
+        hosp = Hospital.objects.get(
+            hospital_id=userobj.userprofile.hospital_id.hospital_id
+            )
+    elif userobj.userprofile.adminstate == 1:
+        hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+    else:
+        hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
+    
+    for i in hosp:
+        for a in assetobj:
+            tmp = []
+            tmp.append(i.hospital_id)
+            tmp.append(i.hospital_name)
+            tmp.append(a.asset_name)
+            try:
+                bjast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                total = objast.asset_total
+                utilized = objast.asset_utilized
+            except:
+                total = 0
+                utilized = 0
+            tmp.append(total)
+            tmp.append(utilized)
+            datatowrite.append(tmp)
+    print(datatowrite)
+    return datatowrite
+
+
+@login_required
 def AssetManagementView(request):
     if request.user:
         user = request.user 
+
+        datatowrite = []
+        userobj = user
+        assetobj = Asset.objects.all()
+        hids = []
+
+        if userobj.userprofile.adminstate == 0:
+            hosp = Hospital.objects.get(
+                hospital_id=userobj.userprofile.hospital_id.hospital_id
+                )
+        elif userobj.userprofile.adminstate == 1:
+            hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+        else:
+            hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
+        
+        for i in hosp:
+            for a in assetobj:
+                tmp = []
+                tmp.append(i.hospital_id)
+                tmp.append(i.hospital_name)
+                tmp.append(a.asset_name)
+                try:
+                    bjast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                    total = objast.asset_total
+                    utilized = objast.asset_utilized
+                except:
+                    total = 0
+                    utilized = 0
+                tmp.append(total)
+                tmp.append(utilized)
+                datatowrite.append(tmp)
+
+        print(datatowrite)
+
         if user.userprofile.adminstate == 0:
             print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
@@ -401,6 +473,7 @@ def AssetManagementView(request):
                 hospital_id=user.userprofile.hospital_id.hospital_id
                 ).order_by('asset_id','hospital_id','-creation_date').distinct('asset_id')
             sample_tmp=xlsGenerate(assetmt,user.username)
+
         elif user.userprofile.adminstate == 1:
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
@@ -412,7 +485,7 @@ def AssetManagementView(request):
             #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
-            #sample_tmp=xlsGenerate(assetmt,user.username)
+            sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
