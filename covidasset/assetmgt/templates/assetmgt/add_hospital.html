@@ -10,7 +10,6 @@
 {% if usr.adminstate > 0 %}
 		<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 		<input type="radio" id="multiple" class= "btn radio-inline btn-primary" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
-		<input type="radio" id="edit" name="hospitaldata" value="2"><label for="edit">Edit Hospital Data</label>
 		<a class="btn btn-info pull-right"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
 		{% else %}
 		<input type="radio" id="edit" name="hospitaldata" value="2"><label for="multiple">Edit Hospital Data</label>
