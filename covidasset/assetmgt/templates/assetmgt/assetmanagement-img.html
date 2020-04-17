@@ -1,0 +1,315 @@
+{% extends 'assetmgt/base.html' %}
+
+
+
+{% block 'title' %}
+	Asset
+{% endblock %}
+
+{% block 'content' %}
+
+
+<div class="modal fade  modal-new" id="addassetmodel" tabindex="-1" role="dialog" aria-labelledby="clientinfo">
+  <div class="modal-dialog modal-md" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h4 class="modal-title" id="clientinfo"> Update Entry  </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body" >
+
+<form action="." method="post" class="form-horizontal" id="formid" data-url="{% url 'addassetmanagement' %}">
+          {% csrf_token %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+
+
+<div id="addasset" >
+
+</div>
+</form>
+</div></div></div></div>
+
+
+  {{ selecthospital | safe }}
+<!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
+</a-->
+
+
+
+
+ 
+
+
+<div class="row mt-2 mb-2">
+  <div class="col-md-12">
+     <div id='mforms'>   </div>
+  
+  </div>
+
+</div>
+
+
+
+
+{% endblock %}
+
+
+{% block 'customjs' %}
+
+
+
+ 
+<script type="text/javascript">
+
+function addassetfun(){
+  $.ajax({
+            type:"POST",
+            url:"{% url 'assetcform' %}",
+            success:function(result){
+              $("#addasset").html(result);
+        }
+            })
+};
+
+ $(document).ready(function() {
+
+function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+  var $myForm = $('#formid')
+    $myForm.submit(function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      var $val = confirm("Are you sure!!");
+        if ($val) {
+
+              var $formData = $(this).serialize()
+	      console.log($formData);
+              var $thisURL = $myForm.attr('data-url') || window.location.href // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess,
+                  error: handleFormError,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        $("#addassetmodel").modal('toggle');
+        $("#responseText").html(data);
+        $('#overlay').modal('show').slideUp( 300 ).delay( 800 ).fadeIn( 400 );
+	    if(data=="Done"){
+		    alert("Value for Asset is added successfully");
+	    }
+	    else if(data=="AE"){
+		    alert("Value of the Asset is already exists");
+	    }
+	    else{
+		    alert("Value for Asset is already exists");
+	    }
+          window.location.replace("{% url 'assetmanagementview' %}");
+
+            };
+
+    function handleFormError(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
+
+
+
+var $myForm2 = $('#getform')
+    $myForm2.submit(function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      $('#actualval').hide()
+      var $val = true;
+        if ($val) {
+
+              var $formData = $(this).serialize()
+        console.log($formData);
+              var $thisURL = "{% url 'assetshow' %}"  // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess2,
+                  error: handleFormError2,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess2(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        //$("#addassetmodel").modal('toggle');
+        //$("#responseText").html(data);
+        $('#overlay').modal('show').slideUp( 300 ).delay( 800 ).fadeIn( 400 );
+
+
+      if(data=="Select Hospital"){
+        alert("Select Hospital");
+      }
+      
+      else{
+        //$("#addasset").html(data);
+        $("#mforms").html(data);
+        
+        //$("#addassetmodel").modal('show');
+
+        
+      }
+          //window.location.replace("{% url 'assetview' %}");
+
+            };
+
+    function handleFormError2(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
+
+ 
+});
+</script>
+
+{% include 'snippets/dataTable.html' %}
+ 
+<script type="text/javascript">
+
+ $(document).ready(function() {
+
+    var table = $('#example').DataTable({
+    		dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+			buttons: [
+            { 
+              extend : 'copyHtml5',  
+              text:      '<i class="fa   text-info fa-file"></i>',          
+              titleAttr: 'Copy'
+            },
+            {
+              extend : 'csvHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa  text-warning fa-file-text"></i>',
+              titleAttr: 'CSV'
+            },
+            {
+                extend: 'excelHtml5',
+                title: 'Devices',
+                text:      '<i class="fa text-success fa-file-excel-o"></i>',
+                titleAttr: 'EXCEL'
+            },
+            {
+              extend : 'pdfHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
+              titleAttr: 'PDF'
+            }
+        ],
+    			"language": {
+                "search": '<i class="fa fa-search"></i>',
+                "searchPlaceholder": "search",
+                "paginate": {
+                "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>'
+            }
+          },
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "order": [[ 0, 'asc' ]],
+
+    });
+
+
+    $("#id_state_id").change(function () {
+      var url = "{% url 'ajax_load_districts' %}"  // get the url of the `load_cities` view
+      var stateid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'state': stateid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_district_id").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+    $("#id_district_id").change(function () {
+      var url = "{% url 'ajax_load_hospital' %}"  // get the url of the `load_cities` view
+      var distid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'distid': distid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_hospital_id").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+
+} ); 
+
+
+</script>
+
+{% endblock %}
