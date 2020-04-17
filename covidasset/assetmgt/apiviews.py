@@ -21,7 +21,7 @@ def getAllState(request):
     if states.exists():
         i = 0
         for state in states:
-            states_dict[state.state_id]=state.state_name
+            states_dict[state['state_id']]=state['state_name']
             i += 1
         states_dict['count']=i
 
