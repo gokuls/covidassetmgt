@@ -24,6 +24,7 @@ urlpatterns = [
         path('generatereport',GetReport.as_view(),name='generatereport'),
         #Apiurls
         path('getallState',apicall.getAllState,name='getallstate'),
+        path('totalcounts',apicall.getTotalCounts,name='totalcounts'),
         ]
 
 if settings.DEBUG:
