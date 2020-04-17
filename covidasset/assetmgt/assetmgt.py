@@ -451,7 +451,7 @@ def AssetManagementView(request):
                 tmp.append(i.hospital_name)
                 tmp.append(a.asset_name)
                 try:
-                    bjast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                    objast = AssetMgt.objects.filter(hospital_id=i,asset_id=a).last()
                     total = objast.asset_total
                     utilized = objast.asset_utilized
                 except:
@@ -472,7 +472,7 @@ def AssetManagementView(request):
             assetmt = AssetMgt.objects.filter(
                 hospital_id=user.userprofile.hospital_id.hospital_id
                 ).order_by('asset_id','hospital_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
 
         elif user.userprofile.adminstate == 1:
             print("District admin")
@@ -483,9 +483,12 @@ def AssetManagementView(request):
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
             #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
-            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+            assetmt = []
+            for i in hids:
+                tmp = AssetMgt.objects.filter(hospital_id=i).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
+                assetmt.extend(tmp)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
@@ -494,10 +497,13 @@ def AssetManagementView(request):
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', 
                 {'dist': dist,'submessage': "Update Details"})
-            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
-                'asset_id','hospital_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
-
+            assetmt = []
+            for i in hids:
+                tmp = AssetMgt.objects.filter(hospital_id=i).order_by(
+                'asset_id','-creation_date').distinct('asset_id')
+                assetmt.extend(tmp)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
+        sample_tmp=xlsGenerate(datatowrite,user.username)
         context = dict()
         
 

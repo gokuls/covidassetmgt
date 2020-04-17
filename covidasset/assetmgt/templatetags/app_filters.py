@@ -9,12 +9,19 @@ def addclass(field, class_attr):
 
 @register.filter(name='calculate')
 def addclass(total, utilized):
-    return int(((utilized)/total)*100)
+	try:
+		c = int(((utilized)/total)*100)
+		return c
+	except Exception as details:
+		return 0
 
 
 @register.filter(name='addc')
 def addclass(total, utilized):
-	mc = int(((utilized)/total)*100)
+	try:
+		mc = int(((utilized)/total)*100)
+	except:
+		mc = 0
 	if mc < 25:
 		return "bg-success"
 	elif mc>25 & mc <60:
