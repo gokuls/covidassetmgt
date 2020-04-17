@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404
+from django.http import HttpResponse 
 
 from .models import State
 from .models import District
@@ -18,6 +19,9 @@ def assetReport(request):
     user = User.objects.get(username=request.user.username)
     userprofile = UserProfile.objects.get(user__username=request.user.username)
     context={}
+    if userprofile.adminstate == 1:
+        context['message'] = "You are not authorised to access this page"
+        return render(request, 'assetmgt/assetreport.html',context=context)
     context['states'] = states
     context['districts'] = districts
     context['hospitals'] = hospitals    
