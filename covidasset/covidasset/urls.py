@@ -38,20 +38,18 @@ urlpatterns = [
     ## asset management
     path('assets', assetmgt.AssetsView, name="assetview"),
     path('assetmanagement', assetmgt.AssetManagementView, name="assetmanagementview"),
+    path('assetmanagementimg', assetmgt.AssetManagementImgView, name="assetmanagementimgview"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('assetmgt/',include('assetmgt.urls'),name='assetmgt'),
     path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
     path('ajax/loadassetform/', assetmgt.returnAssetForm, name='assetcform'),
     path('ajax/loadassetmgtform/', assetmgt.returnAssetMgtForm, name='assetmgtform'),
     path('ajax/loadallastform/', assetmgt.returnAssetMgtMultiForm, name='assetmgtmultiforms'),
+    path('ajax/loadassetimg/', assetmgt.returnAssetShow, name='assetshow'),
     path('addasset/', assetmgt.addAsset, name='addasset'),
     path('ajax/addentry/', assetmgt.addAssetManagement, name='addassetmanagement'),
     path('ajax/addmulentry/', assetmgt.addMultipleAssetManagement, name='addmultiassetmanagement'),
     path('login', assetmgt.LoginMeth, name='login'),
     #path('', assetmgt.LoginMeth, name='login1'),
     path('logout', assetmgt.Logout_view, name='logout'),
-#K.Karthikeyan
-#    path('add_hospital',hospital.addHospital,name="add_hospital"),
-    path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),
-    path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
 ]

@@ -31,7 +31,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from .forms import LoginForm
 from django.db import IntegrityError
-
+from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.contrib.auth import logout
 from django.forms import formset_factory
@@ -127,6 +127,93 @@ def returnAssetForm(request):
 #             return HttpResponse("Select Hospital")
 #     else:
 #         return HttpResponse("Select Hospital")
+def returnAssetShow(request):
+    """
+    Method returns Service Form
+    """
+    if request.method == 'POST':
+        if 'hospital_id' in request.POST:
+            hid = request.POST['hospital_id']
+            print(hid)
+            try:
+                context = dict()
+
+                initopass = []
+                hid = Hospital.objects.get(hospital_id=hid)
+                assets = Asset.objects.all()
+                for ast in assets:
+                    inidict = {}
+                    try:
+                        an =  AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                        if an:
+                            initopass.append(an)
+                    except:
+                        pass
+
+                totalc = len(initopass)
+                if totalc:
+                    objdic = dict()
+                    itc = 0
+                    while(1):
+                        objdic[itc] = initopass[itc:itc+4]
+                        itc = itc+4
+                        if itc > totalc:
+                            break
+                print(objdic)
+                returnstring = ''
+                for key,value in objdic.items():
+                    mstring = '''
+                    <div class="row"><div class="col-md-12 "><div class="card ">
+                    <div class="card-body"><div class="row"> %s</div></div></div></div></div>
+                    '''
+                    substr = ''
+                    for i in value:
+                        print(i)
+                        aname = i.asset_id.asset_name
+                        print(aname)
+                        aimage = "static/assetmgt/images/icons/"+aname.lower()+"-b.svg"
+                        print(aimage)
+                        try:
+                            ival = int( (i.asset_utilized/i.asset_total)*100 )
+                        except :
+                            ival = 0
+                        if ival < 25:
+                            cname = 'bg-success'
+                        elif ival > 25 & ival < 60:
+                            cname = 'bg-warning'
+                        else:
+                            cname = 'bg-danger'
+
+                        tmpstr = '''
+                        <div class="col-md-3 "><div class="card bg-white card-img-holder 
+                        text-black text-center"><div class="card-body"> 
+                        <img width="96px;" src="{1}" ></span><h2 class="mb-5"> {0}</h2>
+                        <div class="progress"><div class="progress-bar {2}" style="width:{3}%"> 
+                        {3}%</div></div></div></div></div>'''.format(aname,aimage,cname,ival)
+                        print(tmpstr)
+                        substr = substr + tmpstr
+                    mstring = mstring%substr
+                    returnstring = returnstring+mstring
+
+
+                return render(request, 'assetmgt/multiform2.html', {
+                    'initdata':initopass,
+                    'hospitaln':hid,
+                    'cdata' : returnstring,
+                    'submessage': "Show Details"
+                    })
+            except Exception as details:
+                print(details)
+                return HttpResponse("Select Hospital")
+        else:
+            return HttpResponse("Select Hospital")
+    else:
+        return HttpResponse("Select Hospital")
+
+
+
+
+
 
 
 def returnAssetMgtMultiForm(request):
@@ -165,7 +252,8 @@ def returnAssetMgtMultiForm(request):
                 
                 return render(request, 'assetmgt/multiform.html', {
                     'formset':formset,'initdata':initopass,
-                    'hospitaln':inidict['hospital_id']
+                    'hospitaln':inidict['hospital_id'],
+                    'submessage': "Update Details"
                     })
             except Exception as details:
                 print(details)
@@ -299,41 +387,123 @@ def addAssetManagement(request):
             return HttpResponse("Error")
     return HttpResponse("Done")
 
+def returnData(userobj):
+    '''
+        return data for constructing Excel
+    '''
+    # userobj = request.user
+    datatowrite = []
+    assetobj = Asset.objects.all()
+    hids = []
 
+    if userobj.userprofile.adminstate == 0:
+        hosp = Hospital.objects.get(
+            hospital_id=userobj.userprofile.hospital_id.hospital_id
+            )
+    elif userobj.userprofile.adminstate == 1:
+        hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+    else:
+        hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
+    
+    for i in hosp:
+        for a in assetobj:
+            tmp = []
+            tmp.append(i.hospital_id)
+            tmp.append(i.hospital_name)
+            tmp.append(a.asset_name)
+            try:
+                bjast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
+                total = objast.asset_total
+                utilized = objast.asset_utilized
+            except:
+                total = 0
+                utilized = 0
+            tmp.append(total)
+            tmp.append(utilized)
+            datatowrite.append(tmp)
+    print(datatowrite)
+    return datatowrite
+
+
+@login_required
 def AssetManagementView(request):
     if request.user:
         user = request.user 
+
+        datatowrite = []
+        userobj = user
+        assetobj = Asset.objects.all()
+        hids = []
+
+        if userobj.userprofile.adminstate == 0:
+            hosp = Hospital.objects.get(
+                hospital_id=userobj.userprofile.hospital_id.hospital_id
+                )
+        elif userobj.userprofile.adminstate == 1:
+            hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+        else:
+            hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
+        
+        for i in hosp:
+            for a in assetobj:
+                tmp = []
+                tmp.append(i.hospital_id)
+                tmp.append(i.hospital_name)
+                tmp.append(a.asset_name)
+                try:
+                    objast = AssetMgt.objects.filter(hospital_id=i,asset_id=a).last()
+                    total = objast.asset_total
+                    utilized = objast.asset_utilized
+                except:
+                    total = 0
+                    utilized = 0
+                tmp.append(total)
+                tmp.append(utilized)
+                datatowrite.append(tmp)
+
+        print(datatowrite)
+
         if user.userprofile.adminstate == 0:
             print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
-            rendered = render_to_string('assetmgt/hospitaladmin.html', {'hospitals': hosp})
+            rendered = render_to_string('assetmgt/hospitaladmin.html', 
+                {'hospitals': hosp, 'submessage': "Update Details" })
 
             assetmt = AssetMgt.objects.filter(
                 hospital_id=user.userprofile.hospital_id.hospital_id
-                ).order_by('asset_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
+                ).order_by('asset_id','hospital_id','-creation_date').distinct('asset_id')
+            #sample_tmp=xlsGenerate(assetmt,user.username)
+
         elif user.userprofile.adminstate == 1:
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
-            rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp })
+            rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp,
+            'submessage': "Update Details" })
             hids = Hospital.objects.filter(
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
             #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
-            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+            assetmt = []
+            for i in hids:
+                tmp = AssetMgt.objects.filter(hospital_id=i).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
+                assetmt.extend(tmp)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
         else:
             print("State Admin ")
             dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
             hids = Hospital.objects.filter(
                         state_id=user.userprofile.state_id.state_id
                         ).values_list('hospital_id',flat=True)
-            rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
-            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+            rendered = render_to_string('assetmgt/stateadmin.html', 
+                {'dist': dist,'submessage': "Update Details"})
+            assetmt = []
+            for i in hids:
+                tmp = AssetMgt.objects.filter(hospital_id=i).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
-            sample_tmp=xlsGenerate(assetmt,user.username)
-
+                assetmt.extend(tmp)
+            #sample_tmp=xlsGenerate(assetmt,user.username)
+        sample_tmp=xlsGenerate(datatowrite,user.username)
         context = dict()
         
 
@@ -344,6 +514,53 @@ def AssetManagementView(request):
         return render(request,
                 'assetmgt/assetmanagement.html',
                 context)
+
+def AssetManagementImgView(request):
+    if request.user:
+        user = request.user 
+        if user.userprofile.adminstate == 0:
+            print('Hospital admin')
+            hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
+            rendered = render_to_string('assetmgt/hospitaladmin.html', {'hospitals': hosp,
+                'submessage': "Show Details" })
+
+            assetmt = AssetMgt.objects.filter(
+                hospital_id=user.userprofile.hospital_id.hospital_id
+                ).order_by('asset_id','-creation_date').distinct('asset_id')
+
+        elif user.userprofile.adminstate == 1:
+            print("District admin")
+            hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+            rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp,
+            'submessage': "Show Details" })
+            hids = Hospital.objects.filter(
+                        district_id=user.userprofile.district_id.district_id
+                        ).values_list('hospital_id',flat=True)
+            #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
+            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+                'asset_id','-creation_date').distinct('asset_id')
+            
+        else:
+            print("State Admin ")
+            dist = District.objects.filter(state_id=user.userprofile.state_id.state_id)
+            hids = Hospital.objects.filter(
+                        state_id=user.userprofile.state_id.state_id
+                        ).values_list('hospital_id',flat=True)
+            rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist,
+                'submessage': "Show Details"})
+            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
+                'asset_id','-creation_date').distinct('asset_id')
+
+        context = dict()
+        
+
+        context['selecthospital'] = rendered
+        context['assetmgt'] = assetmt
+
+        return render(request,
+                'assetmgt/assetmanagement-img.html',
+                context)
+
 
 def Logout_view(request):
     userv = request.user

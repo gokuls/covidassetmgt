@@ -44,27 +44,28 @@
 <div class="col-12">
 <div class="card">
 <div class="card-body">
-    <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data"  class="form-inline" >{% csrf_token %}
 
-    <div class="form-group mb-2">
+  <h4 class="card-title">Bulk upload of hospital asset details</h4>
+  <div class="row"> <div class="col-md-8">  <form name="uploadxls" id="uploadxls" method="post" action="{% url 'assetfileupload' %}" enctype="multipart/form-data"  class="form-inline" >{% csrf_token %}
+
+    <div class="form-group ">
 
       <label for="#datafile"> Upload xls: </label>
-</div>
-  <div class="form-group mx-sm-3 mb-2">
+
 
        <input name='datafile' id="datafile" type="file" required accept=".csv,.xls" ></input>
-</div>
-  <div class="form-group mx-sm-3 mb-2">
+
           {% load static %}
 
           <!--a href="{{sample_tmp}}"> Download Template File </a--> 
-          <a class="btn btn-primary" href="{% static sample_tmp %}"> <i class="fa fa-download"></i> Download Template File </a>
-</div>
-  <div class="form-group mx-sm-3 mb-2">
+     
+
 
       <input class="btn btn-primary" type="submit" name="assetupload" id="assetupload" value='Upload ' ></input> 
-</div>
-      </form>
+
+           
+</div> 
+      </form> </div> <div class="col-md-4"><a class="btn btn-primary pull-right" href="{% static sample_tmp %}"> <i class="fa fa-download"></i> Download Template File </a> </div></div>
     </div></div></div></div>
 
 
@@ -86,7 +87,7 @@
 <div class="col-md-12">
   <div class="card">
                   <div class="card-body">
-	<div class="table-responsive">
+	  <h4 class="card-title">Available asset details</h4>
 	          <table id="example" class="table table-bordered">
 	          		<thead><tr> 
 
@@ -97,34 +98,36 @@
                 Asset
               </th>
                 <th>
-                Total 
+                Availability
               </th>
                 <th>
                 Utilized
               </th>
-              <th>
-                Balance
-              </th>
+              
               <th>
                 Date
               </th>
 	          </tr></thead>
 	          <tbody>
-
+{% load app_filters %}
 	          	{% for i in assetmgt %}
 	          	<tr>
                     <td> {{ i.hospital_id.hospital_name }} </td>
-					         <td> {{ i.asset_id.asset_name }} </td>
-                   <td> {{ i.asset_total }} </td>
-                   <td> {{ i.asset_utilized }} </td>
-                   <td> {{ i.asset_balance }} </td>
+					         <td> {{ i.asset_id.asset_name }} 
+                   <span class="badge badge-success pull-right"> <img width="32px" src="{% static 'assetmgt/images/icons/'|add:i.asset_id.asset_name|lower|add:'-w.svg' %}" alt="{{i.asset_id.asset_name}}" /> </span>
+                   </td>
+                   <td> {{ i.asset_balance }} / {{ i.asset_total }}</td>
+                   <td> <div class="progress">
+                              <div class="progress-bar {{ i.asset_total| addc:i.asset_utilized }}" role="progressbar" style="width: {{ i.asset_total| calculate:i.asset_utilized }}%" aria-valuenow="{{ i.asset_utilized }}" aria-valuemin="0" aria-valuemax="{{ i.asset_total }}"></div>
+                            </div>
+                    </td>
                    <td> {{ i.creation_date }} </td>
 				      </tr>
 					{% endfor %}
 				</tbody>
 	          </table>
  
-	</div> </div></div>
+	 </div></div>
 </div>
 </div>
 

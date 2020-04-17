@@ -14,13 +14,13 @@
     <div class="modal-content">
       <div class="modal-header">
 
-        <h4 class="modal-title" id="clientinfo"> Add  Assets           </h4>
+        <h4 class="modal-title" id="clientinfo"> Update Entry  </h4>
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
       <div class="modal-body" >
 
-<form action="." method="post" class="form-horizontal" id="formid" data-url="{% url 'addasset' %}">
+<form action="." method="post" class="form-horizontal" id="formid" data-url="{% url 'addassetmanagement' %}">
           {% csrf_token %}
           {% for error in field.errors %}
             <div class="alert alert-danger">
@@ -35,53 +35,35 @@
 </form>
 </div></div></div></div>
 
-<div class="row">
-<div class="col-md-12">
-  <div class="card">
-                  <div class="card-body"><p> Click here to add new asset
-<a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary ml-2"  onclick="addassetfun()"> <i class="fa fa-plus "></i>  ADD Asset
-</a> </p></div>
-</div>
-</div>
-</div>
+
+  {{ selecthospital | safe }}
+<!--a  data-toggle='modal' data-target='#addassetmodel' href='#addassetmodel' class=" btn btn-primary"  onclick="addassetfun()"> <i class="fa fa-plus fa-2x"></i>  ADD Asset
+</a-->
 
 
-<div class="row mt-2" >
 
-<div class="col-md-12">
-<div class="card">
-                  <div class="card-body">
+
+ 
+
+
+<div class="row mt-2 mb-2">
+  <div class="col-md-12">
+     <div id='mforms'>   </div>
   
-	<div class="table-responsive">
-	          <table id="example" class="table table-bordered">
-	          		<thead><tr> 
-
-	          	<th>
-	          		Asset Name 
-	          	</th>
-	          </tr></thead>
-	          <tbody>
-	          	{% for i in assets %}
-	          	<tr>
-					<td> {{ i.asset_name }} </td>
-				</tr>
-					{% endfor %}
-				</tbody>
-	          </table>
- 
-	</div>
- 
-  </div> 
   </div>
 
+</div>
 
-</div>
-</div>
+
+
 
 {% endblock %}
 
 
 {% block 'customjs' %}
+
+
+
  
 <script type="text/javascript">
 
@@ -168,7 +150,7 @@ $.ajaxSetup({
 	    else{
 		    alert("Value for Asset is already exists");
 	    }
-          window.location.replace("{% url 'assetview' %}");
+          window.location.replace("{% url 'assetmanagementview' %}");
 
             };
 
@@ -178,6 +160,64 @@ $.ajaxSetup({
         console.log(errorThrown)
     };
 
+
+
+var $myForm2 = $('#getform')
+    $myForm2.submit(function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      $('#actualval').hide()
+      var $val = true;
+        if ($val) {
+
+              var $formData = $(this).serialize()
+        console.log($formData);
+              var $thisURL = "{% url 'assetshow' %}"  // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess2,
+                  error: handleFormError2,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess2(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        //$("#addassetmodel").modal('toggle');
+        //$("#responseText").html(data);
+        $('#overlay').modal('show').slideUp( 300 ).delay( 800 ).fadeIn( 400 );
+
+
+      if(data=="Select Hospital"){
+        alert("Select Hospital");
+      }
+      
+      else{
+        //$("#addasset").html(data);
+        $("#mforms").html(data);
+        
+        //$("#addassetmodel").modal('show');
+
+        
+      }
+          //window.location.replace("{% url 'assetview' %}");
+
+            };
+
+    function handleFormError2(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
 
  
 });
@@ -234,9 +274,42 @@ $.ajaxSetup({
     });
 
 
+    $("#id_state_id").change(function () {
+      var url = "{% url 'ajax_load_districts' %}"  // get the url of the `load_cities` view
+      var stateid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'state': stateid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_district_id").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+    $("#id_district_id").change(function () {
+      var url = "{% url 'ajax_load_hospital' %}"  // get the url of the `load_cities` view
+      var distid = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'distid': distid       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_hospital_id").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
 
 } ); 
 
 
 </script>
+
 {% endblock %}
