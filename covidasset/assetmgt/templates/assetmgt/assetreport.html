@@ -3,7 +3,8 @@
 {% block 'content' %}
         Report Page for user : {{user.username}} admin state : {{ userstate }} userdistrict: {{ userdistrict }} userhospital: {{ userhospital }}
         <br /><br />
-        
+	<form id="reportform" method="post" >
+		{% csrf_token %}
 		<div class="form-group row">
 		    <label for="state" class="col-sm-2 col-form-label">State</label>
 		    <div class="col-sm-10">
@@ -33,7 +34,72 @@
 		        </select>
 		    </div>
 		</div>
+	<div class="form-group row">
+		    <label for="asset" class="col-sm-2 col-form-label">Report By</label>
+		    <div class="col-sm-10">
+		        <select name="asset" id="asset" required=true >
+			        <option value="0">--Select-Asset-Type--</option>
+				{% for asset in assets %}
+				<option value="{{asset.asset_id}}">{{asset.asset_name}}</option>
+				{% endfor %}
+			</select>
+		    </div>
+		</div>
 
+		<div class="form-group row">
+		    <label for="hospital" class="col-sm-2 col-form-label">Report By</label>
+		    <div class="col-sm-10">
+		        <select name="opt" id="opt" required=true >
+			        <option value="0">--Select-Type--</option>
+			        <option value="1">Asset</option>
+			        <option value="2">Hospital</option>
+		        </select>
+		    </div>
+		</div>
+
+		<div class="form-group row">
+		    <div class="col-sm-10">
+			    <input type="submit" id="formsubmit" value="Get Report" />
+			    <input type="reset" value="Reset" />
+		    </div>
+		</div>
+
+
+	</form>
+
+		<div id="fordatatable">
+			<table id="hospital_list" class="table table-bordered table-striped" >
+				<thead>
+					<tr>
+						{% if usr.adminsate > 0 %}
+						<th> District </th>
+						{% endif %}
+						<th>Hospital Name</th>
+						<th>Asset</th>
+						<th>Total Count</th>
+						<th>Total Utilized</th>
+						<th>Total Available</th>
+						<th>Last Updated On</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for assetmgt in assetmgts %}
+	<tr>    
+		{% if usr.adminstate > 0 %}
+		<td> {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
+		{% endif %}
+		<td>{{assetmgt.hospital_id.hospital_name | safe }}</td>
+		<td>{{assetmgt.asset_id.asset_name | safe }}</td>
+		<td>{{assetmgt.asset_total | safe }}</td>
+		<td>{{assetmgt.asset_utilized | safe }}</td>
+		<td>{{assetmgt.asset_balance | safe }}</td>
+		<td>{{assetmgt.creation_date}}</td>
+	</tr>
+	{% endfor %}
+				</tbody>
+					
+			</table>
+		</div>
 
 
         
@@ -41,6 +107,8 @@
 
 {% block 'customjs' %}
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+{% include 'snippets/dataTable.html' %}
     <script type="text/javascript">
     $(document).ready(function(){
 	    //document.getElementById("single").checked = true;
@@ -71,7 +139,7 @@
       var url = "{% url 'ajax_load_hospital' %}"  // get the url of the `load_cities` view
       var distid = $(this).val();  // get the selected country ID from the HTML input
 
-      $.ajax({                       // initialize an AJAX request
+      $.ajax({                      // initialize an AJAX request
         url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
         data: {
           'distid': distid       // add the country id to the GET parameters
@@ -83,31 +151,91 @@
 
     });
 	    
-	    
-	    
-    $("#single").change(function(){
-	    if($(this).is(':checked')){
-		    console.log("single clicked");
-		    $("#forsingle").show();
-		    $("#forbulk").hide();
+   $("#hospital_list").DataTable({
+	    			dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+		        processing: true,
+			buttons: [
+            { 
+              extend : 'copyHtml5',  
+              text:      '<i class="fa   text-info fa-file"></i>',          
+              titleAttr: 'Copy'
+            },
+            {
+              extend : 'csvHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa  text-warning fa-file-text"></i>',
+              titleAttr: 'CSV'
+            },
+            {
+                extend: 'excelHtml5',
+                title: 'Devices',
+                text:      '<i class="fa text-success fa-file-excel-o"></i>',
+                titleAttr: 'EXCEL'
+            },
+            {
+              extend : 'pdfHtml5',
+              title  : 'Devices',
+              text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
+              titleAttr: 'PDF'
+            }
+        ],
+    			"language": {
+                "search": '<i class="fa fa-search"></i>',
+                "searchPlaceholder": "search",
+                "paginate": {
+                "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>'
+            }
+          },
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "order": [[ 0, 'asc' ]],
+		});
+    $("#reportform").submit(function(event){
+	    event.preventDefault();
+	    var data_params={}
+	    var state = $("#state").children("option:selected").val();
+	    var district = $("#district").children("option:selected").val();
+	    var hospital = $("#hospital").children("option:selected").val();
+	    var asset = $("#asset").children("option:selected").val();
+	    var opt = $("#opt").children("option:selected").val();
+	    if(state){
+	       data_params['state'] = state;
 	    }
-	    else{$("#forsingle").hide();
-		    $("#forbulk").show();
+	    if(asset){
+		    data_params['asset']=asset;
 	    }
+	    console.log("state added");
+	    if(district){
+		    data_params['district']=district;
+	    }
+	    console.log("dist added");
+	    if(hospital){
+		    data_params['hospital']=hospital;
+	    }
+	    console.log("hospital added");
+	    if(opt){
+		    data_params['opt']=opt;
+	    }
+	    console.log("opt added");
+	    $.ajax({
+		    type:"POST",
+		    headers: {'X-CSRFToken':"{{csrf_token}}"},
+		    url:"{% url 'generatereport' %}",
+		    data:data_params,
+		    success: function(data){ 
+				   var table = $("#hospital_list").DataTable();
+			           table.destroy();
+				   $("#hospital_list").children('tbody').html(data);
+			          				    
+			    }
+		    });
 
-    });
+   });
 
-    $("#multiple").change(function(){
-	    if($(this).is(':checked')){
-		    console.log("multiple clicked");
-		    $("#forbulk").show();
-		    $("#forsingle").hide();
-	    }
-	    else{
-		    $("#forbulk").hide();
-		    $("#forsingle").show();
-	    }
-	    });
     });
     </script>
 {% endblock %}
