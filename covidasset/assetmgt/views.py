@@ -7,6 +7,8 @@ from .models import AssetMgt
 from .models import Hospital
 from .models import Asset
 
+from django.db import transaction
+
 from django.views import View
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
@@ -41,22 +43,26 @@ class AssetFileUploadView(View):
             af.save()
 
             # AssetMgmt List Constructions and saved to database           
-
-            wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
-            sheet=wb.sheet_by_index(0)
-            for row in range(1,(sheet.nrows)):
-                ad = AssetMgt()                
-                ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
-                ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,2)))
-                ad.asset_total=int(sheet.cell_value(row,3))
-                ad.asset_utilized=int(sheet.cell_value(row,4))
-                ad.asset_balance=ad.asset_total-ad.asset_utilized
-                ad.save()
-
-            ## Successful Message
-            messages.info(request,"File Uploaded Successfully")
-            url = reverse('assetmanagementview')
-            return HttpResponseRedirect(url)
+            try:
+                wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
+                sheet=wb.sheet_by_index(0)
+                with transaction.atomic():
+                    for row in range(1,(sheet.nrows)):
+                        ad = AssetMgt()                
+                        ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
+                        ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,2)))
+                        ad.asset_total=int(sheet.cell_value(row,3))
+                        ad.asset_utilized=int(sheet.cell_value(row,4))
+                        ad.asset_balance=ad.asset_total-ad.asset_utilized
+                        ad.save()
+                 ## Successful Message
+                messages.info(request,"File Uploaded Successfully")
+                url = reverse('assetmanagementview')
+                return HttpResponseRedirect(url)
+            except Exception as e:
+                messages.error(request,"Record Not Saved !!! Check the value in the File")
+                url = reverse('assetmanagementview')
+                return HttpResponseRedirect(url)           
         else:
             messages.info(request,"File Not Uploaded")
             url = reverse('assetmanagementview')

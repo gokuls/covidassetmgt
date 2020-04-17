@@ -149,11 +149,14 @@ def returnAssetMgtMultiForm(request):
                     try:
                         objast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
                         total = objast.asset_total
+                        utilized = objast.asset_utilized
                     except:
                         total = 0
+                        utilized = 0
                         pass
                     inidict['asset_id'] = ast
-                    inidict['asset_total'] = total  
+                    inidict['asset_total'] = total
+                    inidict['asset_utilized'] = utilized  
                     initopass.append(inidict)
                     print(initopass)
 
@@ -316,7 +319,7 @@ def AssetManagementView(request):
             hids = Hospital.objects.filter(
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
-            assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
+            #assetmt = AssetMgt.objects.filter(hospital_id__in=hids)
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
             sample_tmp=xlsGenerate(assetmt,user.username)
@@ -327,7 +330,7 @@ def AssetManagementView(request):
                         state_id=user.userprofile.state_id.state_id
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist})
-            assetmt = AssetMgt.objects.all().order_by(
+            assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
             sample_tmp=xlsGenerate(assetmt,user.username)
 
