@@ -70,26 +70,42 @@ class AssetFileUploadView(View):
 
 
 def xlsGenerate(assetmt, username):
+
+    assets=Asset.objects.all()
+    hid=[h.hospital_id for h in assetmt]
+    hid=list(set(hid))
     wb = xlwt.Workbook() # create empty workbook object
-    newsheet = wb.add_sheet('asset_details') # sheet name can not be longer than 32 characters
-    
+    newsheet = wb.add_sheet('asset_details') # sheet name can not be longer than 32 characters    
     newsheet.write(0,0,'hospital_id') 
     newsheet.write(0,1,'hospital_name')
     newsheet.write(0,2,'Asset_name')
     newsheet.write(0,3,'Total')
     newsheet.write(0,4,'Utilized')
-
-    rows=1
-    for asset in assetmt:
-        newsheet.write(rows,0,asset.hospital_id.hospital_id)
-        newsheet.write(rows,1,asset.hospital_id.hospital_name) 
-        newsheet.write(rows,2,asset.asset_id.asset_name) 
-        newsheet.write(rows,3,asset.asset_total) 
-        newsheet.write(rows,4,asset.asset_utilized)
-        rows += 1 
-
-    
-    #tmpfileName = settings.MEDIA_ROOT+"/tmp/"+"tmp-"+username+".xls"
+    rows=1    
+    for hospital in hid:        
+        for tasset in assets:
+            newsheet.write(rows,0,hospital.hospital_id)
+            newsheet.write(rows,1,hospital.hospital_name)
+            newsheet.write(rows,2,tasset.asset_name)
+            flag=False
+            total=0
+            utilized=0
+            for asset in assetmt:                                
+                if(hospital==asset.hospital_id and tasset==asset.asset_id):
+                    print("True")
+                    flag=True
+                    total=asset.asset_total
+                    utilized=asset.asset_utilized
+                    break
+            if(flag):
+                newsheet.write(rows,3,total) 
+                newsheet.write(rows,4,utilized)
+                rows += 1
+                flag=False
+            else:
+                newsheet.write(rows,3,0) 
+                newsheet.write(rows,4,0)
+                rows += 1
     destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
     tmpfileName = os.path.join(destFolder,'tmp-%s.xls'%username)
     murl = "assetmgt/temp/tmp-%s.xls"%username
