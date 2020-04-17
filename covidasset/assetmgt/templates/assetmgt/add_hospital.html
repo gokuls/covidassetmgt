@@ -2,133 +2,191 @@
 {% extends 'assetmgt/base.html' %}
 {% block 'title' %} Add Hospital {% endblock %}
 {% block 'content' %}
+
 		<div ><!-- for row -->
-			{% if messages %}
+{% if messages %}
 <ul class="messages">
     {% for message in messages %}
     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
 {% endif %}
-			<div class="form-group" > <!-- for radio group-->
-				{% if usr.adminstate > 0 %}
-				<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
-				<input type="radio" id="multiple" class= "btn radio-inline btn-primary" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
-				{% else %}
-				<input type="radio" id="edit" name="hospitaldata" value="2"><label>Edit Hospital Data</label>
-				{% endif %}
-			</div><br />
-    			<div id="forbulk" > <!-- for render file browser -->
-    				<a class="btn btn-info"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
-    				<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
-    					{% csrf_token %}
-    					<div class="form-group row">
-        					<label for="#datafile" class="col-sm-2 col-form-label"> Select CSV File : </label> 
-        					<div class="col-sm-10">
-        					    <input id="#datafile" name="datafile" type="file" required accept=".csv" ></input>
-        					</div>
-        				</div>
-        				<div class="form-group row">
-	   				    <div class="col-sm-10">
-        					<input type="submit" id="multipliesubmit" value='Upload ' ></input>
-        					<input type="reset"/>
-        				</div>
-        				</div>
-    				</form>
-    			</div>
-    			
-   			 </div>
 
-			<div id="forsingle" > <!-- for Single hospital information -->
+<div class="row mt-3">
+	  <div class="col-lg-12 ">
+                <div class="card">
+                  <div class="card-body">
+{% if usr.adminstate > 0 %}
+		<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
+		<input type="radio" id="multiple" class= "btn radio-inline btn-primary" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
+		<a class="btn btn-info pull-right"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
+		{% else %}
+		<input type="radio" id="edit" name="hospitaldata" value="2"><label for="multiple">Edit Hospital Data</label>
+		{% endif %}
+
+</div></div></div></div>
+
+
+	 <div class="row mt-3">
+	  <div class="col-lg-12 ">
+                <div class="card">
+                  <div class="card-body">
+	
+
+	<div id="forbulk" > <!-- for render file browser -->
+		<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
+    					{% csrf_token %}
+    				<div class="row">	 <div class="col-md-6"> <div class="form-group row">
+        					<label for="#datafile" class="col-sm-3 col-form-label"> Select CSV File : </label> 
+        					<div class="col-sm-9">
+        					    <input id="#datafile"  class="form-control" name="datafile" type="file" required accept=".csv" ></input>
+        					</div>
+        				</div> </div>
+                                 <div class="col-md-6"> 
+        				<div class="form-group row">
+	   				    <div class="col-sm-6">
+        					<input type="submit" class="btn btn-primary" id="multipliesubmit" value='Upload ' ></input>
+        					<input type="reset" class="btn btn-warning "/>
+        				</div>
+        				</div>
+		 </div></div>
+<div class="row">
+<div class="col-md-8">
+<div class="form-group row">
+<P><strong> Note:-</strong><br>
+<ul>
+<li> All field / column filled with correct values within ("New Delhi","Delhi","AIMS") double quotes</li>
+<li> If any field / column not having value fill that column with comma "," Example: "New Delhi",,AIMS,,,,,,10,33</li>
+</ul>
+</div>
+</div>
+</div>
+    				</form>
+    		</div> 
+
+		<div id="forsingle" > <!-- for Single hospital information -->
 				<form name="addhospital" id="addhospital" method="post" action="{% url 'addsinglehospital' %}" >		
 					{% csrf_token %}
+
+<div class="row">
+                        <div class="col-md-6">
 					<div class="form-group row">
-					    <label for="state" class="col-sm-2 col-form-label">State</label>
-					    <div class="col-sm-10">
-					        <select name="state" id="state" required=true>
+					    <label for="state" class="col-sm-3 col-form-label">State</label>
+					    <div class="col-sm-9">
+					        <select name="state" id="state" class="form-control" required=true>
 							    <option value="0">--select-state--</option>
 							    {% for state in states %}
 							     <option value="{{state.state_id}}">{{state.state_name}}</option>
 							    {% endfor %}
     					    </select>
     					</div>
-					</div>
+					</div> </div><div class="col-md-6">
 					<div class="form-group row">
-					    <label for="district" class="col-sm-2 col-form-label">District</label>
-					    <div class="col-sm-10">
-					        <select name="district" id="district" required=true >
+					    <label for="district" class="col-sm-3 col-form-label">District</label>
+					    <div class="col-sm-9">
+					        <select name="district" id="district"  class="form-control" required=true >
 						        <option value="0">--Select-District--</option>
 					        </select>
 					    </div>
-					</div>
+					</div> </div> </div>
+
+<div class="row">
+                        <div class="col-md-6">
+
 					<div class="form-group row">
-					    <label for="htype" class="col-sm-2 col-form-label">Hospital Type</label>
-					    <div class="col-sm-10">
-					        <select id="htype" name="htype">
+					    <label for="htype" class="col-sm-3 col-form-label">Hospital Type</label>
+					    <div class="col-sm-9">
+					        <select id="htype" name="htype" class="form-control">
 						        <option value="Government">Government</option>
 						        <option value="Private">Private</option>
     					    </select>
     					</div>
 					</div>
+</div> <div class="col-md-6">
+
 					<div class="form-group row">
-					    <label for="hname" class="col-sm-2 col-form-label">Hospital Name</label>
-					    <div class="col-sm-10">
-					        <input type="text" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" />
+					    <label for="hname" class="col-sm-3 col-form-label">Hospital Name</label>
+					    <div class="col-sm-9">
+					        <input type="text"  class="form-control" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" />
 					    </div>
 					</div>
+</div></div>
+
+
+
+<div class="row">
+                        <div class="col-md-6">
 					<div class="form-group row">
-				    	<label for="haddress" class="col-sm-2 col-form-label">Full Address</label>
-				    	<div class="col-sm-10">
-				    	    <input type="text" placeholder="E.g No14,Mount road" id="haddress" name="haddress" />
+				    	<label for="haddress" class="col-sm-3 col-form-label">Full Address</label>
+				    	<div class="col-sm-9">
+				    	    <input type="text" class="form-control" placeholder="E.g No14,Mount road" id="haddress" name="haddress" />
 				    	</div>
 					</div>
+</div> <div class="col-md-6">
 					<div class="form-group row">
-					    <label for="taluk" class="col-sm-2 col-form-label">Taluk</label>
-					    <div class="col-sm-10">
-					        <input type="text" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true />
+					    <label for="taluk" class="col-sm-3 col-form-label">Taluk</label>
+					    <div class="col-sm-9">
+					        <input type="text" class="form-control" name="taluk" id="taluk" placeholder="Enter Name of Taluk" required=true />
 					    </div>
-					</div>
+					</div> </div> </div> 
+
+
+<div class="row">
+                        <div class="col-md-6">
 					<div class="form-group row">
-					    <label for="city" class="col-sm-2 col-form-label">City</label>
-					    <div class="col-sm-10">
-					        <input type="text" name="city" id="city" placeholder="Enter City Name" required=true />
+					    <label for="city" class="col-sm-3 col-form-label">City</label>
+					    <div class="col-sm-9">
+					        <input type="text" name="city" id="city"  class="form-control" placeholder="Enter City Name" required=true />
 					    </div>
-					</div>					
+					</div>	
+</div>		<div class="col-md-6">		
 					<div class="form-group row">
-					    <label for="hpin" class="col-sm-2 col-form-label">Pincode</label>
-					    <div class="col-sm-10">
-					        <input type="text" placeholder="600001" id="hpin" name="hpin" required=true />
+					    <label for="hpin" class="col-sm-3 col-form-label">Pincode</label>
+					    <div class="col-sm-9">
+					        <input type="text" class="form-control"  placeholder="600001" id="hpin" name="hpin" required=true />
 					    </div>
-					</div>
+					</div> </div> </div>
+
+<div class="row">
+                        <div class="col-md-6">
 					<div class="form-group row">
-					    <label for="hcontact" class="col-sm-2 col-form-label">Contact Number</label>
-					    <div class="col-sm-10">
-					        <input type="text" placeholder="044-24535325" id="hcontact" name="hcontact" required=true />
+					    <label for="hcontact" class="col-sm-3 col-form-label">Contact Number</label>
+					    <div class="col-sm-9">
+					        <input type="text" class="form-control" placeholder="044-24535325" id="hcontact" name="hcontact" required=true />
 					    </div>
-                    </div>
+                    </div> </div>  <div class="col-md-6">
                     <div class="form-group row">
-					    <label for="nhw" class="col-sm-2 col-form-label">Total No., of Doctors</label>
-					    <div class="col-sm-10">
-					        <input type="number" value=0 id="ndoc" name="ndoc" required=true />
+					    <label for="nhw" class="col-sm-3 col-form-label">Total No., of Doctors</label>
+					    <div class="col-sm-9">
+					        <input type="number" class="form-control" value=0 id="ndoc" name="ndoc" required=true />
 					    </div>
-					</div>
+					</div>  </div></div>
+
+
+<div class="row">
+                        <div class="col-md-6">
+
 					<div class="form-group row">
-    					<label for="nhw" class="col-sm-2 col-form-label">Total Health Workers</label>
-    					<div class="col-sm-10">
-    					    <input type="number" value=0 id="nhw" name="nhw" required=true />
+    					<label for="nhw" class="col-sm-3 col-form-label">Total Health Workers</label>
+    					<div class="col-sm-9">
+    					    <input type="number" class="form-control" value=0 id="nhw" name="nhw" required=true />
     					</div>
-                    </div>
-					<div class="form-group row">
+                    </div> </div></div>
+						  <div class="row"><div class="col-md-6">
+			  
+			<div class="form-group row"> <label class="col-sm-3"></label><div class="col-md-9">
 						<input type="hidden" value="0" name="opt" id="opt" />
 						<input type="hidden" value="" name="hid" id="hid" />
-	   				    <div class="col-sm-10">
-	    				    <input type="submit" value="Add Hospital" id="singlesubmit"></input>
-    					    <input type="reset" />
+	   				    
+	    				    <input type="submit"  class="btn btn-primary" value="Add Hospital" id="singlesubmit"></input>
+    					    <input type="reset" class="btn btn-warning ml-2" />
 					    </div>
-					</div>
+					</div> </div></div>
 				</form>
 			</div>
 		</div>
+	</div>
+		</div></div>
 		{% endblock %}
 
 {% block 'customjs' %}
@@ -165,6 +223,7 @@ $("#single").change(function(){
 		$("#forsingle").show();
 		$("#forbulk").hide();
 		$("#singlesubmit").val("Add Hospital");
+		$("#opt").val("0");
 	}
 	else{$("#forsingle").hide();
 		$("#forbulk").show();
