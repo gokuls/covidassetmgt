@@ -34,7 +34,7 @@
 		        </select>
 		    </div>
 		</div>
-	<div class="form-group row">
+<!--	<div class="form-group row">
 		    <label for="asset" class="col-sm-2 col-form-label">Report By</label>
 		    <div class="col-sm-10">
 		        <select name="asset" id="asset" required=true >
@@ -45,7 +45,7 @@
 			</select>
 		    </div>
 		</div>
-
+-->
 		<div class="form-group row">
 		    <label for="hospital" class="col-sm-2 col-form-label">Report By</label>
 		    <div class="col-sm-10">
@@ -71,7 +71,7 @@
 			<table id="hospital_list" class="table table-bordered table-striped" >
 				<thead>
 					<tr>
-						{% if usr.adminsate > 0 %}
+						{% if userprofile.adminstate == 2 %}
 						<th> District </th>
 						{% endif %}
 						<th>Hospital Name-City</th>
@@ -85,8 +85,8 @@
 				<tbody>
 	{% for assetmgt in assetmgts %}
 	<tr>    
-		{% if usr.adminstate > 0 %}
-		<td> {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
+		{% if userprofile.adminstate == 2 %}
+		<td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
 		{% endif %}
 		<td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
 		<td>{{assetmgt.asset_id.asset_name | safe }}</td>

@@ -28,18 +28,24 @@ def assetReport(request):
     context['userprofile'] = userprofile
     context['userstate'] = State.objects.get(state_id=userprofile.state_id_id)
     context['userdistrict'] = District.objects.get(district_id=userprofile.district_id_id)"""
+    userprofile = UserProfile.objects.get(user__username=request.user.username)
+    if userprofile.adminstate == 0:
+        print("hello")
+        context['message'] = "You are not authorised to access this page"
+        return render(request, 'assetmgt/assetreport.html',context=context)
+
     assets = Asset.objects.all()
     user = User.objects.get(username=request.user.username)
-    userprofile = UserProfile.objects.get(user__username=request.user.username)
     states = State.objects.filter(state_id=userprofile.state_id.state_id)
     districts = District.objects.filter(district_id=userprofile.district_id.district_id)
     hospitals = Hospital.objects.filter(state_id=userprofile.state_id.state_id,district_id=userprofile.district_id.district_id)
     asset_count = Asset.objects.all().count()
-    assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
     context={}
     if userprofile.adminstate == 1:
-        context['message'] = "You are not authorised to access this page"
-        return render(request, 'assetmgt/assetreport.html',context=context)
+        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id, hospital_id__district_id=userprofile.district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]    
+    elif userprofile.adminstate == 2:
+        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
+
     context['states'] = states
     context['districts'] = districts
     context['hospitals'] = hospitals    
