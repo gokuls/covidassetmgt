@@ -25,7 +25,8 @@ urlpatterns = [
         #Apiurls
         path('getallState',apicall.getAllState,name='getallstate'),
         path('totalcounts',apicall.getTotalCounts,name='totalcounts'),
-        path('getstatedata',apicall.getState,name='getstatedata'),
+        #path('getstatedata',apicall.getState,name='getstatedata'),
+        path('getstatedata',apicall.getStateNew,name='getstatedata'),
         path('getdistrictdata',apicall.getHospitalsByDistrict,name='getdistrictdata'),
         ]
 
