@@ -32,7 +32,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', usercreation.index, name="index"),
+    path('home', usercreation.index, name="index"),
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
     ## asset management
@@ -49,7 +49,7 @@ urlpatterns = [
     path('addasset/', assetmgt.addAsset, name='addasset'),
     path('ajax/addentry/', assetmgt.addAssetManagement, name='addassetmanagement'),
     path('ajax/addmulentry/', assetmgt.addMultipleAssetManagement, name='addmultiassetmanagement'),
-    path('login', assetmgt.LoginMeth, name='login'),
+    path('', assetmgt.LoginMeth, name='login'),
     #path('', assetmgt.LoginMeth, name='login1'),
     path('logout', assetmgt.Logout_view, name='logout'),
 ]

@@ -67,6 +67,7 @@ def LoginMeth(request):
         form = LoginForm()
     return render(request, 'assetmgt/login.html', {'form': form})
 
+@login_required
 def AssetsView(request):
     '''
         Page to view the asset and add the Asset 
@@ -127,6 +128,7 @@ def returnAssetForm(request):
 #             return HttpResponse("Select Hospital")
 #     else:
 #         return HttpResponse("Select Hospital")
+
 def returnAssetShow(request):
     """
     Method returns Service Form
@@ -164,7 +166,7 @@ def returnAssetShow(request):
                 for key,value in objdic.items():
                     mstring = '''
                     <div class="row"><div class="col-md-12 "><div class="card ">
-                    <div class="card-body"><div class="row"> %s</div></div></div></div></div>
+                    <div class="card-body"> <div class="row"> %s</div></div></div></div></div>
                     '''
                     substr = ''
                     for i in value:
@@ -179,7 +181,7 @@ def returnAssetShow(request):
                             ival = 0
                         if ival < 25:
                             cname = 'bg-success'
-                        elif ival > 25 & ival < 60:
+                        elif ival > 25 and ival < 60:
                             cname = 'bg-warning'
                         else:
                             cname = 'bg-danger'
@@ -187,9 +189,10 @@ def returnAssetShow(request):
                         tmpstr = '''
                         <div class="col-md-3 "><div class="card bg-white card-img-holder 
                         text-black text-center"><div class="card-body"> 
-                        <img width="96px;" src="{1}" ></span><h2 class="mb-5"> {0}</h2>
-                        <div class="progress"><div class="progress-bar {2}" style="width:{3}%"> 
-                        {3}%</div></div></div></div></div>'''.format(aname,aimage,cname,ival)
+                        <img class="mb-2" width="64px;" src="{1}" ><div class="progress mb-2">
+                        <div class=" progress-bar {2}" style="width:{3}%"> 
+                        {3}%</div></div> </span><h4 class="mb-2"> {0}</h4>
+                        </div></div></div>'''.format(aname,aimage,cname,ival)
                         print(tmpstr)
                         substr = substr + tmpstr
                     mstring = mstring%substr
@@ -200,7 +203,8 @@ def returnAssetShow(request):
                     'initdata':initopass,
                     'hospitaln':hid,
                     'cdata' : returnstring,
-                    'submessage': "Show Details"
+                    'submessage': "Show Details",
+                    'btitle' : "View Hospital Details"
                     })
             except Exception as details:
                 print(details)
@@ -253,7 +257,8 @@ def returnAssetMgtMultiForm(request):
                 return render(request, 'assetmgt/multiform.html', {
                     'formset':formset,'initdata':initopass,
                     'hospitaln':inidict['hospital_id'],
-                    'submessage': "Update Details"
+                    'submessage': "Update Details",
+                    'btitle' : "Update Hospital Details"
                     })
             except Exception as details:
                 print(details)
@@ -313,8 +318,6 @@ def addAsset(request):
     return HttpResponse("Done")
 
 
-
-
 @login_required
 def addMultipleAssetManagement(request):
     print("Request has come")
@@ -326,11 +329,13 @@ def addMultipleAssetManagement(request):
             formset = AssetMgtFormset(request.POST)
             # for forms in formset:
             #     forms.full_clean()
+            mess = ['<p>']
             if formset.is_valid():
                 print("Form is valid")
         
                 for form in formset:
                     print(form)
+                    
                     obj = form.save(commit=False)
                     if obj.asset_total:
                         obj.author = request.user
@@ -341,8 +346,12 @@ def addMultipleAssetManagement(request):
                 print("Some Issue")
             
                 #messages.info(request,'Asset Added')
-            messages.info(request,"Data has been Updated")
+            mess.append("Data has been Updated")
+            mess.append("</p>")
+            mes = "</p><p>".join(mess)
+            messages.info(request,mes)
             url = reverse('assetmanagementview')
+
             return HttpResponseRedirect(url)
         except IntegrityError as ie:
             print("Asset already exists")
@@ -436,9 +445,10 @@ def AssetManagementView(request):
         hids = []
 
         if userobj.userprofile.adminstate == 0:
-            hosp = Hospital.objects.get(
+            hosp = []
+            hosp.append(Hospital.objects.get(
                 hospital_id=userobj.userprofile.hospital_id.hospital_id
-                )
+                ))
         elif userobj.userprofile.adminstate == 1:
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
         else:
@@ -467,7 +477,7 @@ def AssetManagementView(request):
             print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
             rendered = render_to_string('assetmgt/hospitaladmin.html', 
-                {'hospitals': hosp, 'submessage': "Update Details" })
+                {'hospitals': hosp, 'submessage': "Update Details",'btitle' : "Update Hospital Details" })
 
             assetmt = AssetMgt.objects.filter(
                 hospital_id=user.userprofile.hospital_id.hospital_id
@@ -478,7 +488,7 @@ def AssetManagementView(request):
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
             rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp,
-            'submessage': "Update Details" })
+            'submessage': "Update Details",'btitle' : "Update Hospital Details" })
             hids = Hospital.objects.filter(
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
@@ -496,7 +506,7 @@ def AssetManagementView(request):
                         state_id=user.userprofile.state_id.state_id
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', 
-                {'dist': dist,'submessage': "Update Details"})
+                {'dist': dist,'submessage': "Update Details",'btitle' : "Update Hospital Details"})
             assetmt = []
             for i in hids:
                 tmp = AssetMgt.objects.filter(hospital_id=i).order_by(
@@ -522,7 +532,7 @@ def AssetManagementImgView(request):
             print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
             rendered = render_to_string('assetmgt/hospitaladmin.html', {'hospitals': hosp,
-                'submessage': "Show Details" })
+                'submessage': "Show Details",'btitle' : "View Hospital Details" })
 
             assetmt = AssetMgt.objects.filter(
                 hospital_id=user.userprofile.hospital_id.hospital_id
@@ -532,7 +542,7 @@ def AssetManagementImgView(request):
             print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
             rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp,
-            'submessage': "Show Details" })
+            'submessage': "Show Details",'btitle' : "View Hospital Details" })
             hids = Hospital.objects.filter(
                         district_id=user.userprofile.district_id.district_id
                         ).values_list('hospital_id',flat=True)
@@ -547,7 +557,7 @@ def AssetManagementImgView(request):
                         state_id=user.userprofile.state_id.state_id
                         ).values_list('hospital_id',flat=True)
             rendered = render_to_string('assetmgt/stateadmin.html', {'dist': dist,
-                'submessage': "Show Details"})
+                'submessage': "Show Details",'btitle' : "View Hospital Details"})
             assetmt = AssetMgt.objects.filter(hospital_id__in=hids).order_by(
                 'asset_id','-creation_date').distinct('asset_id')
 
