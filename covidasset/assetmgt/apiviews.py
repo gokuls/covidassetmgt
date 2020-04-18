@@ -154,7 +154,7 @@ def getHospitalsByDistrict(request):
         for h_data in hospital_data:
             hospital_dict = {}
             hospital_dict['name']=h_data['fields']['hospital_name']
-            hospital_dict["location"] = (h_data["fields"]["latitude"],h_data["fields"]["longitude"])
+            hospital_dict["location"] = [h_data["fields"]["latitude"],h_data["fields"]["longitude"]]
             hospital_dict["assets"] = {}
             for asset in asset_mgt_data:
                 if h_data['pk']==asset['fields']['hospital_id']:
