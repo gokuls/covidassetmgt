@@ -1,10 +1,6 @@
-let apiHost = "http://localhost:8000";
+/* configuration */
 
-endpoints = {
-    totalcounts: "/assetmgt/totalcounts",
-    state: "/assetmgt/getstatedata?q=24",
-    district: "/assetmgt/getdistrictdata?q=Chennai",
-};
+let apiHost = "http://localhost:8000";
 
 let geoJsonPath = "/static/geojson/";
 
@@ -12,22 +8,40 @@ blueMarkerIconUrl = "/static/images/marker-icon.png";
 
 redMarkerIconUrl = "/static/images/marker-icon-red.png";
 
-//let geoJsonPath = "/home/boss/Downloads/covid-thamc/covid-thamc/static/geojson/";
-//blueMarkerIconUrl = "/home/boss/Downloads/covid-thamc/covid-thamc/static/images/marker-icon.png";
+let stateName = null;
 
-//redMarkerIconUrl = "/home/boss/Downloads/covid-thamc/covid-thamc/static/images/marker-icon-red.png";
+let endpoints = {
+    totalcounts: "/assetmgt/totalcounts",
+    state: "/assetmgt/getstatedata",
+    district: "/assetmgt/getdistrictdata",
+    statedetails:" /assetmgt/getstatenamebyid"
+};
 
-
-let stateName = "TamilNadu"; //gen
+/*  end of configuration */
 
 let defaultZoom = 7;
 
-let stateCenter = [10.985378, 78.664046]; //gen
+let stateCenter = null;
 
-let stateBounds = [ //update for gen
+let stateCenters = {
+
+    Kerala: [10.808036, 76.305992],
+
+    Meghalaya: [25.579659, 91.319157],
+
+    Puducherry: [11.940408, 79.815845],
+
+    Ladakh: [34.223132, 77.475905],
+
+    TamilNadu: [10.985378, 78.664046]
+};
+
+let stateBounds = [
     [14.314431, 81.331526],
     [8.063881, 76.314360]
 ];
+
+let isDistrictSelected = false;
 
 let stateData = null;
 
@@ -35,7 +49,7 @@ let assetsList = null;
 
 let markers = [];
 
-let urlStateJson = geoJsonPath.concat(stateName, ".json"); //gen
+let urlStateJson = null;
 
 var MarkerIcon = L.Icon.extend({
     options: {
@@ -70,7 +84,7 @@ let map = L.map('map', {
     scrollWheelZoom: false,
     tap: false,
     touchZoom: false,
-}).setView(stateCenter, defaultZoom); //gen
+});
 
 let info = L.control();
 
@@ -84,36 +98,37 @@ info.onAdd = function (map) {
 };
 
 info.updateForDistrict = function (properties) {
+
     let dist;
+
     if (properties) {
+
         dist = stateData.filter(ele => ele.district == properties.DISTRICT)
-        if ( dist.length ) dist[0].info.freeBeds - dist[0].info.patients < 10 ? this._div.classList.add('ak-alert') : this._div.classList.remove('ak-alert');
+
+        if (dist.length) dist[0].info.freeBeds - dist[0].info.patients < 10 ? this._div.classList.add('ak-alert') : this._div.classList.remove('ak-alert');
     }
 
     this._div.innerHTML = (properties && dist.length ?
         "".concat(
             '<h4>', properties.DISTRICT, '</h4>',
-            "Health Centres: ", dist[0].info.healthcentres,
-            ", Patients: ", dist[0].info.patients,
-            ", Free Beds: ", dist[0].info.freebeds
+            "Health Centres: ", dist[0].info?.healthcentres,
+            ", Patients: ", dist[0].info?.patients,
+            ", Free Beds: ", dist[0].info?.freebeds
         ) : 'Hover over a district');
 }
-
 info.addTo(map);
 
 function stateStyle(feature) {
 
-    console.log (feature.properties.DISTRICT);
-
     let patientsCount = 0;
 
-    let distDetails = stateData.filter(ele => ele.district == feature.properties.DISTRICT);
-    
-    if ( distDetails.length ){
+    // console.log (feature.properties.DISTRICT);
+    let selState = stateData.filter(ele => ele.district == feature.properties.DISTRICT);
 
-       patientsCount = distDetails[0].info.patients;
+    if (selState.length) {
+
+        patientsCount = selState[0].info.patients
     }
-
     // console.log ( patientsCount );
 
     return {
@@ -207,23 +222,38 @@ function onClickDistrict(e) {
 
     /* getHospitals on that district */
     $.get(apiHost.concat(endpoints.district), { q: selectedDistrict }, function (res) {
-
-	console.log ( res );
+        // $.get("/static/data/karthi/district.json", { q: selectedDistrict }, function (res) {
 
         districtData = res;
+
+        console.log(districtData);
         /* Generate markers for the district */
         $.each(districtData, function (index, value) {
 
-            console.log(value);
+            console.log(value.location, isNaN(parseFloat(value.location[0])), isNaN(parseFloat(value.location[1])));
 
-            let bedsCount = value.assets.beds.occupied + value.assets.beds.free + value.assets.beds.unusable;
+            if (!
+                (
+                    isNaN(parseFloat(value.location[0])) &&
 
-            let popupText = "".concat(
-                "<div class=\"popup\">", value.name,
-                "<br>Patients: ", value.patients,
-                "<br>Free Beds: ", bedsCount, "</div>");
+                    isNaN(parseFloat(value.location[1]))
+                )
+            ) {
 
-            markers.push(L.marker(value.location, { icon: bedsCount - value.patients < 10 ? redMarkerIcon : blueMarkerIcon }).addTo(map).bindPopup(popupText));
+                let hKeys = Object.keys(value.assets);
+
+                let popUpBalance = "";
+
+                hKeys.forEach(function (hKey) {
+
+                    popUpBalance += hKey + ': ' + value.assets[hKey].free + '<br>';
+                });
+
+                let popupText = "".concat("<div class=\"popup\">", value.name, "<br>Patients: ", value.patients, "<br>", popUpBalance, "</div>");
+
+
+                markers.push(L.marker(value.location, { icon: blueMarkerIcon }).addTo(map).bindPopup(popupText));
+            }
         });
 
         assetSelectorForDistrictOnChange(assetsList[0]);
@@ -300,7 +330,7 @@ function generateAssetsList(data) {
 
 function assetSelectorForStateOnChange(value) {
 
-    // console.log(value);
+    console.log(value);
 
     let selectedAsset = value;
 
@@ -328,7 +358,7 @@ function assetSelectorForStateOnChange(value) {
 
 function assetSelectorForDistrictOnChange(value) {
 
-    // console.log(value);
+    console.log(value);
 
     let selectedAsset = value;
 
@@ -340,7 +370,7 @@ function assetSelectorForDistrictOnChange(value) {
 
     let unusable = stateData.map(ele => ele.assets[selectedAsset].unusable);
 
-    // console.log ( assetsList, occupied, free, unusable );
+    console.log ( assetsList, occupied, free, unusable );
 
     updateTrendsChart({
 
@@ -367,6 +397,17 @@ $('#assets-selector').on('change', function () {
     }
 });
 
+function getStateDetails(stateId) {
+
+    return new Promise(function (resolve, reject) {
+
+        $.get( apiHost.concat( endpoints.statedetails ), function (res) {
+
+            resolve(res);
+        });
+    })
+}
+
 function resetAll() {
 
     isDistrictSelected = false;
@@ -375,33 +416,43 @@ function resetAll() {
 
     clearMarkers();
 
-    $.get(apiHost.concat(endpoints.state), function (res) {
+    getStateDetails(24).then(function (res) {
 
-        console.log(res);
+        stateName = res.stateName.split(" ").join("");
 
-        stateData = res;
+        urlStateJson = geoJsonPath.concat(stateName, ".json");
 
-        assetsList = generateAssetsList(stateData);
+        stateCenter = stateCenters[stateName];
 
-        assetSelectorForStateOnChange(assetsList[0]);
+        map.setView(stateCenter, defaultZoom);
 
-        $("#assets-selector").prop('selectedIndex', 0);
+        $.get(apiHost.concat (endpoints.state),{ state: stateName } , function (res) {
 
-        getGeoJson();
+            // $.get("/static/data/karthi/state.json", function (res) {
 
-    });
+            // console.log(JSON.stringify(res));
 
-    $.get(apiHost.concat(endpoints.totalcounts), function (res) {
+            stateData = res;
 
-	console.log(res);
+            assetsList = generateAssetsList(stateData);
 
-        $('#totalhospitals').html(res.totalhospitals);
+            assetSelectorForStateOnChange(assetsList[0]);
 
-        $('#patientsadmitted').html(res.patientsadmitted);
+            $("#assets-selector").prop('selectedIndex', 0);
 
-        $('#availablebeds').html(res.availablebeds);
+            getGeoJson();
 
-        $('#availableventilators').html(res.availableventilators);
+        });
+
+        $.get(apiHost.concat (endpoints.totalcounts),{ state: stateName } , function (res) {
+            // $.get("/static/data/karthi/totalcounts.json", function (res) {
+
+            $('#totalhospitals').html(res.totalhospitals);
+            $('#patientsadmitted').html(res.patientsadmitted);
+            $('#availablebeds').html(res.availablebeds);
+            $('#availableventilators').html(res.availableventilators);
+        });
+
     })
 
 }

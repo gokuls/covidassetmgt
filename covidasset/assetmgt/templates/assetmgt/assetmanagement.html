@@ -118,7 +118,9 @@
                    </td>
                    <td> {{ i.asset_balance }} / {{ i.asset_total }}</td>
                    <td> <div class="progress">
-                              <div class="progress-bar {{ i.asset_total| addc:i.asset_utilized }}" role="progressbar" style="width: {{ i.asset_total| calculate:i.asset_utilized }}%" aria-valuenow="{{ i.asset_utilized }}" aria-valuemin="0" aria-valuemax="{{ i.asset_total }}"></div>
+                              <div class="progress-bar {{ i.asset_total| addc:i.asset_utilized }}" role="progressbar" style="width: {{ i.asset_total| calculate:i.asset_utilized }}%" aria-valuenow="{{ i.asset_utilized }}" aria-valuemin="0" aria-valuemax="{{ i.asset_total }}">
+                                {{ i.asset_total| calculate:i.asset_utilized }}%
+                              </div>
                             </div>
                     </td>
                    <td> {{ i.creation_date }} </td>
@@ -317,19 +319,19 @@ var $myForm2 = $('#getform')
             },
             {
               extend : 'csvHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Details',
               text:      '<i class="fa  text-warning fa-file-text"></i>',
               titleAttr: 'CSV'
             },
             {
                 extend: 'excelHtml5',
-                title: 'Devices',
+                title: 'Hospital Asset Details',
                 text:      '<i class="fa text-success fa-file-excel-o"></i>',
                 titleAttr: 'EXCEL'
             },
             {
               extend : 'pdfHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Details',
               text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
               titleAttr: 'PDF'
             }

@@ -4,13 +4,6 @@
 {% block 'content' %}
 
 		<div ><!-- for row -->
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
 
 <div class="row mt-3">
 	  <div class="col-lg-12 ">
@@ -254,17 +247,12 @@ $("#multiple").change(function(){
 	});
 	
 $("#city").on("keypress keyup blur",function (event) {    
-           $(this).val($(this).val().replace(/[^a-zA-Z].+/, ""));
-            if ((event.which < 48 || event.which > 57)) {
-                event.preventDefault();
-            }
-        });
+           $(this).val($(this).val().replace(/[^a-zA-Z ].+/, ""));
+                   });
 
 $("#taluk").on("keypress keyup blur",function (event) {    
-           $(this).val($(this).val().replace(/[^a-zA-Z].+/, ""));
-            if ((event.which < 48 || event.which > 57)) {
-                event.preventDefault();
-            }
+           $(this).val($(this).val().replace(/[^a-zA-Z ].+/, "")); 
+            
         });
 
 $("#hcontact").on("keypress keyup blur",function (event) {    

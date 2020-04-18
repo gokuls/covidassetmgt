@@ -17,6 +17,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.contrib.auth import authenticate 
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -27,8 +28,10 @@ def index(request):
 
 	context = {'user':user}
 	return render(request,'assetmgt/fomndtable.html',context)
-	#return render(request,'assetmgt/index-arun.html',context)
+	#return render(request,'assetmgt/index-new.html',context)
 
+
+@login_required
 def register(request):
 	if request.method == 'POST':
 		form = ExtendedUserCreationForm(request.POST)
