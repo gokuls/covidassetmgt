@@ -25,6 +25,16 @@ def getAllState(request):
     return JsonResponse({"states":states_dict})
 
 
+def getStateNameById(request):
+    state_id = request.GET['q']
+    state_name = None
+    try:
+        state_id = int(state_id)
+        state_name = State.objects.get(pk=state_id).state_name
+    except State.DoesNotExist as state_not_found:
+        print("Exception state name not found for given state id",state_id)
+
+    return JsonResponse({"stateName":state_name})   
 
 def getTotalCounts(request):
     
@@ -33,9 +43,8 @@ def getTotalCounts(request):
 
     try:
         #user = UserProfile.objects.get(user__username=request.user.username)
-        state_name = request.GET['q']
-        h_total = Hospital.objects.filter(state_id__state_name=state_name).values("hospital_id").count()
-        #h_total = Hospital.objects.filter(state_id='Tamil Nadu').values("hospital_id").count()
+        state_id = int(request.GET['q'])
+        h_total = Hospital.objects.filter(state_id='Tamil Nadu').values("hospital_id").count()
         total_counts["totalhospitals"] = h_total
         assets_list = Asset.objects.all().values_list("asset_name",flat=True)
         print(assets_list)
@@ -75,17 +84,16 @@ def getState(request):
             if h_count:
                 dist_dict["info"]["healthcentres"]=h_count
                 for asset in assets:
-                    asset_lower = asset.lower()
                     try:
                         assetmgt_object = AssetMgt.objects.filter(hospital_id__district_id=district.district_id,asset_id__asset_name=asset).annotate(count_asset=Count("hospital_id")).order_by("-creation_date","asset_id","hospital_id").aggregate(Sum("asset_utilized"),Sum("asset_balance"),Sum("asset_total"))
-                        dist_dict["assets"][asset_lower+"s"]={"occupied":assetmgt_object["asset_utilized__sum"],"total":assetmgt_object["asset_total__sum"],"free":assetmgt_object["asset_balance__sum"],"unusable":0}
-                        if "bed" in asset_lower:
+                        dist_dict["assets"][asset.lower()+"s"]={"occupied":assetmgt_object["asset_utilized__sum"],"total":assetmgt_object["asset_total__sum"],"free":assetmgt_object["asset_balance__sum"],"unusable":0}
+                        if "bed" in asset.lower():
                             dist_dict["info"]["patients"] = assetmgt_object["asset_utilized__sum"]
                             dist_dict["info"]["freebeds"] = assetmgt_object["asset_balance__sum"]
 
                     except AssetMgt.DoesNotExist as asset_notfound:
                         print("Exception asset not found in hospital")
-                        dist_dict["assets"][asset_lower+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
+                        dist_dict["assets"][asset.lower()+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
                         if asset.icontains("bed"):
                             dist_dict["info"]["patients"] = 0
                             dist_dict["info"]["freebeds"] = 0
@@ -95,7 +103,7 @@ def getState(request):
                 dist_dict["info"] = { "healthcentres":0,"patients":0,"freebeds":0}
                 dist_dict["assets"] = {}
                 for asset in assets:
-                    dist_dict["assets"][asset_lower+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
+                    dist_dict["assets"][asset.lower()+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
 
             state_data.append(dist_dict)
 
@@ -215,6 +223,3 @@ def getStateNew(request):
 
     print(state_data)
     return JsonResponse(state_data,safe=False)
-
-
-

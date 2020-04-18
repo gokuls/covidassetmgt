@@ -27,7 +27,7 @@ def index(request):
 
 	context = {'user':user}
 	return render(request,'assetmgt/fomndtable.html',context)
-
+	#return render(request,'assetmgt/index-arun.html',context)
 
 def register(request):
 	if request.method == 'POST':
