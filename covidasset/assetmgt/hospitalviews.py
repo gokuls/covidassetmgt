@@ -58,6 +58,8 @@ class AddHospital(LoginRequiredMixin,View):
         #usr = User.objects.get(username='boss')
         #To do user username from request object
         #if not request.user:
+        assets = Asset.objects.all()
+
         usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
         try:
             usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
@@ -87,6 +89,8 @@ class AddHospital(LoginRequiredMixin,View):
                 with transaction.atomic():
                     hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
                     messages.info(request,hname+" added successfully") 
+                    for asset in assets:
+                        AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj.hospital_id,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0)
             else:
                 with transaction.atomic():
                     hid = int(request.POST['hid'])
@@ -150,7 +154,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
     login_url = 'login'
     def post(self,request):
         states = State.objects.all()
-        #assets = Asset.objects.all()
+        assets = Asset.objects.all()
         usr = UserProfile.objects.get(user__username=request.user.username)
         try:
             #usr = UserProfile.objects.get(user__username=request.user.username)
@@ -195,6 +199,8 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     doctors=int(row[DATA_CSV_HEADER[8]]),
                                     healthworkers=int(row[DATA_CSV_HEADER[9]])
                                     )
+                            for asset in assets:
+                                AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                             messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
                     except District.DoesNotExist as district_nod_found:
                         messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
@@ -220,6 +226,8 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 doctors=int(row[DATA_CSV_HEADER[8]]),
                                 healthworkers=int(row[DATA_CSV_HEADER[9]])
                                 )
+                        for asset in assets:
+                            AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                         messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
 
         except Exception as er3:
