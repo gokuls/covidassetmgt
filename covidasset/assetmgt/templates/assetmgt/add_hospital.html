@@ -36,32 +36,39 @@
 	<div id="forbulk" > <!-- for render file browser -->
 		<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
     					{% csrf_token %}
-    				<div class="row">	 <div class="col-md-6"> <div class="form-group row">
+    				<div class="row">	 
+					<div class="col-md-6"> 
+						<div class="form-group row">
         					<label for="#datafile" class="col-sm-3 col-form-label"> Select CSV File : </label> 
         					<div class="col-sm-9">
         					    <input id="#datafile"  class="form-control" name="datafile" type="file" required accept=".csv" ></input>
         					</div>
-        				</div> </div>
-                                 <div class="col-md-6"> 
-        				<div class="form-group row">
-	   				    <div class="col-sm-6">
+        					</div>
+					 </div>
+                                 	<div class="col-md-6">
+        					<div class="form-group row">
+	   				    	<div class="col-sm-6">
         					<input type="submit" class="btn btn-primary" id="multipliesubmit" value='Upload ' ></input>
         					<input type="reset" class="btn btn-warning "/>
-        				</div>
-        				</div>
-		 </div></div>
-<div class="row">
-<div class="col-md-8">
-<div class="form-group row">
-<P><strong> Note:-</strong><br>
-<ul>
-<li> All field / column filled with correct values within ("New Delhi","Delhi","AIMS") double quotes</li>
-<li> If any field / column not having value fill that column with comma "," Example: "New Delhi",,AIMS,,,,,,10,33</li>
-</ul>
-</div>
-</div>
+        					</div>
+        					</div>
+		 			</div>
+				</div>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="form-group row">
+					<p><strong> Note:-</strong><br>
+						<ul>
+						<li> All field / column filled with correct values within ("New Delhi","Delhi","AIMS") double quotes</li>
+						<li> If any field / column not having value fill that column with comma "," Example: "New Delhi",,AIMS,,,,,,10,33</li>
+						</ul>
+					</p>
+					</div>
+				</div>
+				
 </div>
     				</form>
+</div>
     		</div> 
 
 		<div id="forsingle" > <!-- for Single hospital information -->
@@ -80,7 +87,9 @@
 							    {% endfor %}
     					    </select>
     					</div>
-					</div> </div><div class="col-md-6">
+					</div>
+				 </div>
+					<div class="col-md-6">
 					<div class="form-group row">
 					    <label for="district" class="col-sm-3 col-form-label">District</label>
 					    <div class="col-sm-9">
@@ -88,7 +97,8 @@
 						        <option value="0">--Select-District--</option>
 					        </select>
 					    </div>
-					</div> </div> </div>
+					</div> </div>
+				 </div>
 
 <div class="row">
                         <div class="col-md-6">
@@ -243,6 +253,33 @@ $("#multiple").change(function(){
 
 	});
 	
+$("#city").on("keypress keyup blur",function (event) {    
+           $(this).val($(this).val().replace(/[^a-zA-Z].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+
+$("#taluk").on("keypress keyup blur",function (event) {    
+           $(this).val($(this).val().replace(/[^a-zA-Z].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+
+$("#hcontact").on("keypress keyup blur",function (event) {    
+           $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+
+$("#pin").on("keypress keyup blur",function (event) {    
+           $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
 $("#edit").change(function(){
 	if($(this).is(':checked')){
 		console.log("single clicked");
