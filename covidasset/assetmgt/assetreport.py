@@ -34,7 +34,8 @@ def assetReport(request):
     states = State.objects.filter(state_id=userprofile.state_id.state_id)
     districts = District.objects.filter(district_id=userprofile.district_id.district_id)
     hospitals = Hospital.objects.filter(state_id=userprofile.state_id.state_id,district_id=userprofile.district_id.district_id)
-    assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id)
+    asset_count = Asset.objects.all().count()
+    assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
     context={}
     if userprofile.adminstate == 1:
         context['message'] = "You are not authorised to access this page"
