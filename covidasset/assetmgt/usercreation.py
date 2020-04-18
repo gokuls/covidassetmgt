@@ -28,7 +28,6 @@ def index(request):
 
 	context = {'user':user}
 	return render(request,'assetmgt/fomndtable.html',context)
-	#return render(request,'assetmgt/index-new.html',context)
 
 
 @login_required

@@ -302,3 +302,17 @@ class GetReport(View):
 
 
         return render(request,'assetmgt/assetreport.html',{'assets':assetmgt_obj})
+
+
+class IndexPage(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        if request.user.is_authenticated:
+            user = request.user.username
+        else:
+            user = 'not logged in'
+
+        context = {'user':user}
+        return render(request,'assetmgt/index-new-1.html',context)
+
+

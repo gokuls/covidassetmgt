@@ -43,17 +43,30 @@ def getTotalCounts(request):
 
     try:
         #user = UserProfile.objects.get(user__username=request.user.username)
-        state_id = int(request.GET['q'])
-        h_total = Hospital.objects.filter(state_id='Tamil Nadu').values("hospital_id").count()
+        state = request.GET['state']
+        h_total = Hospital.objects.filter(state_id__state_name=state).values("hospital_id").count()
+        state_hospitals = Hospital.objects.filter(state_id__state_name=state)
         total_counts["totalhospitals"] = h_total
         assets_list = Asset.objects.all().values_list("asset_name",flat=True)
         print(assets_list)
+        asset_total=asset_utilized=asset_balance=0
         for asset in assets_list:
-            asset_total = AssetMgt.objects.filter(asset_id__asset_name=asset).values("asset_id","hospital_id","asset_total").annotate(hid_count=Count("hospital_id"),latestt_date=Max("creation_date")).aggregate(Sum("asset_total"))
-            total_counts["available"+asset.lower()+"s"]=asset_total["asset_total__sum"]
+            asset_lower = asset.lower()
+            for hospital in state_hospitals:
+                try:
+                    assetmgt_obj = AssetMgt.objects.filter(asset_id__asset_name=asset,hospital_id=hospital,hospital_id__state_id__state_name=state).order_by('hospital_id','-creation_date').distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
+                    if assetmgt_obj.exists():
+                        asset_total += assetmgt_obj[0]['asset_total']
+                        asset_utilized += assetmgt_obj[0]['asset_utilized']
+                        asset_balance += assetmgt_obj[0]['asset_balance']
 
-        patient_total = AssetMgt.objects.filter(asset_id__asset_name__icontains="bed").values("asset_id","hospital_id","asset_utilized").annotate(hid_count=Count("hospital_id"),latestt_date=Max("creation_date")).aggregate(Sum("asset_utilized"))
-        total_counts["patientsadmitted"] = patient_total["asset_utilized__sum"]
+                except AssetMgt.DoesNotExist as asset_not_found:
+                    print("exception while getting asset_toatl for state is %s"%(str(asset_notfound)))
+                    continue
+            total_counts["available"+asset_lower+"s"] = asset_balance 
+            if 'bed' in asset_lower:
+                total_counts['patientsadmitted'] = asset_utilized
+
     except Exception as ec:
         print(ec)
         total_counts["totalhospitals"]=h_total
@@ -64,7 +77,7 @@ def getTotalCounts(request):
     
         
 
-def getState(request):
+def getStateAllDateCumulative(request):
 
     state_data = list()
     try:
@@ -157,7 +170,7 @@ def getHospitalsByDistrict(request):
 
     print(district_data)
 
-    return JsonResponse({district:district_data}) 
+    return JsonResponse(district_data,safe=False) 
 
 
  
@@ -168,10 +181,10 @@ def getStateNew(request):
     try:
         #user = UserProfile.objects.get(user__username=request.user.username)
         #state = user.state_id
-        if "q" in request.GET:
-            state = State.objects.get(state_id=int(request.GET["q"]))
+        #if "state" in request.GET:
+        state = State.objects.get(state_name=request.GET["state"])
 
-        districts = District.objects.filter(state_id__state_name=state)
+        districts = District.objects.filter(state_id=state)
         assets = Asset.objects.all().values_list("asset_name",flat=True)
         for district in districts:
             dist_dict = {}

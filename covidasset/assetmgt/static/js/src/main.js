@@ -11,10 +11,10 @@ redMarkerIconUrl = "/static/images/marker-icon-red.png";
 let stateName = null;
 
 let endpoints = {
-    totalcounts: "/assetmgt/totalcounts",
+	totalcounts: "/assetmgt/totalcounts",
     state: "/assetmgt/getstatedata",
     district: "/assetmgt/getdistrictdata",
-    statedetails:" /assetmgt/getstatenamebyid"
+    statedetails:"/assetmgt/getstatenamebyid"
 };
 
 /*  end of configuration */
@@ -111,11 +111,12 @@ info.updateForDistrict = function (properties) {
     this._div.innerHTML = (properties && dist.length ?
         "".concat(
             '<h4>', properties.DISTRICT, '</h4>',
-            "Health Centres: ", dist[0].info?.healthcentres,
-            ", Patients: ", dist[0].info?.patients,
-            ", Free Beds: ", dist[0].info?.freebeds
+            "Health Centres: ", dist[0].info.healthcentres,
+            ", Patients: ", dist[0].info.patients,
+            ", Free Beds: ", dist[0].info.freebeds
         ) : 'Hover over a district');
 }
+
 info.addTo(map);
 
 function stateStyle(feature) {
@@ -401,14 +402,19 @@ function getStateDetails(stateId) {
 
     return new Promise(function (resolve, reject) {
 
-        $.get( apiHost.concat( endpoints.statedetails ), function (res) {
+        $.get( apiHost.concat( endpoints.statedetails ), { q: 24 }, function (res) {
 
-            resolve(res);
+            console.log ( res )
+    
+            resolve(res)
+    
         });
     })
 }
 
 function resetAll() {
+
+    console.log ('resetAll')
 
     isDistrictSelected = false;
 
@@ -418,7 +424,11 @@ function resetAll() {
 
     getStateDetails(24).then(function (res) {
 
+        console.log ( res );
+
         stateName = res.stateName.split(" ").join("");
+
+        console.log ( stateName );
 
         urlStateJson = geoJsonPath.concat(stateName, ".json");
 
@@ -434,7 +444,11 @@ function resetAll() {
 
             stateData = res;
 
+            console.log ( stateData )
+
             assetsList = generateAssetsList(stateData);
+
+            console.log ( assetsList )
 
             assetSelectorForStateOnChange(assetsList[0]);
 
@@ -453,6 +467,9 @@ function resetAll() {
             $('#availableventilators').html(res.availableventilators);
         });
 
+    }).catch  ( function (err){
+
+        console.log ( err );
     })
 
 }

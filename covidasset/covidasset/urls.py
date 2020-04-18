@@ -23,7 +23,7 @@ from assetmgt import usercreation
 from assetmgt import assetmgt
 
 #from assetmgt import hospital
-from assetmgt.hospitalviews import AddHospitalTemplate
+from assetmgt.hospitalviews import AddHospitalTemplate,IndexPage
 from assetmgt.hospitalviews import GetDistrictByState
 from django.conf import settings
 from django.conf.urls.static import static
@@ -32,7 +32,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home', usercreation.index, name="index"),
+    path('home',IndexPage.as_view(), name="index"),
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
     ## asset management
