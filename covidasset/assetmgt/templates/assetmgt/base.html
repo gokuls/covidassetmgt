@@ -19,6 +19,10 @@
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="{% static  'assetmgt/css/bootstrap.min.css' %}" type="text/css" />
 
+  <!-- leaflet style sheets -->
+
+   <link rel="stylesheet" href="/static/css/libs/leaflet-0.7.7.css" />
+    <link rel="stylesheet" href="/static/css/src/style.css" />
 
   <!-- Custom styles for this template -->
 
@@ -83,7 +87,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!--ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
             <li class="nav-item active">
               <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
@@ -101,7 +105,7 @@
                 <a class="dropdown-item" href="#">Something else here</a>
               </div>
             </li>
-          </ul-->
+          </ul>
         </div>
       </nav>
 
@@ -116,10 +120,21 @@
 </nav>
 
 {% if messages %}
-<div class="alert alert-info">
+
+<div class="alert alert-info alert-dismissible fade show" role="alert">		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+		
+<ul class="messages">
+
+
     {% for message in messages %}
     <p {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message | safe }}</p>
     {% endfor %}
+
+</ul>
+
+
 </div>
 {% endif %}
 
