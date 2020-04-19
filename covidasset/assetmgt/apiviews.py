@@ -22,7 +22,8 @@ def getAllState(request):
             i += 1
         states_dict["count"]=i
 
-    return JsonResponse({"states":states_dict})
+    #return JsonResponse({"states":states_dict})
+    return JsonResponse(states_dict)
 
 
 def getStateNameById(request):
@@ -42,10 +43,24 @@ def getTotalCounts(request):
     h_total=0
 
     try:
-        #user = UserProfile.objects.get(user__username=request.user.username)
-        state = request.GET['state']
-        h_total = Hospital.objects.filter(state_id__state_name=state).values("hospital_id").count()
-        state_hospitals = Hospital.objects.filter(state_id__state_name=state)
+        user = UserProfile.objects.get(user__username=request.user.username)
+        #state = request.GET['state']
+        print("users admin state",user.adminstate)
+        h_total = 0
+        state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
+        if user.adminstate == 1:
+            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,district_id__district_name=user.district_id)
+            h_toatal = state_hospitals.values('hospital_id').count()
+        elif user.adminstate == 0:
+            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,district_id__district_name=user.district_id,hospital_id=user.hospital_id.hospital_id)
+            h_toatal = state_hospitals.values('hospital_id').count()
+        else:
+            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
+            h_toatal = state_hospitals.values('hospital_id').count()
+
+        #state_hospitals = Hospital.objects.filter(state_id__state_name=state)
+        #h_toatal = state_hospitals.values('hospital_id').count()
+        print("Total hospital under user %s is %d"%(user,h_total))
         total_counts["totalhospitals"] = h_total
         assets_list = Asset.objects.all().values_list("asset_name",flat=True)
         print(assets_list)
@@ -54,7 +69,7 @@ def getTotalCounts(request):
             asset_lower = asset.lower()
             for hospital in state_hospitals:
                 try:
-                    assetmgt_obj = AssetMgt.objects.filter(asset_id__asset_name=asset,hospital_id=hospital,hospital_id__state_id__state_name=state).order_by('hospital_id','-creation_date').distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
+                    assetmgt_obj = AssetMgt.objects.filter(asset_id__asset_name=asset,hospital_id=hospital,hospital_id__state_id__state_name=user.state_id).order_by('hospital_id','-creation_date').distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
                     if assetmgt_obj.exists():
                         asset_total += assetmgt_obj[0]['asset_total']
                         asset_utilized += assetmgt_obj[0]['asset_utilized']
@@ -179,12 +194,13 @@ def getStateNew(request):
 
     state_data = list()
     try:
-        #user = UserProfile.objects.get(user__username=request.user.username)
+        user = UserProfile.objects.get(user__username=request.user.username)
         #state = user.state_id
         #if "state" in request.GET:
         state = State.objects.get(state_name=request.GET["state"])
 
-        districts = District.objects.filter(state_id=state)
+        #districts = District.objects.filter(state_id=state)
+        districts = District.objects.filter(state_id=user.state_id.state_id)
         assets = Asset.objects.all().values_list("asset_name",flat=True)
         for district in districts:
             dist_dict = {}

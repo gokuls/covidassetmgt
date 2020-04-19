@@ -458,9 +458,9 @@ function resetAll() {
 
         });
 
-        $.get(apiHost.concat (endpoints.totalcounts),{ state: stateName } , function (res) {
+        $.get(apiHost.concat (endpoints.totalcounts) , function (res) {
             // $.get("/static/data/karthi/totalcounts.json", function (res) {
-
+              console.log("Total counts response"+res)
             $('#totalhospitals').html(res.totalhospitals);
             $('#patientsadmitted').html(res.patientsadmitted);
             $('#availablebeds').html(res.availablebeds);
