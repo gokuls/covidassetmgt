@@ -8,7 +8,7 @@ THAMC
 {% block 'content' %}
         <div class="row">
 
-          <div class="col-md-3">
+          <div class="col-md-3 col-xs-6 mb-3">
             <div class="card bg-info card-img-holder text-white">
               <div class="card-body">
 			  
@@ -24,7 +24,7 @@ THAMC
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 col-xs-6 mb-3">
             <div class="card bg-warning card-img-holder text-white">
               <div class="card-body">
 			  <span class="float-right" > <img width="48px;" src="static/images/active.svg" ></span>
@@ -39,7 +39,7 @@ THAMC
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 col-xs-6 mb-3 ">
             <div class="card bg-success card-img-holder text-white">
               <div class="card-body">
 			   <span class="float-right" > <img width="48px;" src="static/assetmgt/images/icons/bed-w.svg" ></span>
@@ -53,7 +53,7 @@ THAMC
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 col-xs-6 mb-3">
             <div class="card bg-danger card-img-holder text-white">
               <div class="card-body">
 			   <span class="float-right" > <img width="48px;" src="static/assetmgt/images/icons/ventilator-w.svg" ></span>
@@ -125,19 +125,14 @@ THAMC
         </div>
         {% endblock %}
         {% block 'customjs' %}
-        <script src="/static/js/libs/jquery-3.4.1.min.js"></script>
-        <script src="/static/js/libs/bootstrap.bundle.min.js"></script>
+        <!--script src="/static/js/libs/jquery-3.4.1.min.js"></script-->
+        <!--script src="/static/js/libs/bootstrap.bundle.min.js"></script-->
         <script src="/static/js/libs/leaflet-0.7.7.js"></script>
         <script src="/static/js/libs/Chart.min.js"></script>
         
         <script src="/static/js/src/chart.js"></script>
         <script src="/static/js/src/main.js"></script>
         <!-- Menu Toggle Script -->
-        <script>
-          $("#menu-toggle").click(function (e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-          });
-        </script>
+        
     {% endblock %}
        

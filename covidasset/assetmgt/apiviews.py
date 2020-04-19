@@ -70,6 +70,8 @@ def getTotalCounts(request):
         print(assets_list)
         asset_total=asset_utilized=asset_balance=0
         for asset in assets_list:
+            asset = asset.split(" ")
+            asset = "_".join(asset)
             asset_lower = asset.lower()
             for hospital in state_hospitals:
                 try:
@@ -179,7 +181,11 @@ def getHospitalsByDistrict(request):
                 if h_data['pk']==asset['fields']['hospital_id']:
                     print(asset['fields']['asset_id'],h_data['pk'])
                     asset_obj = Asset.objects.get(asset_id=asset['fields']['asset_id'])
-                    hospital_dict["assets"][asset_obj.asset_name] = {"occupied":asset["fields"]["asset_utilized"],"free":asset["fields"]["asset_balance"],"unusable":0}
+                    asset_name = asset_obj.asset_name.split(" ")
+                    asset_name = "_".join(asset_name)
+                    asset_name = asset_name.lower()
+
+                    hospital_dict["assets"][asset_name] = {"occupied":asset["fields"]["asset_utilized"],"free":asset["fields"]["asset_balance"],"unusable":0}
                     if "bed" in asset_obj.asset_name.lower():
                         hospital_dict["patients"] = asset["fields"]["asset_utilized"]
             district_data.append(hospital_dict)
@@ -221,9 +227,15 @@ def getStateNew(request):
                 for asset in assets:
                     try:
                         for hospital in district_hospitals:
+                            asset = asset.split(" ")
+                            asset = "_".join(asset)
                             asset_lower = asset.lower()
                             #assetmgt_object = AssetMgt.objects.filter(hospital_id__district_id=district.district_id,hospital_id=hospital,asset_id__asset_name=asset).annotate(count_asset=Count("hospital_id")).order_by("-creation_date","asset_id","hospital_id")[0].distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
-                            assetmgt_object = AssetMgt.objects.filter(hospital_id__district_id=district.district_id,hospital_id=hospital,asset_id__asset_name=asset).order_by("hospital_id","-creation_date").distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
+                            assetmgt_object = AssetMgt.objects.filter(
+                                hospital_id__district_id=district.district_id,
+                                hospital_id=hospital,asset_id__asset_name=asset).order_by(
+                                "hospital_id","-creation_date").distinct('hospital_id').values(
+                                'asset_total','asset_utilized','asset_balance')
                             if assetmgt_object.exists():
                                 asset_total += assetmgt_object[0]['asset_total']
                                 asset_utilized += assetmgt_object[0]['asset_utilized']
@@ -246,7 +258,10 @@ def getStateNew(request):
                 dist_dict["info"] = { "healthcentres":0,"patients":0,"freebeds":0}
                 dist_dict["assets"] = {}
                 for asset in assets:
-                    asset_lower = asset.lower()
+                    asset_lower = asset.split(" ")
+                    asset_lower = "_".join(asset_lower)
+                    asset_lower = asset_lower.lower()
+
                     dist_dict["assets"][asset_lower]={"occupied":0,"total":0,"free":0,"unusable":0}
 
             state_data.append(dist_dict)

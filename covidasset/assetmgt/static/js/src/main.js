@@ -114,7 +114,7 @@ info.updateForDistrict = function (properties) {
             "Health Centres: ", dist[0].info.healthcentres,
             ", Patients: ", dist[0].info.patients,
             ", Free Beds: ", dist[0].info.freebeds
-        ) : 'Hover over a district');
+        ) : '');
 }
 
 info.addTo(map);
@@ -191,6 +191,8 @@ function onMouseOutDistrict(e) {
 
 function onClickDistrict(e) {
 
+     info.updateForDistrict(null);
+
     isDistrictSelected = true;
 
     let selectedDistrict = e.target.feature.properties.DISTRICT;
@@ -227,11 +229,11 @@ function onClickDistrict(e) {
 
         districtData = res;
 
-        console.log(districtData);
+        // console.log(districtData);
         /* Generate markers for the district */
         $.each(districtData, function (index, value) {
 
-            console.log(value.location, isNaN(parseFloat(value.location[0])), isNaN(parseFloat(value.location[1])));
+            // console.log(value.location, isNaN(parseFloat(value.location[0])), isNaN(parseFloat(value.location[1])));
 
             if (!
                 (
@@ -250,8 +252,12 @@ function onClickDistrict(e) {
                     popUpBalance += hKey + ': ' + value.assets[hKey].free + '<br>';
                 });
 
-                let popupText = "".concat("<div class=\"popup\">", value.name, "<br>Patients: ", value.patients, "<br>", popUpBalance, "</div>");
+                let popupText = "".concat(
+                    "<div class=\"popup\">", value.name, 
+                    "<br>Patients: ", value.patients, 
+                    "<br>", popUpBalance, "</div>");
 
+                // console.log ( value.location, popupText );
 
                 markers.push(L.marker(value.location, { icon: blueMarkerIcon }).addTo(map).bindPopup(popupText));
             }
@@ -359,9 +365,11 @@ function assetSelectorForStateOnChange(value) {
 
 function assetSelectorForDistrictOnChange(value) {
 
-    console.log(value);
+    console.log( value );
 
     let selectedAsset = value;
+
+    console.log ( districtData );
 
     let names = districtData.map(ele => ele.name);
 
@@ -446,7 +454,7 @@ function resetAll() {
 
             stateData = res;
 
-            console.log ( stateData )
+            console.log ( JSON.stringify(stateData) )
 
             assetsList = generateAssetsList(stateData);
 
