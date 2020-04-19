@@ -1,6 +1,6 @@
 /* configuration */
 
-let apiHost = "http://localhost:8000";
+let apiHost = "";
 
 let geoJsonPath = "/static/geojson/";
 
@@ -436,7 +436,7 @@ function resetAll() {
 
         map.setView(stateCenter, defaultZoom);
 
-        $.get(apiHost.concat (endpoints.state),{ state: stateName } , function (res) {
+        $.get(apiHost.concat (endpoints.state),{ state: res.stateName } , function (res) {
 
             // $.get("/static/data/karthi/state.json", function (res) {
 

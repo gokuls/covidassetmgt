@@ -31,7 +31,7 @@ def getStateNameById(request):
     state_name = None
     try:
         state_id = int(state_id)
-        state_name = State.objects.get(pk=state_id).state_name
+        state_name = State.objects.get(pk=request.user.userprofile.state_id.state_id).state_name
     except State.DoesNotExist as state_not_found:
         print("Exception state name not found for given state id",state_id)
 
@@ -49,14 +49,18 @@ def getTotalCounts(request):
         h_total = 0
         state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
         if user.adminstate == 1:
-            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,district_id__district_name=user.district_id)
-            h_toatal = state_hospitals.values('hospital_id').count()
+            state_hospitals = Hospital.objects.filter(district_id=user.district_id)
+            #h_total = Hospital.objects.filter(district_id=user.district_id).count()
+            h_total = state_hospitals.count()
         elif user.adminstate == 0:
             state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,district_id__district_name=user.district_id,hospital_id=user.hospital_id.hospital_id)
-            h_toatal = state_hospitals.values('hospital_id').count()
+            #h_total = state_hospitals.values('hospital_id').count()
+            h_total = state_hospitals.count()
         else:
-            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
-            h_toatal = state_hospitals.values('hospital_id').count()
+            state_hospitals = Hospital.objects.filter(state_id=user.state_id)
+            h_total = state_hospitals.count()
+            #h_total = Hospital.objects.filter(state_id=user.state_id).count()
+            #h_toatal = state_hospitals.values('hospital_id').count()
 
         #state_hospitals = Hospital.objects.filter(state_id__state_name=state)
         #h_toatal = state_hospitals.values('hospital_id').count()
