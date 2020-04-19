@@ -156,6 +156,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
         states = State.objects.all()
         assets = Asset.objects.all()
         usr = UserProfile.objects.get(user__username=request.user.username)
+        field_name_list = list()
         try:
             #usr = UserProfile.objects.get(user__username=request.user.username)
             state_obj = usr.state_id
@@ -176,13 +177,23 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             file_path = os.path.join(settings.MEDIA_ROOT,filename)
             print("File path is "+file_path)
             global DATA_CSV_HEADER
-            #if os.path.isfile(file_path) and os.path.exists(file_path):i           
-            data = csv.DictReader(open(file_path),fieldnames=DATA_CSV_HEADER)
+            #if os.path.isfile(file_path) and os.path.exists(file_path)
+            if usr.adminstate == 2:
+                field_name_list = DATA_CSV_HEADER
+            else:
+                field_name_list = DATA_CSV_HEADER[1:]
+
+            data = csv.DictReader(open(file_path),fieldnames=field_name_list)
             print("Data-----",dir(data))
             print("number of lines ",data.line_num)
             for row in data:
                 print("Row->",row)
+                header = ','.join(row.values())
+                dheader = ','.join(DATA_CSV_HEADER)
+                print(header)
+                print(dheader)
                 if usr.adminstate == 2:
+                    print(usr.adminstate)
                     try:
                         district_obj = District.objects.get(district_name=row[DATA_CSV_HEADER[0]])
                         with transaction.atomic():
@@ -212,6 +223,10 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                         continue
 
                 else:
+                    dheader = ','.join(DATA_CSV_HEADER[1:])
+                    if header == dheader:
+                        continue
+
                     with transaction.atomic():
                         hospital_obj = Hospital.objects.create(
                                 state_id=state_obj,
@@ -301,7 +316,7 @@ class GetReport(View):
         context['assetmgts'] = assetmgt_obj
 
 
-        return render(request,'assetmgt/assetreport.html',{'assets':assetmgt_obj})
+        return render(request,'assetmgt/report_dt.html',{'assets':assetmgt_obj})
 
 
 class IndexPage(LoginRequiredMixin,View):
