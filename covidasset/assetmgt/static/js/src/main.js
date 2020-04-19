@@ -463,8 +463,8 @@ function resetAll() {
               console.log("Total counts response"+res)
             $('#totalhospitals').html(res.totalhospitals);
             $('#patientsadmitted').html(res.patientsadmitted);
-            $('#availablebeds').html(res.availablebeds);
-            $('#availableventilators').html(res.availableventilators);
+            $('#availablebeds').html(res.availablebed);
+            $('#availableventilators').html(res.availableventilator);
         });
 
     }).catch  ( function (err){

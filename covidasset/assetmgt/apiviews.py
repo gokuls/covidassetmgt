@@ -82,7 +82,7 @@ def getTotalCounts(request):
                 except AssetMgt.DoesNotExist as asset_not_found:
                     print("exception while getting asset_toatl for state is %s"%(str(asset_notfound)))
                     continue
-            total_counts["available"+asset_lower+"s"] = asset_balance 
+            total_counts["available"+asset_lower] = asset_balance 
             if 'bed' in asset_lower:
                 total_counts['patientsadmitted'] = asset_utilized
 
@@ -229,14 +229,14 @@ def getStateNew(request):
                                 asset_utilized += assetmgt_object[0]['asset_utilized']
                                 asset_balance += assetmgt_object[0]['asset_balance']
 
-                        dist_dict["assets"][asset_lower+"s"]={"occupied":asset_utilized,"total":asset_total,"free":asset_balance,"unusable":0}
+                        dist_dict["assets"][asset_lower]={"occupied":asset_utilized,"total":asset_total,"free":asset_balance,"unusable":0}
                         if "bed" in asset_lower:
                             dist_dict["info"]["patients"] = asset_utilized
                             dist_dict["info"]["freebeds"] = asset_balance
 
                     except AssetMgt.DoesNotExist as asset_notfound:
                         print("Exception asset not found in hospital")
-                        dist_dict["assets"][asset_lower+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
+                        dist_dict["assets"][asset_lower]={"occupied":0,"total":0,"free":0,"unusable":0}
                         if asset.icontains("bed"):
                             dist_dict["info"]["patients"] = 0
                             dist_dict["info"]["freebeds"] = 0
@@ -247,7 +247,7 @@ def getStateNew(request):
                 dist_dict["assets"] = {}
                 for asset in assets:
                     asset_lower = asset.lower()
-                    dist_dict["assets"][asset_lower+"s"]={"occupied":0,"total":0,"free":0,"unusable":0}
+                    dist_dict["assets"][asset_lower]={"occupied":0,"total":0,"free":0,"unusable":0}
 
             state_data.append(dist_dict)
 
