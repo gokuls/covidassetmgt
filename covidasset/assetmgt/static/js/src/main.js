@@ -365,12 +365,14 @@ function assetSelectorForDistrictOnChange(value) {
 
     let names = districtData.map(ele => ele.name);
 
-    let occupied = stateData.map(ele => ele.assets[selectedAsset].occupied);
+    let occupied = districtData.map(ele => ele.assets[selectedAsset].occupied);
 
-    let free = stateData.map(ele => ele.assets[selectedAsset].free);
+    let free = districtData.map(ele => ele.assets[selectedAsset].free);
 
-    let unusable = stateData.map(ele => ele.assets[selectedAsset].unusable);
+    let unusable = districtData.map(ele => ele.assets[selectedAsset].unusable);
 
+    console.log ( districtData );
+    
     console.log ( assetsList, occupied, free, unusable );
 
     updateTrendsChart({

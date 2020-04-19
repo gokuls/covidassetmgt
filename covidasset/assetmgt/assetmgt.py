@@ -172,6 +172,8 @@ def returnAssetShow(request):
                     for i in value:
                         print(i)
                         aname = i.asset_id.asset_name
+                        aname = aname.split()
+                        aname = "".join(aname)
                         print(aname)
                         aimage = "static/assetmgt/images/icons/"+aname.lower()+"-b.svg"
                         print(aimage)
