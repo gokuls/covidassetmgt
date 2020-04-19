@@ -37,7 +37,8 @@ def assetReport(request):
     assets = Asset.objects.all()
     user = User.objects.get(username=request.user.username)
     states = State.objects.filter(state_id=userprofile.state_id.state_id)
-    districts = District.objects.filter(district_id=userprofile.district_id.district_id)
+    #districts = District.objects.filter(district_id=userprofile.district_id.district_id)
+    districts = District.objects.filter(state_id=userprofile.state_id)
     hospitals = Hospital.objects.filter(state_id=userprofile.state_id.state_id,district_id=userprofile.district_id.district_id)
     asset_count = Asset.objects.all().count()
     context={}
