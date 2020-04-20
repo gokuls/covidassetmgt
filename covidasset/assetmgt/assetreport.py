@@ -14,54 +14,74 @@ from django.views.generic import View,TemplateView,ListView
 
 
 def assetReport(request):
-    """states = State.objects.all()
-    districts = District.objects.all()
-    hospitals = Hospital.objects.all()
-    assets = Asset.objects.all()
-    user = User.objects.get(username=request.user.username)
-    userprofile = UserProfile.objects.get(user__username=request.user.username)
-    assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id)
     context={}
-    context['states'] = states
-    context['districts'] = districts
-    context['hospitals'] = hospitals    
-    context['assets'] = assets
-    context['user'] = user
-    context['userprofile'] = userprofile
-    context['userstate'] = State.objects.get(state_id=userprofile.state_id_id)
-    context['userdistrict'] = District.objects.get(district_id=userprofile.district_id_id)"""
     userprofile = UserProfile.objects.get(user__username=request.user.username)
+
     if userprofile.adminstate == 0:
         context['message'] = "You are not authorised to access this page"
         return render(request, 'assetmgt/assetreport.html',context=context)
 
+    context['userprofile'] = userprofile
+    if request.POST:
+        state_id = request.POST['state']
+        sel_state = State.objects.get(state_id=state_id).state_name
+        try:
+            sel_district = District.objects.get(district_id=request.POST['district']).district_name
+            district_id = District.objects.get(district_id=request.POST['district']).district_id
+        except:
+            if request.POST['district'] == "all":
+                sel_district = "All District"
+                district_id="all"
+                
+        #sel_opt = request.POST['opt'] if request.POST['opt']!="0" else "Not selected"
+        report_by = request.POST['opt']
+        context['reportfor']=" / admin state :  "+sel_state+" / District : "+sel_district+" / Report : "+report_by#context['userstate'].state_name+" userdistrict: "+context['userdistrict'].district_name
+    
     assets = Asset.objects.all()
     user = User.objects.get(username=request.user.username)
     states = State.objects.filter(state_id=userprofile.state_id.state_id)
-    #districts = District.objects.filter(district_id=userprofile.district_id.district_id)
+    districts = District.objects.filter(district_id=userprofile.district_id.district_id)
     districts = District.objects.filter(state_id=userprofile.state_id)
     hospitals = Hospital.objects.filter(state_id=userprofile.state_id.state_id,district_id=userprofile.district_id.district_id)
     asset_count = Asset.objects.all().count()
-    context={}
-    if userprofile.adminstate == 1:
-        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id, hospital_id__district_id=userprofile.district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]    
-    elif userprofile.adminstate == 2:
-        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
 
     context['states'] = states
     context['districts'] = districts
     context['hospitals'] = hospitals    
     context['assets'] = assets
     context['user'] = user
-    context['userprofile'] = userprofile
     context['userstate'] = State.objects.get(state_id=userprofile.state_id_id)
     context['userdistrict'] = District.objects.get(district_id=userprofile.district_id_id)
-    context['assetmgts'] = assetmgt
+    if request.POST:
+        result_set = generateReport(state_id,district_id,report_by)
+        if result_set:
+            context['assetmgts'] = result_set
+         
+    if 'reportfor' in context:
+        context['reportfor']="Report Page for user : "+user.username+context['reportfor']
+
+    print("context-output:\n",context)
     #context['userhospital'] = Hospital.objetcts.get(hospital_id_id=userprofile.hospital_id_id)
     return render(request, 'assetmgt/assetreport.html',context=context)
  
- 
-    
+
+def generateReport(state_id,district_id,report_by):
+    assetmgt = None
+    if report_by == "by-hospitals":
+        if district_id == "all":
+            assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
+        else:
+            assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]        
+
+    #To-Do
+    #result for "by-assets"
+
+    """if userprofile.adminstate == 1:
+        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id, hospital_id__district_id=userprofile.district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]    
+    elif userprofile.adminstate == 2:
+        assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]"""
+    return assetmgt
+
 class GetReport(View):
     def post(self,request):
         state=hospital=dist=asset=report_option=0

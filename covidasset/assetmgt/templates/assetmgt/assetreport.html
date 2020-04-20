@@ -1,7 +1,6 @@
 {% extends 'assetmgt/base.html' %}
 {% block 'title' %} Asset Report {% endblock %}
 {% block 'content' %}
-        Report Page for user : {{user.username}} admin state : {{ userstate }} userdistrict: {{ userdistrict }} userhospital: {{ userhospital }}
         <br /><br />
 	<form id="reportform" method="post" action="{% url 'assetreport' %}" >
 		{% csrf_token %}
@@ -23,13 +22,13 @@
 		    <label for="district" class="col-sm-2 col-form-label">District</label>
 		    <div class="col-sm-10">
 		        <select name="district" id="district" required=true >
-			        <option value="0">--Select-District--</option>
+			        <!-- <option value="0">--Select-District--</option> -->
 			        {% if userprofile.adminstate == 1 %}
 				     <option value="{{userprofile.district_id_id}}" selected=true>{{userprofile.district_id.district_name}}</option>
                     {% elif userprofile.adminstate == 2 %}
-   				    <option value="*">All Districts</option>
+   				    <option value="all">All Districts</option>
    				    {% for district in districts %}
-                    <option value="{{district.distric_id}}" >{{district.district_name}}</option>
+                    <option value="{{district.district_id}}" >{{district.district_name}}</option>
                     {% endfor %}                                             
                     {% endif %}
                 </select>
@@ -60,9 +59,9 @@
 		    <label for="hospital" class="col-sm-2 col-form-label">Report By</label>
 		    <div class="col-sm-10">
 		        <select name="opt" id="opt" required=true >
-			        <option value="0">--Select-Type--</option>
-			        <option value="1">Assets</option>
-			        <option value="2">Hospitals</option>
+			        <!-- <option value="0">--Select-Type--</option> -->
+			        <option value="by-assets">Assets</option>
+			        <option value="by-hospitals">Hospitals</option>
 		        </select>
 		    </div>
 		</div>
@@ -76,7 +75,12 @@
 
 
 	</form>
-
+    
+        {% if assetmgts is not empty %} 
+        <div id="reportfor">
+                <h5>{{ reportfor }}</h5>
+        </div>
+        {% endif %}
 		<div id="fordatatable">
 			<table id="hospital_list" class="table table-bordered table-striped" >
 				<thead>
