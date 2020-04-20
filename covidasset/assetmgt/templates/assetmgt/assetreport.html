@@ -3,7 +3,7 @@
 {% block 'content' %}
         Report Page for user : {{user.username}} admin state : {{ userstate }} userdistrict: {{ userdistrict }} userhospital: {{ userhospital }}
         <br /><br />
-	<form id="reportform" method="post" >
+	<form id="reportform" method="post" action="{% url 'assetreport' %}" >
 		{% csrf_token %}
 		<div class="form-group row">
 		    <label for="state" class="col-sm-2 col-form-label">State</label>
@@ -27,6 +27,7 @@
 			        {% if userprofile.adminstate == 1 %}
 				     <option value="{{userprofile.district_id_id}}" selected=true>{{userprofile.district_id.district_name}}</option>
                     {% elif userprofile.adminstate == 2 %}
+   				    <option value="*">All Districts</option>
    				    {% for district in districts %}
                     <option value="{{district.distric_id}}" >{{district.district_name}}</option>
                     {% endfor %}                                             
@@ -203,7 +204,7 @@
           "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
         "order": [[ 0, 'asc' ]],
 		});
-    $("#reportform").submit(function(event){
+    /*$("#reportform").submit(function(event){
 	    event.preventDefault();
 	    var data_params={}
 	    var state = $("#state").children("option:selected").val();
@@ -243,7 +244,7 @@
 			    }
 		    });
 
-   });
+   });*/
 
     });
     </script>

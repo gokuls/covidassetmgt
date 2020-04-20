@@ -5,7 +5,7 @@ from assetmgt.hospitalviews import AddHospital
 from assetmgt.hospitalviews import AddMultipleHospital
 from assetmgt.hospitalviews import GetHospitalSample,GetHospitalData
 from assetmgt.hospitalviews import GetHospitalSample 
-from assetmgt.hospitalviews import GetReport 
+from assetmgt.assetreport import GetReport 
 from assetmgt import assetreport
 from .views import AssetFileUploadView
 from django.conf import settings
