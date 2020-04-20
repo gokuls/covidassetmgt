@@ -208,9 +208,10 @@ def getStateNew(request):
         #state = user.state_id
         #if "state" in request.GET:
         state = State.objects.get(state_name=request.GET["state"])
+        districts = District.objects.filter(state_id=user.state_id)
+        if user.adminstate <= 1:
+            districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)
 
-        #districts = District.objects.filter(state_id=state)
-        districts = District.objects.filter(state_id=user.state_id.state_id)
         assets = Asset.objects.all().values_list("asset_name",flat=True)
         for district in districts:
             dist_dict = {}
