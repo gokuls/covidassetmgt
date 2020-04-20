@@ -6,16 +6,15 @@
 {% block 'content' %}
  
  <style>
-    body {
-            background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898; 
- background-blend-mode: multiply,multiply;
-    }
-    .forLogin a {     color: #fafafa !important; } .forLogin {     background-color: rgba(68, 70, 79, 0.5);     color: #fafafa !important;     margin-bottom: 20px;     position: relative;     z-index: 1; } .forLogin .content {     padding: 15px 15px 10px 15px; } .login-box, .register-box {     width: 360px;     margin: 8% auto; } .login-page, .register-page {} .login-logo, .register-logo {     font-size: 35px;     text-align: center;     color: #fafafa; } .login-logo a {     color: #f6a821 !important; } .login-logo a:hover {     text-decoration: none; } .login-box-msg, .register-box-msg {     margin: 0;     text-align: center;     padding: 0 20px 20px 20px; } .login-box-body, .register-box-body {     padding: 20px;     border-top: 0; } .has-feedback {     position: relative; } .form-group {     margin-bottom: 15px; } .has-feedback .form-control {     padding-right: 42.5px; } .login-box-body .form-control-feedback, .register-box-body .form-control-feedback {} .form-control-feedback {     position: absolute;     top: 0;     right: 0;     z-index: 2;     display: block;     width: 34px;     height: 34px;     line-height: 34px;     text-align: center;     pointer-events: none; } .checkbox, .radio {     position: relative;     display: block;     margin-top: 10px;     margin-bottom: 10px; } .icheck>label {     padding-left: 0; } .checkbox label, .radio label {     min-height: 20px;     padding-left: 20px;     margin-bottom: 0;     font-weight: 400;     cursor: pointer; }
+    body{padding: 0;background-color: #33077c;}
+    .forLogin a {     color: #fafafa !important; } .forLogin {      background-color:#33077c;  }
 </style>
+{% load static %}
 
-<div class="login-box  forLogin">  <div class="content">
+<div class="container h-100">
+  <div class="row h-100 justify-content-center align-items-center forLogin"> <div class="col-md-4">  <div class="card"> <div class="card-body">
     <div class="login-logo">
-        <a href="#">Covid 19 ASSET Management </a>
+        <a href="#"><img  src="{% static 'assetmgt/images/logologin.png' %}" alt="logo" /> </a>
     </div><!-- /.login-logo -->
     <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>
@@ -37,22 +36,16 @@
    {{ form.password	}}
 </div>
     <div class="row">
-            <div class="col-xs-8">
-                <div class="checkbox icheck">
-                    <label>
-                        <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false" >
-                        <input type="checkbox" name="remember" value="" id="remember">
-                        </div> <label for="remember" class="">Remember me</label>                   
-                        </label>
-                </div>
-            </div><!-- /.col -->
-            <div class="col-xs-4">
- <input type="submit"  class="btn btn-warning btn-block btn-flat" value='Login'/>  </div>
+            
+            <div class="col-xs-12">
+ <input type="submit"  class="btn btn-warning ml-3" value='Login'/>  </div>
   
   </div>
         </form>  
-            </div><!-- /.login-box-body --> </div>
+            </div><!-- /.login-box-body -->  </div> </div></div> </div>
 </div>
+{% endblock %}
+{% block 'footer' %}
 {% endblock %}
 
 {%block scripts %}

@@ -77,10 +77,10 @@ let titleLayer = null;
 
 let map = L.map('map', {
     keyboard: false,
-    dragging: false,
-    zoomControl: false,
+   // dragging: false,
+   // zoomControl: false,
     boxZoom: false,
-    doubleClickZoom: false,
+    //doubleClickZoom: false,
     scrollWheelZoom: false,
     tap: false,
     touchZoom: false,

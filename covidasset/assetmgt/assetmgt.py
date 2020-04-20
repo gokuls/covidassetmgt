@@ -210,7 +210,7 @@ def returnAssetShow(request):
                     })
             except Exception as details:
                 print(details)
-                return HttpResponse("Select Hospital")
+                return HttpResponse("No Records Found")
         else:
             return HttpResponse("Select Hospital")
     else:
@@ -445,6 +445,8 @@ def AssetManagementView(request):
         userobj = user
         assetobj = Asset.objects.all()
         hids = []
+        print(request.user)
+        print(request.user.userprofile.adminstate)
 
         if userobj.userprofile.adminstate == 0:
             hosp = []
@@ -454,7 +456,7 @@ def AssetManagementView(request):
         elif userobj.userprofile.adminstate == 1:
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
         else:
-            hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
+            hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
         
         for i in hosp:
             for a in assetobj:

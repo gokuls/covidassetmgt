@@ -114,7 +114,7 @@
 	          	<tr>
                     <td> {{ i.hospital_id.hospital_name }} </td>
 					         <td> {{ i.asset_id.asset_name }} 
-                   <span class="badge badge-success pull-right"> <img width="32px" src="{% static 'assetmgt/images/icons/'|add:i.asset_id.asset_name|lower|add:'-w.svg' %}" alt="{{i.asset_id.asset_name}}" /> </span>
+                   <span class="badge badge-success pull-right"> <img width="32px" src="{% static 'assetmgt/images/icons/'|add:i.asset_id.asset_name|change|lower|add:'-w.svg' %}" alt="{{i.asset_id.asset_name}}" /> </span>
                    </td>
                    <td> {{ i.asset_balance }} / {{ i.asset_total }}</td>
                    <td> <div class="progress">

@@ -16,6 +16,15 @@ def addclass(total, utilized):
 		return 0
 
 
+@register.filter(name='change')
+def addclass(value):
+    try:
+    	value = value.split(" ")
+    	value = "".join(value)
+    	return value
+    except:
+    	return value
+
 @register.filter(name='addc')
 def addclass(total, utilized):
 	try:

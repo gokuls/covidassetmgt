@@ -27,6 +27,9 @@ scales: {
             zeroLineColor: "#fff",
             zeroLineWidth: 0
         },
+        scaleLabel:{
+            display:false
+        },
         ticks: {
             fontFamily: "'Open Sans Bold', sans-serif",
             fontSize:11
