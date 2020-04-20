@@ -58,7 +58,7 @@ def assetReport(request):
             context['assetmgts'] = result_set
          
     if 'reportfor' in context:
-        context['reportfor']="Report Page for user : "+user.username+context['reportfor']
+        context['reportfor']="Report for user : "+user.username+context['reportfor']
 
     print("context-output:\n",context)
     #context['userhospital'] = Hospital.objetcts.get(hospital_id_id=userprofile.hospital_id_id)

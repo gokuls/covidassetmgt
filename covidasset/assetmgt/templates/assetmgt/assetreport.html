@@ -8,7 +8,7 @@
 		    <label for="state" class="col-sm-2 col-form-label">State</label>
 		    <div class="col-sm-10">
 		        <select name="state" id="state" required=true>
-				    <option value="0">--select-state--</option>
+				    <option value="">--select-state--</option>
 				    {% for state in states %}
 				     <!-- <option value="{{state.state_id}}" selected=true>{{state.state_name}}</option> -->
 				     <option value="{{userprofile.state_id_id}}" selected=true>{{userprofile.state_id.state_name}}</option>
@@ -22,7 +22,7 @@
 		    <label for="district" class="col-sm-2 col-form-label">District</label>
 		    <div class="col-sm-10">
 		        <select name="district" id="district" required=true >
-			        <!-- <option value="0">--Select-District--</option> -->
+			        <!-- <option value="">--Select-District--</option> -->
 			        {% if userprofile.adminstate == 1 %}
 				     <option value="{{userprofile.district_id_id}}" selected=true>{{userprofile.district_id.district_name}}</option>
                     {% elif userprofile.adminstate == 2 %}
@@ -58,10 +58,10 @@
 		<div class="form-group row">
 		    <label for="hospital" class="col-sm-2 col-form-label">Report By</label>
 		    <div class="col-sm-10">
-		        <select name="opt" id="opt" required=true >
-			        <!-- <option value="0">--Select-Type--</option> -->
-			        <option value="by-assets">Assets</option>
+		        <select name="opt" id="opt" required>
+			        <option value="">--Select--</option>
 			        <option value="by-hospitals">Hospitals</option>
+   			        <option value="by-assets">Assets(in-progress)</option>
 		        </select>
 		    </div>
 		</div>
@@ -81,6 +81,7 @@
                 <h5>{{ reportfor }}</h5>
         </div>
         {% endif %}
+        
 		<div id="fordatatable">
 			<table id="hospital_list" class="table table-bordered table-striped" >
 				<thead>
@@ -113,7 +114,8 @@
 				</tbody>
 					
 			</table>
-		</div>
+    </div>
+    
 
 
         
