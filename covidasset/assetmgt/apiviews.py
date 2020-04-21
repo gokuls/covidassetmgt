@@ -164,10 +164,28 @@ def getHospitalsByDistrict(request):
         district=request.GET['q']
         district_data = list()
         asset_dict = {}
+        user = UserProfile.objects.get(user__username=request.user.username)
         districtobj=District.objects.get(district_name=district)
+        HospitalQuerySet = Hospital.objects.filter(district_id_id=districtobj)
+        AssetMgtQuerySet = AssetMgt.objects.filter(hospital_id__district_id=districtobj).order_by(
+            'hospital_id','asset_id','-creation_date').distinct('hospital_id','asset_id')
+
+        if user.adminstate == 1:
+            districtobj=District.objects.get(district_name=district)
+            HospitalQuerySet = Hospital.objects.filter(district_id=districtobj,state_id=user.state_id.state_id)
+            AssetMgtQuerySet = AssetMgt.objects.filter(hospital_id__district_id=districtobj).order_by(
+                'hospital_id','asset_id','-creation_date').distinct('hospital_id','asset_id')
+        
+        if user.adminstate == 0:
+            districtobj=District.objects.get(district_name=district)
+            HospitalQuerySet = Hospital.objects.filter(district_id=districtobj,state_id=user.state_id.state_id,hospital_id=user.hospital_id.hospital_id)
+            AssetMgtQuerySet = AssetMgt.objects.filter(hospital_id__district_id=districtobj).order_by(
+                'hospital_id','asset_id','-creation_date').distinct('hospital_id','asset_id')
+
         #dis_hospitals = Hospital.objects.get(district_id_id=districtobj)
-        serialized_data = serializers.serialize('json', Hospital.objects.filter(district_id_id=districtobj),
-                use_natural_foreign_keys=True, fields=['hospital_name', 'latitude', 'longitude','hospital_id'], indent=4)
+        
+        serialized_data = serializers.serialize('json', HospitalQuerySet,
+                use_natural_foreign_keys=True, fields=['hospital_name', 'latitude', 'longitude','hospital_id'], indent=4)#Hospital.objects.filter(district_id_id=districtobj)
         
         #print(serialized_data)
         assets = Asset.objects.all()
@@ -176,7 +194,7 @@ def getHospitalsByDistrict(request):
             
         print("Assets",asset_dict)
         #aasetmgt_serialized_data = serializers.serialize('json', AssetMgt.objects.filter(hospital_id__district_id=1).select_related('hospital_id').order_by('hospital_id','asset_id','creation_date'),use_natural_foreign_keys=True, fields=['asset_id','hospital_id','asset_utilized','asset_total','asset_balance'], indent=4)
-        aasetmgt_serialized_data = serializers.serialize('json', AssetMgt.objects.filter(hospital_id__district_id=districtobj).order_by('hospital_id','asset_id','-creation_date').distinct('hospital_id','asset_id'),use_natural_foreign_keys=True, fields=['asset_id', 'hospital_id','asset_utilized','asset_total','asset_balance'], indent=4)
+        aasetmgt_serialized_data = serializers.serialize('json', AssetMgtQuerySet,use_natural_foreign_keys=True, fields=['asset_id', 'hospital_id','asset_utilized','asset_total','asset_balance'], indent=4) ##AssetMgt.objects.filter(hospital_id__district_id=districtobj).order_by('hospital_id','asset_id','-creation_date').distinct('hospital_id','asset_id')
         
         #print(aasetmgt_serialized_data)
         hospital_data = json.loads(serialized_data)
