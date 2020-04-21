@@ -56,8 +56,7 @@ animation: {
                 /* if(i==0){
                     ctx.fillText(data, 50, bar._model.y+4);
                 } else {  */
-                    ctx.fillText(data, bar._model.x-25, bar._model.y+4);
-                // }
+                if ( data != 0 ) ctx.fillText(data, bar._model.x - 15, bar._model.y);                // }
             }),this)
         }),this);
     }

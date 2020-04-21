@@ -18,6 +18,8 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 
 def index(request):
@@ -47,13 +49,15 @@ def register(request):
 			profile.save()
 
 			username = form.cleaned_data.get('username')
-			password = form.cleaned_data.get('password1')
+			#password = form.cleaned_data.get('password1')
 
-			user = authenticate(username = username,
-					password=password)
-			login(request,user)
+			
+			messages.info(request,"User %s Addded Sucessfully"%username)
+            #url = reverse('assetmanagementview')
 
-			return redirect('index')
+            #return HttpResponseRedirect(url)
+
+			return redirect('register')
 		else:
 			print(profile_form.errors)
 	else:

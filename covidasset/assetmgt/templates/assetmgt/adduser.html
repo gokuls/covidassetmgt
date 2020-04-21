@@ -11,6 +11,36 @@
   <div class="card">
   <div class="card-body">
  <h4 class="card-title">User registration</h4> 
+
+ {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+{% if profile_form.errors %}
+    {% for field in profile_form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in profile_form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 	<form method="POST" action="{% url 'register' %}">
 		{% csrf_token %}
 <div class="row">
