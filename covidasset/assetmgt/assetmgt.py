@@ -72,6 +72,9 @@ def AssetsView(request):
     '''
         Page to view the asset and add the Asset 
     '''
+    if request.user.userprofile.adminstate < 2:
+        messages.info(request,"You are not Authorised to View this page ")
+        return redirect('index')
     assets = Asset.objects.all()
     context = dict()
 

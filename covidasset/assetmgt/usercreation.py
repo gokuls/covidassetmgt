@@ -34,6 +34,9 @@ def index(request):
 
 @login_required
 def register(request):
+	if request.user.userprofile.adminstate < 2:
+		messages.info(request,"You are not Authorised to View this page ")
+		return redirect('index')
 	if request.method == 'POST':
 		form = ExtendedUserCreationForm(request.POST)
 		profile_form = UserProfileForm(request.POST)
@@ -62,7 +65,12 @@ def register(request):
 			print(profile_form.errors)
 	else:
 		form = ExtendedUserCreationForm()
-		profile_form = UserProfileForm()
+		try:
+			state = State.objects.get(state_id=request.user.userprofile.state_id.state_id)
+			profile_form = UserProfileForm(initial={'stateid':state})
+		except Exception as details:
+			print(details)
+			profile_form = UserProfileForm()
  
 	context = {'form' : form,
 			'profile_form':profile_form}
