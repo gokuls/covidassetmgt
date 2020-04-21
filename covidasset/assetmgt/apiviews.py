@@ -208,9 +208,10 @@ def getStateNew(request):
         #state = user.state_id
         #if "state" in request.GET:
         state = State.objects.get(state_name=request.GET["state"])
+        districts = District.objects.filter(state_id=user.state_id)
+        if user.adminstate <= 1:
+            districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)
 
-        #districts = District.objects.filter(state_id=state)
-        districts = District.objects.filter(state_id=user.state_id.state_id)
         assets = Asset.objects.all().values_list("asset_name",flat=True)
         for district in districts:
             dist_dict = {}
@@ -218,11 +219,13 @@ def getStateNew(request):
             district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id)
 
             dist_dict["district"]=district.district_name
+            dist_dict["status"] = {}
             dist_dict["info"]={}
             dist_dict["assets"]={}
 
             if h_count:
                 dist_dict["info"]["healthcentres"]=h_count
+                dist_dict["status"]["totalhospitals"] = h_count
                 asset_utilized=asset_total=asset_balance = 0
                 for asset in assets:
                     try:
@@ -243,8 +246,13 @@ def getStateNew(request):
 
                         dist_dict["assets"][asset_lower]={"occupied":asset_utilized,"total":asset_total,"free":asset_balance,"unusable":0}
                         if "bed" in asset_lower:
+                            dist_dict["status"]["patientsadmitted"] = asset_utilized
+                            dist_dict["status"]["availablebeds"]=asset_balance
                             dist_dict["info"]["patients"] = asset_utilized
                             dist_dict["info"]["freebeds"] = asset_balance
+
+                        if "ventilator" in asset_lower:
+                            dist_dict["status"]["availableventilators"]=asset_balance
 
                     except AssetMgt.DoesNotExist as asset_notfound:
                         print("Exception asset not found in hospital")
@@ -257,6 +265,7 @@ def getStateNew(request):
             else:
                 dist_dict["info"] = { "healthcentres":0,"patients":0,"freebeds":0}
                 dist_dict["assets"] = {}
+                dist_dict["status"] = { "totalhospitals":0,"patientsadmitted":0,"availablebeds":0,"availableventilators":0}
                 for asset in assets:
                     asset_lower = asset.split(" ")
                     asset_lower = "_".join(asset_lower)
