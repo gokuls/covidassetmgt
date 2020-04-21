@@ -59,8 +59,11 @@
 
             <a href="{% url 'assetmanagementview' %}" class="list-group-item border-0 list-group-item-action "> Asset Management <i class="fa  fa-sliders pull-right mr-2" aria-hidden="true"></i></a>
             {% if request.user.userprofile.adminstate > 1 %}
-            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action ">Asset <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
+            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action ">Add Asset <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
             {% endif %}
+            {% if request.user.userprofile.adminstate != 0 %}
+            <a href="{% url 'assetreport' %}" class="list-group-item border-0 list-group-item-action ">Asset Report <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
+            {% endif %}            
 
             {% if request.user.userprofile.adminstate > 0 %}
 

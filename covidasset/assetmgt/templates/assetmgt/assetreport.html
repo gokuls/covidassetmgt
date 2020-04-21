@@ -2,6 +2,9 @@
 {% block 'title' %} Asset Report {% endblock %}
 {% block 'content' %}
         <br /><br />
+{% if message %}
+    <div align="center"><b>{{ message }}<b></div>
+{% else %}    
 	<form id="reportform" method="post" action="{% url 'assetreport' %}" >
 		{% csrf_token %}
 		<div class="form-group row">
@@ -98,23 +101,24 @@
 					</tr>
 				</thead>
 				<tbody>
-	{% for assetmgt in assetmgts %}
-	<tr>    
-		{% if userprofile.adminstate == 2 %}
-		<td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
-		{% endif %}
-		<td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
-		<td>{{assetmgt.asset_id.asset_name | safe }}</td>
-		<td>{{assetmgt.asset_total | safe }}</td>
-		<td>{{assetmgt.asset_utilized | safe }}</td>
-		<td>{{assetmgt.asset_balance | safe }}</td>
-		<td>{{assetmgt.creation_date}}</td>
-	</tr>
-	{% endfor %}
-				</tbody>
-					
+	            {% for assetmgt in assetmgts %}
+	            <tr>    
+		            {% if userprofile.adminstate == 2 %}
+		            <td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
+		            {% endif %}
+		            <td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
+		            <td>{{assetmgt.asset_id.asset_name | safe }}</td>
+		            <td>{{assetmgt.asset_total | safe }}</td>
+		            <td>{{assetmgt.asset_utilized | safe }}</td>
+		            <td>{{assetmgt.asset_balance | safe }}</td>
+		            <td>{{assetmgt.creation_date}}</td>
+	            </tr>
+	            {% endfor %}
+	            </tbody>					
 			</table>
-    </div>
+        </div>
+{% endif %}
+
     
 
 
