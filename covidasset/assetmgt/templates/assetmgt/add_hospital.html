@@ -73,7 +73,7 @@
 					<div class="form-group row">
 					    <label for="state" class="col-sm-3 col-form-label">State</label>
 					    <div class="col-sm-9">
-					        <select name="state" id="state" class="form-control" required=true>
+					        <select name="state" id="state" class="form-control" required=true >
 							    <option value="0">--select-state--</option>
 							    {% for state in states %}
 							     <option value="{{state.state_id}}">{{state.state_name}}</option>
@@ -110,7 +110,7 @@
 					<div class="form-group row">
 					    <label for="hname" class="col-sm-3 col-form-label">Hospital Name</label>
 					    <div class="col-sm-9">
-					        <input type="text"  class="form-control" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" />
+					        <input type="text"  class="form-control" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" required=true/>
 					    </div>
 					</div>
 </div></div>
