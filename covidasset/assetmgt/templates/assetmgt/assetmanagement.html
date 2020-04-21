@@ -81,7 +81,7 @@
 
 </div>
 
-
+{% load tz %}
 <div id="actualval" class="row" >
 
 <div class="col-md-12">
@@ -110,6 +110,7 @@
 	          </tr></thead>
 	          <tbody>
 {% load app_filters %}
+{% load tz %}
 	          	{% for i in assetmgt %}
 	          	<tr>
                     <td> {{ i.hospital_id.hospital_name }} </td>
@@ -123,7 +124,9 @@
                               </div>
                             </div>
                     </td>
-                   <td> {{ i.creation_date }} </td>
+                    {% timezone "Asia/Calcutta" %}
+                   <td> {{ i.creation_date  }} </td>
+                    {% endtimezone %}
 				      </tr>
 					{% endfor %}
 				</tbody>

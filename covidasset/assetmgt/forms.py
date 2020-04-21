@@ -5,6 +5,7 @@ from .models import UserProfile
 from .models import District
 from .models import Hospital
 from .models import Asset
+from .models import State
 from .models import AssetMgt
 from django.forms import TextInput
 from django.forms import Select
@@ -138,6 +139,10 @@ class UserProfileForm(forms.ModelForm):
 		super().__init__(*args, **kwargs)
 		self.fields['district_id'].queryset = District.objects.none()
 		self.fields['hospital_id'].queryset = Hospital.objects.none()
+
+		if 'initial' in kwargs:
+			self.fields['state_id'].queryset = State.objects.filter(
+						state_id=kwargs['initial']['stateid'].state_id)
 
 
 		if 'state_id' in self.data:

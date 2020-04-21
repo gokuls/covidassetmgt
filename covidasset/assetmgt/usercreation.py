@@ -18,6 +18,8 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 
 def index(request):
@@ -32,6 +34,9 @@ def index(request):
 
 @login_required
 def register(request):
+	if request.user.userprofile.adminstate < 2:
+		messages.info(request,"You are not Authorised to View this page ")
+		return redirect('index')
 	if request.method == 'POST':
 		form = ExtendedUserCreationForm(request.POST)
 		profile_form = UserProfileForm(request.POST)
@@ -47,18 +52,25 @@ def register(request):
 			profile.save()
 
 			username = form.cleaned_data.get('username')
-			password = form.cleaned_data.get('password1')
+			#password = form.cleaned_data.get('password1')
 
-			user = authenticate(username = username,
-					password=password)
-			login(request,user)
+			
+			messages.info(request,"User %s Addded Sucessfully"%username)
+            #url = reverse('assetmanagementview')
 
-			return redirect('index')
+            #return HttpResponseRedirect(url)
+
+			return redirect('register')
 		else:
 			print(profile_form.errors)
 	else:
 		form = ExtendedUserCreationForm()
-		profile_form = UserProfileForm()
+		try:
+			state = State.objects.get(state_id=request.user.userprofile.state_id.state_id)
+			profile_form = UserProfileForm(initial={'stateid':state})
+		except Exception as details:
+			print(details)
+			profile_form = UserProfileForm()
  
 	context = {'form' : form,
 			'profile_form':profile_form}
