@@ -103,9 +103,22 @@ info.updateForDistrict = function (properties) {
 
     if (properties) {
 
+        console.log (properties.DISTRICT );
+
         dist = stateData.filter(ele => ele.district == properties.DISTRICT)
 
-        if (dist.length) dist[0].info.freeBeds - dist[0].info.patients < 10 ? this._div.classList.add('ak-alert') : this._div.classList.remove('ak-alert');
+        if (dist.length) {
+
+            dist[0].info.freeBeds - dist[0].info.patients < 10 ? this._div.classList.add('ak-alert') : this._div.classList.remove('ak-alert');
+            
+            $('#totalhospitals').html(dist[0].status.totalhospitals);
+            
+            $('#patientsadmitted').html(dist[0].status.patientsadmitted);
+            
+            $('#availablebeds').html(dist[0].status.availablebeds);
+            
+            $('#availableventilators').html(dist[0].status.availableventilators);
+        }
     }
 
     this._div.innerHTML = (properties && dist.length ?
@@ -115,6 +128,8 @@ info.updateForDistrict = function (properties) {
             ", Patients: ", dist[0].info.patients,
             ", Free Beds: ", dist[0].info.freebeds
         ) : '');
+    
+        
 }
 
 info.addTo(map);
@@ -255,6 +270,11 @@ function onClickDistrict(e) {
                 let popupText = "".concat(
                     "<div class=\"popup\">", value.name, 
                     "<br>Patients: ", value.patients, 
+                    /*"<br>","Beds:",
+                    "<table class=\"my-table\"><tr><td>Occupied:</td><td>", value.assets.bed.occupied, 
+                    "</td></tr><tr><td>Free:</td><td>", value.assets.bed.free, 
+                    "</td></tr><tr><td>Unusable:</td><td>", value.assets.bed.unusable, 
+                    "</td></tr></table></div>");*/
                     "<br>", popUpBalance, "</div>");
 
                 // console.log ( value.location, popupText );
@@ -454,7 +474,7 @@ function resetAll() {
 
             stateData = res;
 
-            console.log ( JSON.stringify(stateData) )
+            console.log ( stateData);
 
             assetsList = generateAssetsList(stateData);
 
