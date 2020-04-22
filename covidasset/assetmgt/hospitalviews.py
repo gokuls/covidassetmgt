@@ -40,11 +40,15 @@ class GetDistrictByState(View):
 
     def post(self,request):
         stateid = int(request.POST['stateid'])#To do verify stateid mapped in UserProfile also
-        districts_dict = {}
+        districts = {}
         try:
-            state = State.objects.get(pk=stateid)
-            districts = District.objects.filter(state_id=state)
-
+            usr = UserProfile.objects.get(user__username=request.user.username)
+            if usr.adminstate == 2:
+                state = State.objects.get(pk=stateid)
+                districts = District.objects.filter(state_id=state)
+            else:
+                districts = District.objects.filter(state_id=usr.state_id.state_id,district_id=usr.district_id.district_id)
+            print(districts)
         except State.DoesNotExist as state_not_found:
             print(state_not_found)
             
@@ -195,6 +199,10 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                 if usr.adminstate == 2:
                     print(usr.adminstate)
                     try:
+                        if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
+                            messages.error(request,"Hospital data already exists "+",".join(row.values()))
+                            continue
+
                         district_obj = District.objects.get(district_name=row[DATA_CSV_HEADER[0]])
                         with transaction.atomic():
                             hospital_obj = Hospital.objects.create(
@@ -226,6 +234,9 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                     dheader = ','.join(DATA_CSV_HEADER[1:])
                     if header == dheader:
                         continue
+                    if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
+                        messages.error(request,"Hospital data already exists "+",".join(row.values()))
+                        continue
 
                     with transaction.atomic():
                         hospital_obj = Hospital.objects.create(
@@ -247,8 +258,22 @@ class AddMultipleHospital(LoginRequiredMixin,View):
 
         except Exception as er3:
             print("Exception while add multiple hospital ",er3)
+            messages.error(request,"Hospital Data be in-correct format or order,Please use sample csv format")
 
         return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
+
+    def validate_hospital_data(self,hname,hphone,hpincode):
+        ''' To valiidate hospital data while add hospital '''
+        try:
+            hobj = Hospital.objects.get(hospital_name=hname)
+            if hobj:
+                if hphone == hobj.contact_number:
+                    return False
+                
+        except Hospital.DoesNotExist as er:
+            print(er)
+            return True
+
 
 
 class GetHospitalData(View):

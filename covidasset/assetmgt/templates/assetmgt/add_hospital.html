@@ -73,7 +73,7 @@
 					<div class="form-group row">
 					    <label for="state" class="col-sm-3 col-form-label">State</label>
 					    <div class="col-sm-9">
-					        <select name="state" id="state" class="form-control" required=true>
+					        <select name="state" id="state" class="form-control" required=true >
 							    <option value="0">--select-state--</option>
 							    {% for state in states %}
 							     <option value="{{state.state_id}}">{{state.state_name}}</option>
@@ -110,7 +110,7 @@
 					<div class="form-group row">
 					    <label for="hname" class="col-sm-3 col-form-label">Hospital Name</label>
 					    <div class="col-sm-9">
-					        <input type="text"  class="form-control" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" />
+					        <input type="text"  class="form-control" placeholder="E.g Rajivgandhi Government Hospital" id="hname" name="hname" required=true/>
 					    </div>
 					</div>
 </div></div>
@@ -146,7 +146,7 @@
 					<div class="form-group row">
 					    <label for="hpin" class="col-sm-3 col-form-label">Pincode</label>
 					    <div class="col-sm-9">
-					        <input type="text" class="form-control"  placeholder="600001" id="hpin" name="hpin" required=true />
+					        <input type="text" class="form-control"  placeholder="600001" id="hpin" name="hpin" minlength="6" maxlength="6" required=true />
 					    </div>
 					</div> </div> </div>
 
@@ -155,7 +155,7 @@
 					<div class="form-group row">
 					    <label for="hcontact" class="col-sm-3 col-form-label">Contact Number</label>
 					    <div class="col-sm-9">
-					        <input type="text" class="form-control" placeholder="044-24535325" id="hcontact" name="hcontact" required=true />
+					        <input type="number" class="form-control" placeholder="04424535325(with STD code)" minlength="6" maxlength="15" id="hcontact" name="hcontact" required=true />
 					    </div>
                     </div> </div>  <div class="col-md-6">
                     <div class="form-group row">

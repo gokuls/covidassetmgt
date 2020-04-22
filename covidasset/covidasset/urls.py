@@ -19,6 +19,9 @@ from django.urls import include
 from django.urls import path
 from django.urls import re_path
 
+from django.contrib.auth import views as auth_views
+
+
 from assetmgt import usercreation
 from assetmgt import assetmgt
 
@@ -52,4 +55,5 @@ urlpatterns = [
     path('', assetmgt.LoginMeth, name='login'),
     #path('', assetmgt.LoginMeth, name='login1'),
     path('logout', assetmgt.Logout_view, name='logout'),
+    path('changepassword', auth_views.PasswordChangeView.as_view(template_name='assetmgt/password_change.html',success_url = '/'),name='changepassword'),
 ]
