@@ -1,0 +1,111 @@
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template-overviews/simple-sidebar)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+body {
+  overflow-x: hidden;  background-color:#eff1f4; font-family: 'Open Sans', sans-serif;     
+
+
+}
+.progress {height:2rem;}
+.messages li {list-style:none !important;}
+
+.list-group-item .fa  {font-size: 22px;}
+
+.bg-gradient-danger {
+    background: -webkit-gradient(linear, left top, right top, from(#ffbf96), to(#fe7096)) !important;
+    background: linear-gradient(to right, #ffbf96, #fe7096) !important;
+}
+
+.bg-gradient-primary {
+    background: -webkit-gradient(linear, left top, right top, from(#da8cff), to(#9a55ff)) !important;
+    background: linear-gradient(to right, #da8cff, #9a55ff) !important;
+}
+
+.btn-gradient-primary {
+    background: -webkit-gradient(linear, left top, right top, from(#da8cff), to(#9a55ff));
+    background: linear-gradient(to right, #da8cff, #9a55ff);
+    border: 0;
+    -webkit-transition: opacity 0.3s ease;
+transition: opacity 0.3s ease; color:#fff;}
+
+.card {
+    border: 0 !important;
+    background: #fff;
+}
+.bg-gradient-info {
+    background: -webkit-gradient(linear, left top, right top, from(#90caf9), color-stop(99%, #047edf)) !important;
+    background: linear-gradient(to right, #90caf9, #047edf 99%) !important;
+}
+
+.bg-gradient-success {
+    background: -webkit-gradient(linear, left top, right top, from(#84d9d2), to(#07cdae)) !important;
+    background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+}
+#sidebar-wrapper {
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out; background-color:#33077c;
+}
+#trendsChart {font-size: 18px;}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.8rem 0.25rem;
+  font-size: 1.25rem; color: #fafafa; font-weight: bold;
+}
+#sidebar-wrapper .sidebar-heading p{
+  padding: 0.8rem 0;
+  font-size: 1rem; color: #fafafa; font-weight: bold;
+}
+
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+
+
+#footer {
+  
+clear:both;
+margin-top:50px;
+height:50px;
+position:relative;
+   
+
+}
+
+#main {padding-bottom:50px; min-height:80vh;}
+.custom-bg {background-color:#1c0148;   padding: 0.25rem 1.25rem !important;} .custom-bg p {margin-bottom:0 !important}
+.border-light {border-color:#6c509d !important;}
+
+#page-content-wrapper {
+  min-width: 100vw;   
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+  
+  
+
+  #page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
+.breadcrumb {background-color:transparent !important; padding-left:0 !important;}
+.list-group-item {padding:0.8rem 0 .8rem 1rem; background-color:#33077c; color:#ede7ff	;}
+.list-group-item:hover {background-color:#4309a2; color:#fafafa;}
+
