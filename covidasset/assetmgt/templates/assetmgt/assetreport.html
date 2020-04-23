@@ -132,7 +132,7 @@
 				    </thead>
 				    <tbody>
 	                {% for assetmgt in assetmgts %}
-	                <tr>    
+	                 
 		                <!-- <td rowspan={{assetcount}}> {{ assetmgt.district }}</td>
 		                <td rowspan={{assetcount}}>{{ assetmgt.status.totalhospitals }}</td> -->
 		                {% for key,value in assetmgt.assets.items %}
@@ -146,7 +146,7 @@
 		                    </tr>
 		                    <!-- <td>{{assetmgt.creation_date}}</td> -->
 		                {% endfor %}
-	                </tr>
+	              
 	                {% endfor %}
 	                </tbody>					
 			    </table>
@@ -217,19 +217,19 @@
             },
             {
               extend : 'csvHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa  text-warning fa-file-text"></i>',
               titleAttr: 'CSV'
             },
             {
                 extend: 'excelHtml5',
-                title: 'Devices',
+                title: 'Hospital Asset Management Report',
                 text:      '<i class="fa text-success fa-file-excel-o"></i>',
                 titleAttr: 'EXCEL'
             },
             {
               extend : 'pdfHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
               titleAttr: 'PDF'
             }
@@ -261,19 +261,19 @@
             },
             {
               extend : 'csvHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa  text-warning fa-file-text"></i>',
               titleAttr: 'CSV'
             },
             {
                 extend: 'excelHtml5',
-                title: 'Devices',
+                title: 'Hospital Asset Management Report',
                 text:      '<i class="fa text-success fa-file-excel-o"></i>',
                 titleAttr: 'EXCEL'
             },
             {
               extend : 'pdfHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
               titleAttr: 'PDF'
             }
@@ -329,10 +329,8 @@
 			          				    
 			    }
 		    });
-
    });*/
 
     });
     </script>
 {% endblock %}
-
