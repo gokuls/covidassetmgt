@@ -38,6 +38,21 @@ from django.forms import formset_factory
 
 
 
+
+def error_404(request,exception):
+        data = {}
+        #return render(request,'snippets/404.html', data)
+        return render(request,
+            'assetmgt/error_page.html',
+            {})
+
+def error_500(request):
+        data = {}
+        return render(request,
+            'assetmgt/error_page.html',
+            {})
+
+
 def LoginMeth(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -448,8 +463,8 @@ def AssetManagementView(request):
         userobj = user
         assetobj = Asset.objects.all()
         hids = []
-        print(request.user)
-        print(request.user.userprofile.adminstate)
+        #print(request.user)
+        #print(request.user.userprofile.adminstate)
 
         if userobj.userprofile.adminstate == 0:
             hosp = []
@@ -478,10 +493,10 @@ def AssetManagementView(request):
                 tmp.append(utilized)
                 datatowrite.append(tmp)
 
-        print(datatowrite)
+        #print(datatowrite)
 
         if user.userprofile.adminstate == 0:
-            print('Hospital admin')
+            #print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
             rendered = render_to_string('assetmgt/hospitaladmin.html', 
                 {'hospitals': hosp, 'submessage': "Update Details",'btitle' : "Update Hospital Details" })
@@ -492,7 +507,7 @@ def AssetManagementView(request):
             #sample_tmp=xlsGenerate(assetmt,user.username)
 
         elif user.userprofile.adminstate == 1:
-            print("District admin")
+            #print("District admin")
             hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
             rendered = render_to_string('assetmgt/districtadmin.html', {'hospitals': hosp,
             'submessage': "Update Details",'btitle' : "Update Hospital Details" })

@@ -29,6 +29,10 @@ body {
     background-color:rgba(255,0,0,0.0);
 }
 
+table.my-table { border-collapse: collapse; }
+
+table.my-table td { border: 1px solid #cacaca; padding: 2px 3px;}
+
 .ak-alert { background-color: #F8D8D9;  }
 
 a.brand-link ,a.brand-link:hover { color: inherit; text-decoration: none; font-size: 1.25rem; line-height: 1.5; } 

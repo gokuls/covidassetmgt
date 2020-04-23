@@ -57,3 +57,11 @@ urlpatterns = [
     path('logout', assetmgt.Logout_view, name='logout'),
     path('changepassword', auth_views.PasswordChangeView.as_view(template_name='assetmgt/password_change.html',success_url = '/'),name='changepassword'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler404 = assetmgt.error_404
+handler500 = assetmgt.error_500

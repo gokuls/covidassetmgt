@@ -244,7 +244,7 @@ function onClickDistrict(e) {
 
         districtData = res;
 
-        // console.log(districtData);
+        console.log(districtData);
         /* Generate markers for the district */
         $.each(districtData, function (index, value) {
 
@@ -270,12 +270,12 @@ function onClickDistrict(e) {
                 let popupText = "".concat(
                     "<div class=\"popup\">", value.name, 
                     "<br>Patients: ", value.patients, 
-                    /*"<br>","Beds:",
+                    "<br>","Beds:",
                     "<table class=\"my-table\"><tr><td>Occupied:</td><td>", value.assets.bed.occupied, 
                     "</td></tr><tr><td>Free:</td><td>", value.assets.bed.free, 
                     "</td></tr><tr><td>Unusable:</td><td>", value.assets.bed.unusable, 
-                    "</td></tr></table></div>");*/
-                    "<br>", popUpBalance, "</div>");
+                    "</td></tr></table></div>");
+                    //"<br>", popUpBalance, "</div>");
 
                 // console.log ( value.location, popupText );
 
@@ -363,11 +363,20 @@ function assetSelectorForStateOnChange(value) {
 
     let districts = stateData.map(ele => ele.district);
 
-    let occupied = stateData.map(ele => ele.assets[selectedAsset].occupied);
+    let occupied = stateData.map(ele => { 
+    
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].occupied; 
+    });
 
-    let free = stateData.map(ele => ele.assets[selectedAsset].free);
+    let free = stateData.map(ele => { 
+        
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].free; 
+    });
 
-    let unusable = stateData.map(ele => ele.assets[selectedAsset].unusable);
+    let unusable = stateData.map(ele => { 
+        
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].unusable;
+    }); 
 
     console.log ( assetsList, occupied, free, unusable );
 
@@ -393,11 +402,20 @@ function assetSelectorForDistrictOnChange(value) {
 
     let names = districtData.map(ele => ele.name);
 
-    let occupied = districtData.map(ele => ele.assets[selectedAsset].occupied);
+    let occupied = districtData.map(ele => { 
+    
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].occupied; 
+    });
 
-    let free = districtData.map(ele => ele.assets[selectedAsset].free);
+    let free = districtData.map(ele => { 
+        
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].free; 
+    });
 
-    let unusable = districtData.map(ele => ele.assets[selectedAsset].unusable);
+    let unusable = districtData.map(ele => { 
+        
+        if ( ele.assets[selectedAsset] ) return ele.assets[selectedAsset].unusable;
+    }); 
 
     console.log ( districtData );
     

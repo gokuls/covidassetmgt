@@ -21,6 +21,7 @@ import time
 import xlrd
 import xlwt
 import os
+import sys
 
 # Create your views here.
 
@@ -86,7 +87,16 @@ def xlsGenerate(datavals,username):
         newsheet.write(rows,3,dat[3])
         newsheet.write(rows,4,dat[4])
         rows += 1
-    destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
+    #if settings.DEBUG:
+    try:
+        if (sys.argv[1] == 'runserver'):
+            print("Running in Runserver")
+            destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
+        else:
+            destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')
+    except Exception as details:
+        destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')
+        print(details)
     tmpfileName = os.path.join(destFolder,'tmp-%s.xls'%username)
     murl = "assetmgt/temp/tmp-%s.xls"%username
     wb.save(tmpfileName)

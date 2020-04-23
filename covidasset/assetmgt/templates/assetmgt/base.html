@@ -24,6 +24,8 @@
    <link rel="stylesheet" href="/static/css/libs/leaflet-0.7.7.css" />
     <link rel="stylesheet" href="/static/css/src/style.css" />
 
+    {% block 'customcss' %}
+    {% endblock %}
   <!-- Custom styles for this template -->
 
 
@@ -59,11 +61,8 @@
 
             <a href="{% url 'assetmanagementview' %}" class="list-group-item border-0 list-group-item-action "> Asset Management <i class="fa  fa-sliders pull-right mr-2" aria-hidden="true"></i></a>
             {% if request.user.userprofile.adminstate > 1 %}
-            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action ">Add Asset <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
+            <a href="{% url 'assetview' %}" class="list-group-item border-0 list-group-item-action ">Asset <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
             {% endif %}
-            {% if request.user.userprofile.adminstate != 0 %}
-            <a href="{% url 'assetreport' %}" class="list-group-item border-0 list-group-item-action ">Asset Report <i class="fa  fa-medkit pull-right mr-2" aria-hidden="true"></i></a>
-            {% endif %}            
 
             {% if request.user.userprofile.adminstate > 0 %}
 
@@ -103,10 +102,6 @@
             <li class="nav-item active">
               <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'changepassword' %}">Change Password</a>
-            </li>
-
             <li class="nav-item">
               <a href="{% url 'logout' %}" class="nav-link"> Logout </a>
             </li>
