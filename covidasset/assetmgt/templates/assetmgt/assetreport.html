@@ -64,7 +64,7 @@
 		        <select name="opt" id="opt" required>
 			        <option value="">--Select--</option>
 			        <option value="by-hospitals">By - Hospitals</option>
-   			        <option value="by-assets">By - Assets(in-progress)</option>
+   			        <option value="by-assets">By - Assets</option>
 		        </select>
 		    </div>
 		</div>
@@ -85,44 +85,75 @@
         </div>
         {% endif %}
         
-		<div id="fordatatable">
-			<table id="hospital_list" class="table table-bordered table-striped" >
-				<thead>
-					<tr>
-						{% if userprofile.adminstate == 2 %}
-						<th> District </th>
-						{% endif %}
-						<th>Hospital Name-City</th>
-						<th>Asset</th>
-						<th>Total</th>
-						<th>Utilized</th>
-						<th>Available</th>
-						<th>Last Updated On</th>
-					</tr>
-				</thead>
-				<tbody>
-	            {% for assetmgt in assetmgts %}
-	            <tr>    
-		            {% if userprofile.adminstate == 2 %}
-		            <td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
-		            {% endif %}
-		            <td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
-		            <td>{{assetmgt.asset_id.asset_name | safe }}</td>
-		            <td>{{assetmgt.asset_total | safe }}</td>
-		            <td>{{assetmgt.asset_utilized | safe }}</td>
-		            <td>{{assetmgt.asset_balance | safe }}</td>
-		            <td>{{assetmgt.creation_date}}</td>
-	            </tr>
-	            {% endfor %}
-	            </tbody>					
-			</table>
-        </div>
+		    <div id="fordatatable">
+            {% if report_by == "by-hospitals" %}
+			    <table id="by_hospitals" class="table table-bordered table-striped" >
+				    <thead>
+					    <tr>
+						    {% if userprofile.adminstate == 2 %}
+						    <th> District </th>
+						    {% endif %}
+						    <th>Hospital Name-City</th>
+						    <th>Asset</th>
+						    <th>Total</th>
+						    <th>Utilized</th>
+						    <th>Available</th>
+						    <th>Last Updated On</th>
+					    </tr>
+				    </thead>
+				    <tbody>
+	                {% for assetmgt in assetmgts %}
+	                <tr>    
+		                {% if userprofile.adminstate == 2 %}
+		                <td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
+		                {% endif %}
+		                <td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
+		                <td>{{assetmgt.asset_id.asset_name | safe }}</td>
+		                <td>{{assetmgt.asset_total | safe }}</td>
+		                <td>{{assetmgt.asset_utilized | safe }}</td>
+		                <td>{{assetmgt.asset_balance | safe }}</td>
+		                <td>{{assetmgt.creation_date}}</td>
+	                </tr>
+	                {% endfor %}
+	                </tbody>					
+			    </table>
+        {% elif report_by == "by-assets" %}
+			    <table id="by_assets" class="table table-bordered table-striped" >
+				    <thead>
+					    <tr>
+						    <th> District </th>
+						    <th>Total Hospitals</th>
+						    <th>Asset Name</th>
+						    <th>Total</th>
+						    <th>Occupied</th>
+						    <th>Free</th>
+						    <!-- <th>Last Updated On</th> -->
+					    </tr>
+				    </thead>
+				    <tbody>
+	                {% for assetmgt in assetmgts %}
+	                 
+		                <!-- <td rowspan={{assetcount}}> {{ assetmgt.district }}</td>
+		                <td rowspan={{assetcount}}>{{ assetmgt.status.totalhospitals }}</td> -->
+		                {% for key,value in assetmgt.assets.items %}
+		                    <tr>
+		                    <td>{{ assetmgt.district }}</td>
+    		                <td>{{ assetmgt.status.totalhospitals }}</td>
+		                    <td>{{ key }}</td>
+		                    <td>{{ value.total }}</td>
+		                    <td>{{ value.occupied }}</td>
+		                    <td>{{ value.free }}</td>
+		                    </tr>
+		                    <!-- <td>{{assetmgt.creation_date}}</td> -->
+		                {% endfor %}
+	              
+	                {% endfor %}
+	                </tbody>					
+			    </table>
+            </div>
+        {% endif %}
 {% endif %}
 
-    
-
-
-        
 {% endblock %}
 
 {% block 'customjs' %}
@@ -171,7 +202,7 @@
 
     });
 	    
-   $("#hospital_list").DataTable({
+   $("#by_hospitals").DataTable({
 	    			dom:             "<'row'<'col-sm-5'B>>"+
 "<'hr'>"+
 "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
@@ -186,19 +217,19 @@
             },
             {
               extend : 'csvHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa  text-warning fa-file-text"></i>',
               titleAttr: 'CSV'
             },
             {
                 extend: 'excelHtml5',
-                title: 'Devices',
+                title: 'Hospital Asset Management Report',
                 text:      '<i class="fa text-success fa-file-excel-o"></i>',
                 titleAttr: 'EXCEL'
             },
             {
               extend : 'pdfHtml5',
-              title  : 'Devices',
+              title  : 'Hospital Asset Management Report',
               text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
               titleAttr: 'PDF'
             }
@@ -214,6 +245,51 @@
           "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
         "order": [[ 0, 'asc' ]],
 		});
+		
+   $("#by_assets").DataTable({
+	    			dom:             "<'row'<'col-sm-5'B>>"+
+"<'hr'>"+
+"<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+"<'row'<'col-sm-12'tr>>" +
+"<'row'<'col-sm-5'i><'col-sm-7'p>>",
+		        processing: true,
+			buttons: [
+            { 
+              extend : 'copyHtml5',  
+              text:      '<i class="fa   text-info fa-file"></i>',          
+              titleAttr: 'Copy'
+            },
+            {
+              extend : 'csvHtml5',
+              title  : 'Hospital Asset Management Report',
+              text:      '<i class="fa  text-warning fa-file-text"></i>',
+              titleAttr: 'CSV'
+            },
+            {
+                extend: 'excelHtml5',
+                title: 'Hospital Asset Management Report',
+                text:      '<i class="fa text-success fa-file-excel-o"></i>',
+                titleAttr: 'EXCEL'
+            },
+            {
+              extend : 'pdfHtml5',
+              title  : 'Hospital Asset Management Report',
+              text:      '<i class="fa text-danger fa-file-pdf-o"></i>',
+              titleAttr: 'PDF'
+            }
+        ],
+    			"language": {
+                "search": '<i class="fa fa-search"></i>',
+                "searchPlaceholder": "search",
+                "paginate": {
+                "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>'
+            }
+          },
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "order": [[ 0, 'asc' ]],
+		});
+		
     /*$("#reportform").submit(function(event){
 	    event.preventDefault();
 	    var data_params={}
@@ -253,10 +329,8 @@
 			          				    
 			    }
 		    });
-
    });*/
 
     });
     </script>
 {% endblock %}
-

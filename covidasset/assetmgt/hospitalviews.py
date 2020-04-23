@@ -156,6 +156,12 @@ class GetHospitalSample(View):
 
 class AddMultipleHospital(LoginRequiredMixin,View):
     login_url = 'login'
+    def validate_values(self,values_dict):
+        if values_dict[DATA_CSV_HEADER[1]].isspace() or values_dict[DATA_CSV_HEADER[2]].isspace or values_dict[DATA_CSV_HEADER[3]].isspace() or values_dict[DATA_CSV_HEADER[4]].isspace() or values_dict[DATA_CSV_HEADER[5]].isspace() or values_dict[DATA_CSV_HEADER[6]].isspace() or values_dict[DATA_CSV_HEADER[7]].isspace() or values_dict[DATA_CSV_HEADER[8]].isalpha() or values_dict[DATA_CSV_HEADER[9]].isspace() or values_dict[DATA_CSV_HEADER[9]].isalpha():
+            return False
+        else:
+            return True
+
     def post(self,request):
         states = State.objects.all()
         assets = Asset.objects.all()
@@ -193,6 +199,11 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             for row in data:
                 print("Row->",row)
                 header = ','.join(row.values())
+                field_count = len(row.values())
+                
+                if field_count < 8:
+                    messages.error(request,"Some data could be missed  in record about "+"-".join(row.values()))
+                    continue
                 dheader = ','.join(DATA_CSV_HEADER)
                 print(header)
                 print(dheader)
@@ -201,6 +212,9 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                     try:
                         if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
                             messages.error(request,"Hospital data already exists "+",".join(row.values()))
+                            continue
+                        if not self.validate_values(row):
+                            messages.error(request,"Hospital data may have invalid format "+",".join(row.values()))
                             continue
 
                         district_obj = District.objects.get(district_name=row[DATA_CSV_HEADER[0]])
@@ -237,6 +251,12 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                     if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
                         messages.error(request,"Hospital data already exists "+",".join(row.values()))
                         continue
+                    
+                    if not self.validate_values(row):
+                            print(row)
+                            messages.error(request,"Hospital data may have invalid format "+",".join(row.values()))
+                            continue
+
 
                     with transaction.atomic():
                         hospital_obj = Hospital.objects.create(
