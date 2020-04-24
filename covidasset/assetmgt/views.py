@@ -43,6 +43,17 @@ class AssetFileUploadView(View):
             af.datafile=fs.url(filename)
             af.save()
 
+            #Get Hospital List based on User
+            userobj = request.user
+            if userobj.userprofile.adminstate == 0:
+                hosp = Hospital.objects.get(
+                    hospital_id=userobj.userprofile.hospital_id.hospital_id
+                    )
+            elif userobj.userprofile.adminstate == 1:
+                hosp = Hospital.objects.filter(district_id=userobj.userprofile.district_id.district_id)
+            else:
+                hosp = Hospital.objects.filter(state_id=userobj.userprofile.district_id.district_id)
+            
             # AssetMgmt List Constructions and saved to database           
             try:
                 wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
@@ -53,6 +64,7 @@ class AssetFileUploadView(View):
                             continue
                         ad = AssetMgt()                
                         ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
+                        hospitalCheck(ad.hospital_id.hospital_id,hosp)
                         ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,2)))
                         ad.asset_total=int(sheet.cell_value(row,3))
                         ad.asset_utilized=int(sheet.cell_value(row,4))
@@ -63,7 +75,7 @@ class AssetFileUploadView(View):
                 url = reverse('assetmanagementview')
                 return HttpResponseRedirect(url)
             except Exception as e:
-                messages.error(request,"Record Not Saved !!! Check the value in the File")
+                messages.error(request,str(e))
                 url = reverse('assetmanagementview')
                 return HttpResponseRedirect(url)           
         else:
@@ -147,6 +159,17 @@ def xlsGenerate(datavals,username):
 #     return murl
 
 
+
+
+def hospitalCheck(hid, hospital):
+    """
+            ## Hospital Check 
+    """
+    hids = [i.hospital_id for i in hospital]    
+    if hid not in hids:
+        raise Exception("Hospital Not Available for the User.")
+
+        
 
            
         
