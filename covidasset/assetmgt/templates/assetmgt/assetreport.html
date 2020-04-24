@@ -102,6 +102,8 @@
 					    </tr>
 				    </thead>
 				    <tbody>
+				    {% load app_filters %}
+                    {% load tz %}
 	                {% for assetmgt in assetmgts %}
 	                <tr>    
 		                {% if userprofile.adminstate == 2 %}
@@ -112,7 +114,9 @@
 		                <td>{{assetmgt.asset_total | safe }}</td>
 		                <td>{{assetmgt.asset_utilized | safe }}</td>
 		                <td>{{assetmgt.asset_balance | safe }}</td>
+                        {% timezone "Asia/Calcutta" %}
 		                <td>{{assetmgt.creation_date}}</td>
+		                {% endtimezone %}
 	                </tr>
 	                {% endfor %}
 	                </tbody>					
