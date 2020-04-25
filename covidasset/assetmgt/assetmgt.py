@@ -269,10 +269,10 @@ def returnAssetMgtMultiForm(request):
                     inidict['asset_total'] = total
                     inidict['asset_utilized'] = utilized  
                     initopass.append(inidict)
-                    print(initopass)
+                    #print(initopass)
 
                 formset = AssetMgtFormset(initial=initopass)
-                print(dir(formset))
+                #print(dir(formset))
                 
                 return render(request, 'assetmgt/multiform.html', {
                     'formset':formset,'initdata':initopass,
@@ -352,21 +352,32 @@ def addMultipleAssetManagement(request):
             mess = ['<p>']
             if formset.is_valid():
                 print("Form is valid")
+                updateflag = False
         
                 for form in formset:
                     print(form)
                     
                     obj = form.save(commit=False)
                     if obj.asset_total:
-                        obj.author = request.user
-                        obj.asset_balance = obj.asset_total - obj.asset_utilized
-                        obj.save()
+                        if obj.asset_utilized <= obj.asset_total:
+                            obj.author = request.user
+                            obj.asset_balance = obj.asset_total - obj.asset_utilized 
+                            obj.save()
+                            updateflag = True
+                        else:
+                            mess.append("Utilization was given more then Total for Asset %s"\
+                                %obj.asset_id.asset_name)
+                    else:
+                        if obj.asset_utilized > 0:
+                            mess.append("Total Should be more then utilized Invalid input for %s"\
+                                %obj.asset_id.asset_name)
             else:
                 print(formset.errors)
                 print("Some Issue")
             
                 #messages.info(request,'Asset Added')
-            mess.append("Data has been Updated")
+            if updateflag:
+                mess.append("All Valid Inputs has been Updated")
             mess.append("</p>")
             mes = "</p><p>".join(mess)
             messages.info(request,mes)
