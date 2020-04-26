@@ -8,6 +8,8 @@ from .models import Hospital
 from .models import Asset
 
 from django.db import transaction
+from django.db.models.query import QuerySet
+from  django.db.utils import IntegrityError
 
 from django.views import View
 from django.http import JsonResponse
@@ -44,7 +46,7 @@ class AssetFileUploadView(View):
             af.save()
 
             #Get Hospital List based on User
-            userobj = request.user
+            userobj = request.user            
             if userobj.userprofile.adminstate == 0:
                 hosp = Hospital.objects.get(
                     hospital_id=userobj.userprofile.hospital_id.hospital_id
@@ -52,16 +54,22 @@ class AssetFileUploadView(View):
             elif userobj.userprofile.adminstate == 1:
                 hosp = Hospital.objects.filter(district_id=userobj.userprofile.district_id.district_id)
             else:
-                hosp = Hospital.objects.filter(state_id=userobj.userprofile.district_id.district_id)
+                hosp = Hospital.objects.filter(state_id=userobj.userprofile.state_id.state_id)
             
-            # AssetMgmt List Constructions and saved to database           
+            # AssetMgmt List Constructions and saved to database 
+                      
             try:
                 wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
                 sheet=wb.sheet_by_index(0)
                 with transaction.atomic():
                     for row in range(1,(sheet.nrows)):
-                        if sheet.cell_value(row,3)==0:
+                        #If total value is 0 Fields is Ommited
+                        balance = sheet.cell_value(row,3) - sheet.cell_value(row,4)                        
+                        if sheet.cell_value(row,3) == 0 :
                             continue
+                        elif balance < 0:
+                            raise Exception('Value Error for {}, Check Value of Assets'.format(sheet.cell_value(row,1)))
+                        
                         ad = AssetMgt()                
                         ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
                         hospitalCheck(ad.hospital_id.hospital_id,hosp)
@@ -74,8 +82,14 @@ class AssetFileUploadView(View):
                 messages.info(request,"File Uploaded Successfully")
                 url = reverse('assetmanagementview')
                 return HttpResponseRedirect(url)
-            except Exception as e:
-                messages.error(request,str(e))
+            except Exception as e:                
+                if isinstance(e, IntegrityError):
+                    messages.error(request,'Constrain violation, Check Value of Assets')
+                elif isinstance(e, ValueError):
+                    messages.error(request,'Value Error, Check Value of Assets')
+                else:
+                    messages.error(request,str(e))
+                
                 url = reverse('assetmanagementview')
                 return HttpResponseRedirect(url)           
         else:
@@ -101,14 +115,12 @@ def xlsGenerate(datavals,username):
         rows += 1
     #if settings.DEBUG:
     try:
-        if (sys.argv[1] == 'runserver'):
-            print("Running in Runserver")
+        if (sys.argv[1] == 'runserver'):            
             destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
         else:
             destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')
     except Exception as details:
-        destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')
-        print(details)
+        destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')        
     tmpfileName = os.path.join(destFolder,'tmp-%s.xls'%username)
     murl = "assetmgt/temp/tmp-%s.xls"%username
     wb.save(tmpfileName)
@@ -165,9 +177,12 @@ def hospitalCheck(hid, hospital):
     """
             ## Hospital Check 
     """
-    hids = [i.hospital_id for i in hospital]    
+    if isinstance(hospital,QuerySet):
+        hids = [i.hospital_id for i in hospital]
+    else:
+        hids = [hospital.hospital_id]    
     if hid not in hids:
-        raise Exception("Hospital Not Available for the User.")
+        raise Exception("Hospital ID {} - Not Available for the User.".format(hid))
 
         
 
