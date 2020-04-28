@@ -15,7 +15,7 @@ from .models import AssetFiles
 
 
 
-CATE = ((0,"Hospital Admin"),(1,"District Admin"),(2,"State Admin"))
+CATE = ((0,"Hospital Admin"),(1,"District Admin"))
 
 class LoginForm(forms.Form):
         username = forms.CharField(

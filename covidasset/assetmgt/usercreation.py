@@ -43,10 +43,19 @@ def register(request):
 
 
 		if form.is_valid() and profile_form.is_valid():
-			user = form.save()
+			
 
 			print("form is valid")
 			profile = profile_form.save(commit=False)
+			if not profile.adminstate:
+				print(profile.hospital_id)
+				if not profile.hospital_id:
+					messages.info(request,"Select The Hospital for Hospital Admin")
+					context = {'form' : form, 'profile_form':profile_form} 
+					return render(request,'assetmgt/adduser.html',context)
+
+			user = form.save()
+
 			profile.user = user 
 
 			profile.save()

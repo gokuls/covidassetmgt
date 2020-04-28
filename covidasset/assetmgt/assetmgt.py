@@ -179,7 +179,7 @@ def returnAssetShow(request):
                         itc = itc+4
                         if itc > totalc:
                             break
-                print(objdic)
+                #print(objdic)
                 returnstring = ''
                 for key,value in objdic.items():
                     mstring = '''
@@ -188,13 +188,13 @@ def returnAssetShow(request):
                     '''
                     substr = ''
                     for i in value:
-                        print(i)
+                        #print(i)
                         aname = i.asset_id.asset_name
                         aname = aname.split()
                         aname = "".join(aname)
-                        print(aname)
+                        #print(aname)
                         aimage = "static/assetmgt/images/icons/"+aname.lower()+"-b.svg"
-                        print(aimage)
+                        #print(aimage)
                         try:
                             ival = int( (i.asset_utilized/i.asset_total)*100 )
                         except :
@@ -213,7 +213,7 @@ def returnAssetShow(request):
                         <div class=" progress-bar {2}" style="width:{3}%"> 
                         {3}%</div></div> </span><h4 class="mb-2"> {0}</h4>
                         </div></div></div>'''.format(aname,aimage,cname,ival)
-                        print(tmpstr)
+                        #print(tmpstr)
                         substr = substr + tmpstr
                     mstring = mstring%substr
                     returnstring = returnstring+mstring
@@ -355,7 +355,7 @@ def addMultipleAssetManagement(request):
                 updateflag = False
         
                 for form in formset:
-                    print(form)
+                    #print(form)
                     
                     obj = form.save(commit=False)
                     if obj.asset_total:
@@ -372,7 +372,7 @@ def addMultipleAssetManagement(request):
                             mess.append("Total Should be more then utilized Invalid input for %s"\
                                 %obj.asset_id.asset_name)
             else:
-                print(formset.errors)
+                #print(formset.errors)
                 print("Some Issue")
             
                 #messages.info(request,'Asset Added')
@@ -461,7 +461,7 @@ def returnData(userobj):
             tmp.append(total)
             tmp.append(utilized)
             datatowrite.append(tmp)
-    print(datatowrite)
+    #print(datatowrite)
     return datatowrite
 
 
