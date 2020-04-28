@@ -32,6 +32,9 @@ def getStateNameById(request):
     try:
         state_id = int(state_id)
         state_name = State.objects.get(pk=request.user.userprofile.state_id.state_id).state_name
+        if '&' in state_name:
+            state_name = str(state_name).replace('&','')
+        state_name = state_name.strip(' ')
     except State.DoesNotExist as state_not_found:
         print("Exception state name not found for given state id",state_id)
 
