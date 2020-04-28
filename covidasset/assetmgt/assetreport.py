@@ -78,21 +78,19 @@ def generateReport(state_id,district_id,report_by,request):
         else:
             assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]        
 
-    #To-Do
-    #result for "by-assets"
     if report_by == "by-assets":
-            assetmgt = reportByAsset(request,state_id)        
+            assetmgt = reportByAsset(request,state_id,district_id)        
         
 
     """if userprofile.adminstate == 1:
         assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id, hospital_id__district_id=userprofile.district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]    
     elif userprofile.adminstate == 2:
         assetmgt = AssetMgt.objects.filter(hospital_id__state_id=userprofile.state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]"""
-    print("------------------------------------------------------------------------\n",assetmgt)
+    #print("------------------------------------------------------------------------\n",assetmgt)
     return assetmgt
 
 
-def reportByAsset(request,state_id):
+def reportByAsset(request,state_id,district_id):
 
     state_data = list()
     try:
@@ -101,16 +99,21 @@ def reportByAsset(request,state_id):
         #if "state" in request.GET:
         state = State.objects.get(state_id=state_id)
         districts = District.objects.filter(state_id=user.state_id)
-        if user.adminstate == 1:
+        """if user.adminstate == 1:
             districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)
 
         if user.adminstate == 0:
-            districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)
+            districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)"""
+        if district_id == "all":
+            districts = District.objects.filter(state_id=state_id)
+        else:
+            districts = District.objects.filter(state_id=state_id,district_id=district_id)
 
         assets = Asset.objects.all()#values_list("asset_name",flat=True)
         for district in districts:
             dist_dict = {}
-            district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id)
+            district_hospitals = Hospital.objects.filter(state_id=state_id,district_id=district.district_id)
+                
             if user.adminstate == 0:
                 district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id,hospital_id=user.hospital_id.hospital_id)
             
@@ -182,14 +185,8 @@ def reportByAsset(request,state_id):
     except Exception as er:
         print("Exception while getting data for district %s"%(str(er)))
 
-    print(state_data)
+    #print(state_data)
     return state_data
-
-
-
-
-
-
 
 
 class GetReport(View):
