@@ -19,7 +19,7 @@ let endpoints = {
 
 /*  end of configuration */
 
-let defaultZoom = 7;
+let defaultZoom = 8;
 
 let stateCenter = null;
 
@@ -33,13 +33,17 @@ let stateCenters = {
 
     Ladakh: [34.223132, 77.475905],
 
-    TamilNadu: [10.985378, 78.664046]
+    TamilNadu: [10.985378, 78.664046],
+
+    DamanDiu: [20.597270, 71.894826]
 };
 
+/*
 let stateBounds = [
     [14.314431, 81.331526],
     [8.063881, 76.314360]
 ];
+*/
 
 let isDistrictSelected = false;
 
@@ -309,7 +313,7 @@ function getGeoJson() {
 
         if (titleLayer) map.removeLayer(titleLayer);
 
-        map.fitBounds(stateBounds);
+        //map.fitBounds(stateBounds);
 
         geojson = L.geoJson(geoData, {
 
