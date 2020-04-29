@@ -58,6 +58,10 @@ urlpatterns = [
     path('changepassword', auth_views.PasswordChangeView.as_view(template_name='assetmgt/password_change.html',success_url = '/'),name='changepassword'),
 ]
 
+urlpatterns += [
+    path(r'captcha/', include('captcha.urls')),
+]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

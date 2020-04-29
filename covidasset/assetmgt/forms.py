@@ -12,6 +12,7 @@ from django.forms import Select
 from django.forms import PasswordInput
 
 from .models import AssetFiles
+from captcha.fields import CaptchaField
 
 
 
@@ -26,6 +27,7 @@ class LoginForm(forms.Form):
 				widget=forms.PasswordInput(
 					attrs={'class':'form-control','autocomplete':'off'}), 
 				help_text='Enter Password')
+        captcha = CaptchaField()
 
 
 
