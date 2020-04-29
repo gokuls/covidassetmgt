@@ -27,7 +27,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'assetfiles')
 SECRET_KEY = 'ikpkw0trzm7y1=gj7my-i((1h7-76_)p)99x@2en1wshcd&ode'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
