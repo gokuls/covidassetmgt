@@ -130,6 +130,7 @@ class AddHospital(LoginRequiredMixin,View):
                     h.doctors = nd
                     h.healthworkers = nhw
                     h.pincode = pin
+                    h.htype=htyp
                     h.save()
                     messages.info(request,hname+" details updated successfully")
                     print("hospital updated")

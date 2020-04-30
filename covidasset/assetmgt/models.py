@@ -74,7 +74,8 @@ class Asset(models.Model):
         return self.asset_name
 
 class HtypeAssetMapping(models.Model):
-	state 				= models.ForeignKey(Hospital,on_delete=models.CASCADE)
+	#state 				= models.ForeignKey(Hospital,on_delete=models.CASCADE)
+	state 				= models.ForeignKey(State,on_delete=models.CASCADE)
 	district 			= models.ForeignKey(District,on_delete=models.CASCADE)
 	htype 				= models.ForeignKey(HospitalType,on_delete=models.CASCADE)
 	assetsmapped 		= models.ForeignKey(Asset,on_delete=models.CASCADE)

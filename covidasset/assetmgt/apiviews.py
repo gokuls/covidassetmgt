@@ -1,13 +1,25 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.http import HttpResponse,JsonResponse,FileResponse
-from assetmgt.models import Hospital,Asset,State,District,AssetMgt,UserProfile
+from assetmgt.models import (Hospital,
+        Asset,
+        State,
+        District,
+        AssetMgt,
+        UserProfile,
+        HospitalType,
+        HospAssetMapping,
+        HtypeAssetMapping)
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib import messages
-from django.db.models import Sum,Count,Min,Max,Avg
+from django.db.models import (Sum,
+        Count,
+        Min,
+        Max,
+        Avg)
 from django.core import serializers
 import json
 
@@ -44,45 +56,74 @@ def getTotalCounts(request):
     
     total_counts = dict()
     h_total=0
-
+    htypeid = 0
     try:
         user = UserProfile.objects.get(user__username=request.user.username)
         #state = request.GET['state']
         print("users admin state",user.adminstate)
         h_total = 0
-        state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
-        if user.adminstate == 1:
-            state_hospitals = Hospital.objects.filter(district_id=user.district_id.district_id,state_id=user.state_id.state_id)
-            #h_total = Hospital.objects.filter(district_id=user.district_id).count()
-            h_total = state_hospitals.count()
-        elif user.adminstate == 0:
-            state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,district_id__district_name=user.district_id,hospital_id=user.hospital_id.hospital_id)
-            #h_total = state_hospitals.values('hospital_id').count()
-            h_total = state_hospitals.count()
-        else:
-            state_hospitals = Hospital.objects.filter(state_id=user.state_id)
-            h_total = state_hospitals.count()
-            #h_total = Hospital.objects.filter(state_id=user.state_id).count()
-            #h_toatal = state_hospitals.values('hospital_id').count()
+        if 'htypeid' in request.GET:
+            htypeid = int(request.GET['htypeid'])
+            print(htypeid)
 
-        #state_hospitals = Hospital.objects.filter(state_id__state_name=state)
-        #h_toatal = state_hospitals.values('hospital_id').count()
+        state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id)
+        #assets_list = Asset.objects.all()
+        assets_list = HtypeAssetMapping.objects.all().select_related('assetsmapped')
+        if htypeid:
+            htype = HospitalType.objects.get(htype_id=htypeid)
+            print("Hospital type",htype)
+            if user.adminstate == 1:
+                state_hospitals = Hospital.objects.filter(district_id=user.district_id.district_id,
+                        state_id=user.state_id.state_id,
+                        htype=htype)
+                h_total = state_hospitals.count()
+                assets_list = HtypeAssetMapping.objects.filter(state=user.state_id,district=user.district_id,
+                        htype=htype).select_related('assetsmapped')
+            elif user.adminstate == 0:
+                state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,
+                        district_id__district_name=user.district_id,
+                        hospital_id=user.hospital_id.hospital_id,
+                        htype=htype)
+                h_total = state_hospitals.count()
+                assets_list = HtypeAssetMapping.objects.filter(state=user.state_id,district=user.district_id,
+                        htype=htype).select_related('assetsmapped')
+            else:
+                state_hospitals = Hospital.objects.filter(state_id=user.state_id,
+                        htype=htype)
+                h_total = state_hospitals.count()
+                assets_list = HtypeAssetMapping.objects.filter(state=user.state_id,htype=htype).select_related('assetsmapped')
+                    
+        else:
+            if user.adminstate == 1:
+                state_hospitals = Hospital.objects.filter(district_id=user.district_id.district_id,
+                        state_id=user.state_id.state_id)
+                h_total = state_hospitals.count()
+            elif user.adminstate == 0:
+                state_hospitals = Hospital.objects.filter(state_id__state_name=user.state_id,
+                        district_id__district_name=user.district_id,
+                        hospital_id=user.hospital_id.hospital_id)
+                h_total = state_hospitals.count()
+            else:
+                state_hospitals = Hospital.objects.filter(state_id=user.state_id)
+                h_total = state_hospitals.count()
+
+
+
         print(state_hospitals)
         print("Total hospital under user %s is %d"%(user,h_total))
         total_counts["totalhospitals"] = h_total
-        assets_list = Asset.objects.all()#.values_list("asset_name",flat=True)
         print(assets_list)
         
         for asset in assets_list:
             asset_total = 0
             asset_utilized = 0
             asset_balance = 0
-            ast_name = asset.asset_name.split(" ")
+            ast_name = asset.assetsmapped.asset_name.split(" ")
             ast_name = "_".join(ast_name)
             asset_lower = ast_name.lower()
             for hospital in state_hospitals:
                 try:
-                    assetmgt_obj = AssetMgt.objects.filter(asset_id=asset,hospital_id=hospital,hospital_id__state_id__state_name=user.state_id).order_by('hospital_id','-creation_date').distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
+                    assetmgt_obj = AssetMgt.objects.filter(asset_id=asset.assetsmapped,hospital_id=hospital,hospital_id__state_id__state_name=user.state_id).order_by('hospital_id','-creation_date').distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
                     if assetmgt_obj.exists():
                         asset_total = asset_total+assetmgt_obj[0]['asset_total']
                         asset_utilized = asset_utilized+assetmgt_obj[0]['asset_utilized']
@@ -322,3 +363,11 @@ def getStateNew(request):
 
     print(state_data)
     return JsonResponse(state_data,safe=False)
+
+
+
+def getHospitalType(request):
+    '''To get all hospital '''
+    htypes = HospitalType.objects.all().values('htype_id','hospital_type')
+    htypes = list(htypes)
+    return JsonResponse(htypes,safe=False)
