@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.http import HttpResponse,JsonResponse,FileResponse
-from assetmgt.models import Hospital,Asset,State,District,AssetMgt,UserProfile
+
 from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
 #from assetmgt.hospitalforms import HospitalForm
@@ -14,6 +14,8 @@ import os
 import csv
 from django.core.files.storage import FileSystemStorage
 
+from assetmgt.models import Hospital,Asset,State,District,AssetMgt,UserProfile
+from assetmgt.models import HospitalType
 
 DATA_CSV_HEADER = [ "District","Hospital_Name","Hospital_Type(Government/Private)","FullAddress","City","Taluk","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealthWorkers" ]
 
@@ -28,11 +30,13 @@ class AddHospitalTemplate(LoginRequiredMixin,View):
             usr = UserProfile.objects.get(user__username=request.user.username)
             states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
             context_dict['usr'] = usr
+            htypes = HospitalType.objects.all()
         except UserProfile.DoesNotExist as usr_profile_not_found:
             print("exception while checking user profile %s"%(usr_profile_not_found))
             states = State.objects.all()#To do to query the State respect to the user permission
         #assets = Asset.objects.all()
         context_dict['states'] = states
+        context_dict['htype'] = htypes
         return render(request,'assetmgt/add_hospital.html',context=context_dict)
 
 
@@ -68,19 +72,29 @@ class AddHospital(LoginRequiredMixin,View):
         try:
             usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
             states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
+            htypes = HospitalType.objects.all()
         except UserProfile.DoesNotExist as e:
             print("exception while add hospital %s"%(str(e)))
             states = State.objects.all()
 
         try:
             #To do get user's distict,state ids 
+            htv = request.POST['htype']
+            try:
+                htobj = HospitalType.objects.get(htype_id=int(htv))
+                ht = htobj.hospital_type
+                htyp = htobj
+            except Exception as details:
+                ht = htv
+                htyp = htv
+
             stid = int(request.POST['state'])  
             did = int(request.POST['district'])
             tk = request.POST['taluk']
             city = request.POST['city']
             addr = request.POST['haddress']
             pin = request.POST['hpin']
-            ht = request.POST['htype']
+            #ht = request.POST['htype']
             nd = int(request.POST['ndoc'])
             nhw = int(request.POST['nhw'])
             hcontact = request.POST['hcontact']
@@ -91,10 +105,18 @@ class AddHospital(LoginRequiredMixin,View):
             d = District.objects.get(district_id=did)
             if opt == 0:
                 with transaction.atomic():
-                    hospital_obj = Hospital.objects.create(state_id=s,district_id=d,hospital_name=hname,hospital_type=ht,city=city,taluk=tk,address=addr,contact_number=hcontact,pincode=pin,doctors=nd,healthworkers=nhw)
+                    hospital_obj = Hospital.objects.create(
+                        state_id=s,district_id=d,hospital_name=hname,
+                        hospital_type=ht,city=city,taluk=tk,address=addr,
+                        contact_number=hcontact,pincode=pin,doctors=nd,
+                        healthworkers=nhw,htype=htyp)
                     messages.info(request,hname+" added successfully") 
-                    for asset in assets:
-                        AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0)
+                    # for asset in assets:
+                    #     AssetMgt.objects.create(asset_id=asset,
+                    #         hospital_id=hospital_obj,
+                    #         author=usr.user,
+                    #         asset_total=0,asset_utilized=0,
+                    #         asset_balance=0)
             else:
                 with transaction.atomic():
                     hid = int(request.POST['hid'])
@@ -115,8 +137,11 @@ class AddHospital(LoginRequiredMixin,View):
         except Exception as add_h_err:
             print("exception in adding single hospital %s"%(str(add_h_err)))
             messages.error(request,hname+" not added")
-
-        return render(request,'assetmgt/add_hospital.html',{'states':states,'usr':usr})
+        print("Printing htype ")
+        print(htypes)
+        return render(request,'assetmgt/add_hospital.html',
+            {'states':states,'usr':usr,'htype':htypes
+            })
 
 
 class GetHospitalSample(View):

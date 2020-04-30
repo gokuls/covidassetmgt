@@ -34,12 +34,21 @@ class District(models.Model):
         return self.district_name
 
 
+class HospitalType(models.Model):
+    htype_id			= models.BigAutoField(primary_key=True)
+    hospital_type		= models.CharField(max_length=250,unique=True)
+    creation_date 		= models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.hospital_type
+
 class Hospital(models.Model):
 	hospital_id				= models.BigAutoField(primary_key=True)
 	state_id 	 			= models.ForeignKey(State,on_delete=models.CASCADE)
 	district_id 			= models.ForeignKey(District,on_delete=models.CASCADE)
 	hospital_name			= models.CharField(max_length=250,blank=True,null=True)
-	hospital_type			= models.CharField(max_length=250)
+	hospital_type			= models.CharField(max_length=250,blank=True,null=True)
+	htype 					= models.ForeignKey(HospitalType,models.SET_NULL,blank=True,null=True)
 	address 				= models.CharField(max_length=250,blank=True,null=True)
 	contact_number			= models.CharField(max_length=250,blank=True,null=True)
 	city					= models.CharField(max_length=250,blank=True,null=True)
@@ -64,7 +73,23 @@ class Asset(models.Model):
     def __str__(self):
         return self.asset_name
 
+class HtypeAssetMapping(models.Model):
+	state 				= models.ForeignKey(Hospital,on_delete=models.CASCADE)
+	district 			= models.ForeignKey(District,on_delete=models.CASCADE)
+	htype 				= models.ForeignKey(HospitalType,on_delete=models.CASCADE)
+	assetsmapped 		= models.ForeignKey(Asset,on_delete=models.CASCADE)
+	creation_date 		= models.DateTimeField(auto_now_add=True)
 
+	def __str__(self):
+		return "%s-%s"%(self.htype.hospital_type,self.assetsmapped.asset_name)
+
+class HospAssetMapping(models.Model):
+	hospital 			= models.ForeignKey(Hospital,on_delete=models.CASCADE)
+	assetsmapped 		= models.ForeignKey(Asset,on_delete=models.CASCADE)
+	creation_date 		= models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return "%s-%s"%(self.hospital.hospital_name,self.assetsmapped.asset_name)
 
 class AssetMgt(models.Model):
 	asset_id 			= models.ForeignKey(Asset,on_delete=models.CASCADE)

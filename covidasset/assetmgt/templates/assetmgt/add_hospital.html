@@ -101,8 +101,11 @@
 					    <label for="htype" class="col-sm-3 col-form-label">Hospital Type</label>
 					    <div class="col-sm-9">
 					        <select id="htype" name="htype" class="form-control">
-						        <option value="Government">Government</option>
-						        <option value="Private">Private</option>
+					        	{% for ht in htype %}
+						        <option value="{{ ht.htype_id }}">
+						        {{ ht.hospital_type }}
+						        </option>
+					        	{% endfor %}
     					    </select>
     					</div>
 					</div>
