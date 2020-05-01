@@ -6,15 +6,12 @@ from .models import Asset
 from .models import State
 from .models import District
 from .models import Hospital
-<<<<<<< HEAD
 from .models import ( AssetMgt ,
                     HospitalType  ,
                     HtypeAssetMapping,
                     HospAssetMapping  )
-=======
+
 from .models import AssetMgt
-from .models import HospAssetMapping
->>>>>>> 594eca562a3405146f158e6ec1057991426b75ca
 
 from .forms import ExtendedUserCreationForm
 from .forms import UserProfileForm
