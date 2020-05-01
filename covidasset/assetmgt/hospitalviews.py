@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.http import HttpResponse,JsonResponse,FileResponse
+from django.http import StreamingHttpResponse
 
 from django.views.generic import View,TemplateView,ListView
 from django.views.decorators.csrf import csrf_exempt
@@ -9,9 +10,12 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.conf import settings
+from django.conf import settings 
 import os
+import sys
 import csv
+import xlrd
+import xlwt
 from django.core.files.storage import FileSystemStorage
 
 from assetmgt.models import (Hospital,
@@ -24,9 +28,10 @@ from assetmgt.models import (Hospital,
         HtypeAssetMapping,
         HospAssetMapping)
 
+htypes_header = HospitalType.objects.all().values_list('hospital_type',flat=True)
 DATA_CSV_HEADER = [ "District",
         "Hospital_Name",
-        "Hospital_Type(Government/Private)",
+        "Hospital_Type("+'/'.join(htypes_header)+")",
         "FullAddress",
         "City",
         "Taluk",
@@ -214,7 +219,9 @@ class GetHospitalSample(View):
         response["Accept-Ranges"] = "bytes"
         response["Content-Length"] = statobj.st_size
         response['Content-Disposition'] = 'attachment; filename=%s'%(os.path.basename(sample_file))
+        #response['Content-Disposition'] = 'attachment; filename=hospital_uploadtemplate.xls'
         return response
+        
         
 
 
@@ -427,4 +434,58 @@ class IndexPage(LoginRequiredMixin,View):
         context = {'user':user}
         return render(request,'assetmgt/index-new-1.html',context)
 
+
+#==================== K. Karthikeyan =====================================
+def hospitalxlsGenerate(request):
+    htypes = HospitalType.objects.all().values_list('hospital_type',flat=True)
+    user = UserProfile.objects.get(user__username=request.user.username)
+    
+    wb = xlwt.Workbook() # create empty workbook object
+    newsheet = wb.add_sheet('hospital_template') # sheet name can not be longer than 32 characters    
+    newsheet.write(0,0,'District') 
+    newsheet.write(0,1,'Hospital_Name')
+    newsheet.write(0,2,'Hospital_Type\n('+'/'.join(htypes)+')')
+    newsheet.write(0,3,'Full Address')
+    newsheet.write(0,4,'City')
+    newsheet.write(0,5,'Taluk')
+    newsheet.write(0,6,'Pincode')
+    newsheet.write(0,7,'Contact_Number')
+    newsheet.write(0,8,'latitude')
+    newsheet.write(0,9,'longitude')    
+    
+    if user.adminstate == 2:
+        dists = District.objects.filter(state_id=user.state_id).values_list("district_name",flat=True)
+        i = 1
+        for dist in dists:
+            newsheet.write(i,0,dist)
+            i+=1
+
+    if user.adminstate == 1:
+        dist = user.district_id.district_name 
+        newsheet.write(1,0,dist)
+    
+    i = 1
+    for htype in htypes:
+        newsheet.write(i,2,htype)
+        i+=1
+  
+    #if settings.DEBUG:
+    try:
+        if (sys.argv[1] == 'runserver'):            
+            destFolder = os.path.join(settings.BASE_DIR,'assetmgt/static/assetmgt/temp')
+        else:
+            destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')
+    except Exception as details:
+        destFolder = os.path.join(settings.BASE_DIR,'static/assetmgt/temp')        
+    tmpfileName = os.path.join(destFolder,"hospital_uploadtemplate.xls")
+    #murl = "assetmgt/temp/hospital_uploadtemplate.xls"
+    wb.save(tmpfileName)
+    #return murl
+
+    response = FileResponse(open(tmpfileName,"rb"))
+    #response = HttpResponse(mimetype='application/force-download')
+    #response["Accept-Ranges"] = "bytes"
+    #response["Content-Length"] = statobj.st_size
+    response['Content-Disposition'] = 'attachment; filename=%s'%(os.path.basename(tmpfileName))
+    return response
 
