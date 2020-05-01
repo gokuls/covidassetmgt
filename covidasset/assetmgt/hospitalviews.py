@@ -14,10 +14,26 @@ import os
 import csv
 from django.core.files.storage import FileSystemStorage
 
-from assetmgt.models import Hospital,Asset,State,District,AssetMgt,UserProfile
-from assetmgt.models import HospitalType
+from assetmgt.models import (Hospital,
+        Asset,
+        State,
+        District,
+        AssetMgt,
+        UserProfile,
+        HospitalType,
+        HtypeAssetMapping,
+        HospAssetMapping)
 
-DATA_CSV_HEADER = [ "District","Hospital_Name","Hospital_Type(Government/Private)","FullAddress","City","Taluk","PINCODE","Phone_Number(with STD-code)","Total_Doctors","Total_HealthWorkers" ]
+DATA_CSV_HEADER = [ "District",
+        "Hospital_Name",
+        "Hospital_Type(Government/Private)",
+        "FullAddress",
+        "City",
+        "Taluk",
+        "PINCODE",
+        "Phone_Number(with STD-code)",
+        "Total_Doctors",
+        "Total_HealthWorkers" ]
 
 class AddHospitalTemplate(LoginRequiredMixin,View):
     '''To render a templet to get hospital Information Invidually '''
@@ -112,6 +128,10 @@ class AddHospital(LoginRequiredMixin,View):
                         hospital_type=ht,city=city,taluk=tk,address=addr,
                         contact_number=hcontact,pincode=pin,doctors=nd,
                         healthworkers=nhw,htype=htyp)
+                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                    for htype_asset in htype_mapping_obj:
+                        HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
+ 
                     messages.info(request,hname+" added successfully") 
                     # for asset in assets:
                     #     AssetMgt.objects.create(asset_id=asset,
@@ -134,6 +154,10 @@ class AddHospital(LoginRequiredMixin,View):
                     h.pincode = pin
                     h.htype=htyp
                     h.save()
+                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                    for htype_asset in htype_mapping_obj:
+                        HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
+ 
                     messages.info(request,hname+" details updated successfully")
                     print("hospital updated")
 
@@ -280,8 +304,11 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     healthworkers=int(row[DATA_CSV_HEADER[9]]),
                                     htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                     )
-                            for asset in assets:
-                                AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
+                            htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                            for htype_asset in htype_mapping_obj:
+                                HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
+                            for asset in htype_mapping_obj:
+                                AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                             messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
                     except District.DoesNotExist as district_nod_found:
                         messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
@@ -324,8 +351,12 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 healthworkers=int(row[DATA_CSV_HEADER[9]]),
                                 htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                 )
-                        for asset in assets:
-                            AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
+                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                        for htype_asset in htype_mapping_obj:
+                            HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
+
+                        for asset in htype_mapping_obj:
+                            AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                         messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
 
         except Exception as er3:
