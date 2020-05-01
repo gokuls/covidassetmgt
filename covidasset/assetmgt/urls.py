@@ -29,6 +29,7 @@ urlpatterns = [
         path('getstatedata',apicall.getStateNew,name='getstatedata'),
         path('getdistrictdata',apicall.getHospitalsByDistrict,name='getdistrictdata'),
         path('getstatenamebyid',apicall.getStateNameById,name='getstatenamebyid'),
+        path('gethospitaltype',apicall.getHospitalType,name='gethospitaltype'),
         ]
 
 if settings.DEBUG:
