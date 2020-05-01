@@ -178,7 +178,7 @@ def returnAssetsH(request):
     context = dict()
     htype = request.GET['ht']
     hobj = Hospital.objects.get(hospital_id=int(htype))
-    exisa =HospAssetMapping.objects.filter(
+    exisa = HospAssetMapping.objects.filter(
         hospital=hobj)
     assetsmappeda = exisa.values_list('assetsmapped',flat=True)
     context['vals'] = Asset.objects.exclude(asset_id__in=assetsmappeda)

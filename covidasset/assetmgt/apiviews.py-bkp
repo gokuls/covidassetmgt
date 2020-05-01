@@ -50,60 +50,9 @@ def getStateNameById(request):
     except State.DoesNotExist as state_not_found:
         print("Exception state name not found for given state id",state_id)
 
-    return JsonResponse({"stateName":state_name}) 
+    return JsonResponse({"stateName":state_name})   
 
-def getTotalCounts(request):  
-    try:
-        pass
-        rdata = dict()
-        
-        user = request.user 
-        if user.userprofile.adminstate == 0:
-            rdata['totalhospitals'] = 1
-            hospitals = Hospital.objects.filter(
-                hospital_id=user.userprofile.hospital_id.hospital_id)
-        elif user.userprofile.adminstate == 1:
-            hospitals = Hospital.objects.filter(
-                district_id=user.userprofile.district_id)
-            rdata['totalhospitals']= hospitals.count()
-        else:
-            hospitals = Hospital.objects.filter(
-                state_id=user.userprofile.state_id)
-            rdata['totalhospitals']= hospitals.count()
-
-        bedast = Asset.objects.get(asset_name='Bed')
-        venast = Asset.objects.get(asset_name='ventilator')
-        rdata['patientsadmitted'] = 0
-        rdata['availablebed'] = 0
-        rdata['availableventilator'] = 0
-
-        for h in hospitals:
-            try:
-                ast = AssetMgt.objects.filter(hospital_id=h,asset_id=bedast).last()
-                if ast:
-                    rdata['patientsadmitted'] += ast.asset_utilized
-                    rdata['availablebed'] += ast.asset_balance
-            except Exception as details:
-                print(details)
-                pass
-            try:
-                vst = AssetMgt.objects.filter(hospital_id=h,asset_id=venast).last()
-                if vst:
-                    rdata['availableventilator'] += vst.asset_balance
-            except Exception:
-                pass
-
-
-
-
-        return JsonResponse(rdata)
-    except Exception as details:
-        print(details)
-        data = dict()
-        data['value'] = 0
-        return JsonResponse(data)
-
-def getTotalCounts2(request):
+def getTotalCounts(request):
     
     total_counts = dict()
     h_total=0

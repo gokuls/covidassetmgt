@@ -10,7 +10,7 @@ from assetmgt import assetreport
 from .views import AssetFileUploadView
 from django.conf import settings
 from django.conf.urls.static import static
-from assetmgt import apiviews as apicall
+from assetmgt import apiviewsv2 as apicall
 
 urlpatterns = [
         path('addhospitaltemp',AddHospitalTemplate.as_view(),name='addhospitaltemp'),

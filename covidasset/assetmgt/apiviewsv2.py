@@ -376,9 +376,148 @@ def getHospitalsByDistrict(request):
     return JsonResponse(district_data,safe=False) 
 
 
+def getStateNew(request):
+    try:
+        pass
+        user = request.user
+        if user.userprofile.adminstate == 2:
+            districts = District.objects.filter(state_id=user.userprofile.state_id).iterator()
+        else:
+            districts = District.objects.filter(district_id=user.userprofile.district_id.district_id).iterator()
+
+        returndata = []
+        for dis in districts:
+            distdict = dict()
+            distdict['district'] = dis.district_name
+            hospitals = Hospital.objects.filter(district_id=dis).iterator()
+            if not hospitals:
+                distdict['status'] = 0
+                distdict['info'] = 0
+                distdict['assets'] = 0
+            else:
+                distdict['status'] = {
+                'totalhospital' : 0,
+                'availablebed' :0,
+                'patientsadmitted' : 0,
+                'availableventilator' : 0
+                }
+
+                distdict['info'] = {
+                'healthcentres' : 0,
+                'patients':0,
+                'freebeds' : 0
+                }
+                distdict['assets'] = dict()
+
+                bedast = Asset.objects.get(asset_name='Bed')
+                venast = Asset.objects.get(asset_name='ventilator')
+                for hosps in hospitals:
+                    distdict['status']['totalhospital'] += 1
+                    assetsmapped = HospAssetMapping.objects.filter(
+                                    hospital=hosps).exclude(
+                                    assetsmapped__in=[bedast,venast]
+                                    ).distinct('assetsmapped').values_list(
+                                    'assetsmapped',flat=True).iterator()
+                    print("printing Assets Mapped")
+                    #print(assetsmapped)
+
+                    if assetsmapped:
+
+                        try:
+                            ast = AssetMgt.objects.filter(hospital_id=hosps,asset_id=bedast).last()
+                            if ast:
+                                distdict['status']['patientsadmitted'] += ast.asset_utilized 
+                                distdict['status']['availablebed'] += ast.asset_balance
+                                if 'bed' not in distdict['assets']:
+                                    distdict['assets']['bed'] = {
+                                    'occupied':0,
+                                    'free' : 0,
+                                    'total':0,
+                                    'unusable':0
+                                    }
+                                distdict['assets']['bed']['occupied'] = distdict['status']['patientsadmitted']
+                                distdict['assets']['bed']['free'] = distdict['status']['availablebed']
+                                distdict['assets']['bed']['total'] += ast.asset_total
+                                distdict['assets']['bed']['unusable']  = 0
+
+                        except Exception as details:
+                            #print("in adding bed")
+                            #print(details)
+                            pass
+
+                        try:
+                            vst = AssetMgt.objects.filter(hospital_id=hosps,asset_id=venast).last()
+                            if vst:
+                                distdict['status']['availableventilator'] += vst.asset_balance
+                                if 'ventilator' not in distdict['assets']:
+                                    distdict['assets']['ventilator'] = {
+                                    'occupied':0,
+                                    'free' : 0,
+                                    'total':0,
+                                    'unusable':0
+                                    }
+                                distdict['assets']['ventilator']['occupied'] = vst.asset_utilized
+                                distdict['assets']['ventilator']['free'] = distdict['status']['availableventilator']
+                                distdict['assets']['ventilator']['total'] += vst.asset_total
+                                distdict['assets']['ventilator']['unusable']  = 0
+                        except Exception as details:
+                            print(details)
+                            pass
+
+                        for asts in assetsmapped:
+                            #print(asts)
+                            try:
+                                #print("For all assets")
+                                #print(hosps)
+                                #print(asts)
+                                #atd = Asset.objects.get(asset_id=asts)
+                                astsobj = AssetMgt.objects.filter(
+                                    hospital_id=hosps,asset_id=asts).last()
+                                #print(astsobj)
+
+                                if astsobj:
+                                    assetname = astsobj.asset_id.asset_name
+                                    assetname = assetname.lower()
+                                    assetname = assetname.replace(" ","-")
+                                    if assetname not in distdict['assets']:
+                                        distdict['assets'][assetname] = {
+                                            'occupied':0,
+                                            'free' : 0,
+                                            'total':0,
+                                            'unusable':0
+                                            }
+
+                                    distdict['assets'][assetname]['occupied'] += astsobj.asset_utilized
+                                    distdict['assets'][assetname]['free'] += astsobj.asset_balance
+                                    distdict['assets'][assetname]['total'] += astsobj.asset_total
+                                    distdict['assets'][assetname]['unusable'] =0
+
+                            except Exception as details:
+                                print(details)
+                                pass
+
+                distdict['info']['healthcentres'] = distdict['status']['totalhospital']
+                distdict['info']['patients'] = distdict['status']['patientsadmitted']
+                distdict['info']['freebeds'] = distdict['status']['availablebed']
+
+            returndata.append(distdict)
+
+        return JsonResponse(returndata,safe=False)
+
+
+
+
+
+
+
+    except Exception as details:
+        print(details)
+        data = dict()
+        data['values'] = 0
+        return JsonResponse(data)
  
 
-def getStateNew(request):
+def getStateNew2(request):
 
     state_data = list()
     htypeid = 0
@@ -412,7 +551,9 @@ def getStateNew(request):
                 district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id,htype=htype)
 
             if user.adminstate == 0:
-                district_hospitals = district_hospitals.filter(state_id=district.state_id,district_id=district.district_id,hospital_id=user.hospital_id.hospital_id)
+                district_hospitals = district_hospitals.filter(
+                    state_id=district.state_id,district_id=district.district_id,
+                    hospital_id=user.hospital_id.hospital_id)
             
             h_count = district_hospitals.count()
 
