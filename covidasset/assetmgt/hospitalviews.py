@@ -132,6 +132,7 @@ class AddHospital(LoginRequiredMixin,View):
                     h.doctors = nd
                     h.healthworkers = nhw
                     h.pincode = pin
+                    h.htype=htyp
                     h.save()
                     messages.info(request,hname+" details updated successfully")
                     print("hospital updated")
@@ -158,6 +159,8 @@ class GetHospitalSample(View):
         #assets_list = Asset.objects.all().values_list('asset_name',flat=True)
         #asset_names = list(map(lambda x: "Total_"+x+"_available",assets_list))
         adminstate = usr.adminstate
+        htypes = HospitalType.objects.all().values_list('hospital_type',flat=True)
+        sample_data = [' ',' ',' ',' ',' ',' ',' ',' ',' '] 
         global DATA_CSV_HEADER
         if adminstate == 1:
             title_row = DATA_CSV_HEADER[1:]
@@ -171,6 +174,16 @@ class GetHospitalSample(View):
         print(title_row)
         sample_csv = open(sample_file,"w")
         sample_csv.write(",".join(title_row))
+        if adminstate == 2:
+            districts = District.objects.filter(state_id=usr.state_id).values_list('district_name',flat=True)
+            for district in districts:
+                sample_data[0]=district
+                sample_data[2]='/'.join(htypes)
+                sample_csv.write("\n"+",".join(sample_data))
+        else:
+            sample_data[2]= '/'.join(htypes)
+            sample_csv.write("\n"+",".join(sample_data))
+
         sample_csv.close()
         response = FileResponse(open(sample_file,"rb"))
         #response = HttpResponse(mimetype='application/force-download')
@@ -183,8 +196,9 @@ class GetHospitalSample(View):
 
 class AddMultipleHospital(LoginRequiredMixin,View):
     login_url = 'login'
+
     def validate_values(self,values_dict):
-        if values_dict[DATA_CSV_HEADER[1]].isspace() or values_dict[DATA_CSV_HEADER[2]].isspace or values_dict[DATA_CSV_HEADER[3]].isspace() or values_dict[DATA_CSV_HEADER[4]].isspace() or values_dict[DATA_CSV_HEADER[5]].isspace() or values_dict[DATA_CSV_HEADER[6]].isspace() or values_dict[DATA_CSV_HEADER[7]].isspace() or values_dict[DATA_CSV_HEADER[8]].isalpha() or values_dict[DATA_CSV_HEADER[9]].isspace() or values_dict[DATA_CSV_HEADER[9]].isalpha():
+        if values_dict[DATA_CSV_HEADER[1]].isspace() or values_dict[DATA_CSV_HEADER[3]].isspace() or values_dict[DATA_CSV_HEADER[4]].isspace() or values_dict[DATA_CSV_HEADER[5]].isspace() or values_dict[DATA_CSV_HEADER[6]].isspace() or values_dict[DATA_CSV_HEADER[7]].isspace() or values_dict[DATA_CSV_HEADER[8]].isalpha() or values_dict[DATA_CSV_HEADER[9]].isspace() or values_dict[DATA_CSV_HEADER[9]].isalpha():
             return False
         else:
             return True
@@ -210,9 +224,9 @@ class AddMultipleHospital(LoginRequiredMixin,View):
             fs = FileSystemStorage()
             filename = fs.save(myfile.name, myfile)
             uploaded_file_url = fs.url(filename)
-            print("File save in "+str(uploaded_file_url))
+            #print("File save in "+str(uploaded_file_url))
             file_path = os.path.join(settings.MEDIA_ROOT,filename)
-            print("File path is "+file_path)
+            #print("File path is "+file_path)
             global DATA_CSV_HEADER
             #if os.path.isfile(file_path) and os.path.exists(file_path)
             if usr.adminstate == 2:
@@ -221,10 +235,10 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                 field_name_list = DATA_CSV_HEADER[1:]
 
             data = csv.DictReader(open(file_path),fieldnames=field_name_list)
-            print("Data-----",dir(data))
-            print("number of lines ",data.line_num)
+            #print("Data-----",dir(data))
+            #print("number of lines ",data.line_num)
             for row in data:
-                print("Row->",row)
+                #print("Row->",row)
                 header = ','.join(row.values())
                 field_count = len(row.values())
                 
@@ -232,23 +246,29 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                     messages.error(request,"Some data could be missed  in record about "+"-".join(row.values()))
                     continue
                 dheader = ','.join(DATA_CSV_HEADER)
-                print(header)
-                print(dheader)
+                #print(header)
+                #print(dheader)
                 if usr.adminstate == 2:
-                    print(usr.adminstate)
+                    #print(usr.adminstate)
                     try:
                         if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
                             messages.error(request,"Hospital data already exists "+",".join(row.values()))
                             continue
+
                         if not self.validate_values(row):
                             messages.error(request,"Hospital data may have invalid format "+",".join(row.values()))
                             continue
 
-                        district_obj = District.objects.get(district_name=row[DATA_CSV_HEADER[0]])
+                        if not self.validate_hospital_type(row[DATA_CSV_HEADER[2]]):
+                            messages.error(request,"Invalid Hospital type "+",".join(row.values()))
+                            continue
+
+                        districtname = row[DATA_CSV_HEADER[0]]
+
                         with transaction.atomic():
                             hospital_obj = Hospital.objects.create(
                                     state_id=state_obj,
-                                    district_id=district_obj,
+                                    district_id=District.objects.get(district_name=districtname),
                                     hospital_name=row[DATA_CSV_HEADER[1]],
                                     hospital_type=row[DATA_CSV_HEADER[2]],
                                     city=row[DATA_CSV_HEADER[4]],
@@ -257,33 +277,37 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     contact_number=row[DATA_CSV_HEADER[7]],
                                     pincode=row[DATA_CSV_HEADER[6]],
                                     doctors=int(row[DATA_CSV_HEADER[8]]),
-                                    healthworkers=int(row[DATA_CSV_HEADER[9]])
+                                    healthworkers=int(row[DATA_CSV_HEADER[9]]),
+                                    htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                     )
                             for asset in assets:
                                 AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                             messages.info(request,hospital_obj.hospital_name+" Hospital Added successfully")
                     except District.DoesNotExist as district_nod_found:
                         messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
+                        continue
+
                     except ValueError as ver:
                         messages.error(request,"Uploaded file having invalid data for numerical values as \n "+",".join(row.values()))
-                    except Exception as er2:
-                        print(er2)
-                        messages.error(request,"Uploaded file having invalid data "+",".join(row.values()))
                         continue
 
                 else:
                     dheader = ','.join(DATA_CSV_HEADER[1:])
                     if header == dheader:
                         continue
+
                     if not self.validate_hospital_data(row[DATA_CSV_HEADER[1]],row[DATA_CSV_HEADER[7]],row[DATA_CSV_HEADER[6]]):
                         messages.error(request,"Hospital data already exists "+",".join(row.values()))
-                        continue
-                    
-                    if not self.validate_values(row):
-                            print(row)
-                            messages.error(request,"Hospital data may have invalid format "+",".join(row.values()))
-                            continue
+                        continue                    
 
+                    if not self.validate_values(row):
+                        print(row)
+                        messages.error(request,"Hospital data may have invalid format "+",".join(row.values()))
+                        continue
+                            
+                    if not self.validate_hospital_type(row[DATA_CSV_HEADER[2]]):
+                        messages.error(request,"Invalid Hospital type "+",".join(row.values()))
+                        continue
 
                     with transaction.atomic():
                         hospital_obj = Hospital.objects.create(
@@ -297,7 +321,8 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 contact_number=row[DATA_CSV_HEADER[7]],
                                 pincode=row[DATA_CSV_HEADER[6]],
                                 doctors=int(row[DATA_CSV_HEADER[8]]),
-                                healthworkers=int(row[DATA_CSV_HEADER[9]])
+                                healthworkers=int(row[DATA_CSV_HEADER[9]]),
+                                htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                 )
                         for asset in assets:
                             AssetMgt.objects.create(asset_id=asset,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
@@ -318,8 +343,26 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                     return False
                 
         except Hospital.DoesNotExist as er:
-            print(er)
+            print("*********",er)
             return True
+        except Exception as ser:
+            print("===============",ser)
+            return False
+
+    def validate_hospital_type(self,htype):
+        '''To validate validate hospital type '''
+        try:
+            ht = HospitalType.objects.get(hospital_type=htype)
+            if ht:
+                return True
+        except HospitalType.DoesNotExist as invalid:
+            print(invalid)
+            return False
+
+        except Exception as er:
+            print(er)
+            return False
+
 
 
 

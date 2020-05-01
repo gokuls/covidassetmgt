@@ -6,10 +6,15 @@ from .models import Asset
 from .models import State
 from .models import District
 from .models import Hospital
+<<<<<<< HEAD
 from .models import ( AssetMgt ,
                     HospitalType  ,
                     HtypeAssetMapping,
                     HospAssetMapping  )
+=======
+from .models import AssetMgt
+from .models import HospAssetMapping
+>>>>>>> 594eca562a3405146f158e6ec1057991426b75ca
 
 from .forms import ExtendedUserCreationForm
 from .forms import UserProfileForm
@@ -490,7 +495,7 @@ def returnData(userobj):
     '''
     # userobj = request.user
     datatowrite = []
-    assetobj = Asset.objects.all()
+    #assetobj = Asset.objects.all()
     hids = []
 
     if userobj.userprofile.adminstate == 0:
@@ -503,6 +508,7 @@ def returnData(userobj):
         hosp = Hospital.objects.filter(state_id=user.userprofile.district_id.district_id)
     
     for i in hosp:
+        assetobj=HospAssetMapping.objects.filter(hospital=i).values('assetsmapped')
         for a in assetobj:
             tmp = []
             tmp.append(i.hospital_id)
@@ -529,7 +535,7 @@ def AssetManagementView(request):
 
         datatowrite = []
         userobj = user
-        assetobj = Asset.objects.all()
+        #assetobj = Asset.objects.all()
         hids = []
         #print(request.user)
         #print(request.user.userprofile.adminstate)
@@ -545,13 +551,14 @@ def AssetManagementView(request):
             hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
         
         for i in hosp:
+            assetobj=HospAssetMapping.objects.filter(hospital=i)
             for a in assetobj:
                 tmp = []
                 tmp.append(i.hospital_id)
                 tmp.append(i.hospital_name)
-                tmp.append(a.asset_name)
+                tmp.append(a.assetsmapped.asset_name)
                 try:
-                    objast = AssetMgt.objects.filter(hospital_id=i,asset_id=a).last()
+                    objast = AssetMgt.objects.filter(hospital_id=i,asset_id=a.assetsmapped).last()
                     total = objast.asset_total
                     utilized = objast.asset_utilized
                 except:
