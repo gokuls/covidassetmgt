@@ -138,7 +138,10 @@ def returnhtypeMappingForm(request):
     else:
         user = request.user
         context = dict()
-        hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+        if user.userprofile.adminstate ==2:
+            hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
+        else:
+            hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
         context['hosp'] = hosp
         return render(request,'assetmgt/hospitalmapping.html',context)
 
@@ -150,9 +153,16 @@ def returnAssetsHt(request):
     htype = request.GET['ht']
     htypeobj = HospitalType.objects.get(htype_id=int(htype))
 
-    exisa = HtypeAssetMapping.objects.filter(
+    if request.user.userprofile.adminstate ==2:
+        exisa = HtypeAssetMapping.objects.filter(
+        state=request.user.userprofile.state_id,
+        htype=htypeobj).distinct('assetsmapped')
+
+    else:
+        exisa = HtypeAssetMapping.objects.filter(
         district=request.user.userprofile.district_id,
         htype=htypeobj)
+
     assetsmappeda = exisa.values_list('assetsmapped',flat=True)
     print(exisa)
     context['vals'] = Asset.objects.exclude(asset_id__in=assetsmappeda)
@@ -658,17 +668,33 @@ def HospitalTypeAssetMapping(request):
         htypeobj = HospitalType.objects.get(htype_id=int(hosptype))
         with transaction.atomic():
             state = request.user.userprofile.state_id
-            district = request.user.userprofile.district_id
-            for asset in assetobjs:
-                HtypeAssetMapping.objects.create(
-                    state = state,
-                    district = district,
-                    htype = htypeobj,
-                    assetsmapped = asset
-                    )
+            
+            if request.user.userprofile.adminstate == 2:
+                districts = District.objects.filter(state_id=state)
+                for dists in districts:
+                    for asset in assetobjs:
+                        HtypeAssetMapping.objects.create(
+                        state = state,
+                        district = dists,
+                        htype = htypeobj,
+                        assetsmapped = asset
+                        )
+            else:
+                district = request.user.userprofile.district_id
+                for asset in assetobjs:
+                    HtypeAssetMapping.objects.create(
+                        state = state,
+                        district = district,
+                        htype = htypeobj,
+                        assetsmapped = asset
+                        )
 
             ## Get hospital List
-            hospitals = Hospital.objects.filter(district_id=district,htype=htypeobj)
+            if request.user.userprofile.adminstate == 2:
+                hospitals = Hospital.objects.filter(state_id=state,htype=htypeobj)
+            else:
+                hospitals = Hospital.objects.filter(district_id=district,htype=htypeobj)
+
             for h in hospitals:
                 for ast in assetobjs:
                     HospAssetMapping.objects.create(
@@ -678,9 +704,14 @@ def HospitalTypeAssetMapping(request):
 
 
 
-        ## get the list of assets. 
 
-        return HttpResponse("Updated")
+
+        ## get the list of assets. 
+        lisofasset = [ ast.asset_name for ast in assetobjs ]
+        str1 = " , ".join(lisofasset)
+        
+
+        return HttpResponse("Assets : %s mapped to %s"%(str1,htypeobj.hospital_type))
 
     except Exception as details:
         print(details)
@@ -714,8 +745,12 @@ def HospitalAssetMapping(request):
 
 
         ## get the list of assets. 
+        lisofasset = [ ast.asset_name for ast in assetobjs ]
+        str1 = " , ".join(lisofasset)
+        
 
-        return HttpResponse("Updated")
+        return HttpResponse("Assets : %s mapped to %s"%(str1,
+            Hospital.objects.get(hospital_id=int(hospid)).hospital_name))
 
     except Exception as details:
         print(details)
