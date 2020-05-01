@@ -10,18 +10,28 @@ redMarkerIconUrl = "/static/images/marker-icon-red.png";
 
 let stateName = null;
 
+let htypeId = 0;
+
 let endpoints = {
-	totalcounts: "/assetmgt/totalcounts",
+
+    totalcounts: "/assetmgt/totalcounts",
+    
     state: "/assetmgt/getstatedata",
+
     district: "/assetmgt/getdistrictdata",
-    statedetails:"/assetmgt/getstatenamebyid"
+
+    statedetails: "/assetmgt/getstatenamebyid",
+
+    hospitaltype: "/assetmgt/gethospitaltype"
 };
 
 /*  end of configuration */
 
-let defaultZoom = 8;
+let defaultZoom = 7;
 
 let stateCenter = null;
+
+let originalStateName = null;
 
 let stateCenters = {
 
@@ -48,6 +58,8 @@ let stateBounds = [
 let isDistrictSelected = false;
 
 let stateData = null;
+
+let hospitalType = null;
 
 let assetsList = null;
 
@@ -243,12 +255,18 @@ function onClickDistrict(e) {
     }).addTo(map);
 
     /* getHospitals on that district */
-    $.get(apiHost.concat(endpoints.district), { q: selectedDistrict }, function (res) {
+    getDistrictData ( selectedDistrict, htypeId );
+}
+
+function getDistrictData ( selectedDistrict, htypeid ) {
+
+    $.get(apiHost.concat(endpoints.district), { q: selectedDistrict, htypeid: htypeid }, function (res) {
         // $.get("/static/data/karthi/district.json", { q: selectedDistrict }, function (res) {
 
         districtData = res;
 
         console.log(districtData);
+
         /* Generate markers for the district */
         $.each(districtData, function (index, value) {
 
@@ -287,7 +305,7 @@ function onClickDistrict(e) {
             }
         });
 
-        assetSelectorForDistrictOnChange(assetsList[0]);
+        assetSelectorForDistrictOnChange ( assetsList[0] );
 
         $("#assets-selector").prop('selectedIndex', 0);
 
@@ -464,6 +482,47 @@ function getStateDetails(stateId) {
     })
 }
 
+function getStatesData( state, htypeid ) {
+
+    $.get(apiHost.concat (endpoints.state),{ state: state, htypeid: htypeid } , function (res) {
+
+        // $.get("/static/data/karthi/state.json", function (res) {
+
+        // console.log(JSON.stringify(res));
+
+        stateData = res;
+
+        console.log ( stateData);
+
+        assetsList = generateAssetsList(stateData);
+
+        console.log ( assetsList )
+
+        assetSelectorForStateOnChange(assetsList[0]);
+
+        $("#assets-selector").prop('selectedIndex', 0);
+
+        getGeoJson();
+
+    });
+}
+
+function getTotalCounts ( htypeid ) {
+
+    $.get(apiHost.concat ( endpoints.totalcounts ), { htypeid: htypeid } , function (res) {
+        
+        console.log("Total counts response", res);
+
+        $('#totalhospitals').html(res.totalhospitals);
+
+        $('#patientsadmitted').html(res.patientsadmitted);
+
+        $('#availablebeds').html(res.availablebed);
+
+        $('#availableventilators').html(res.availableventilator);
+    });
+}
+
 function resetAll() {
 
     console.log ('resetAll')
@@ -472,11 +531,15 @@ function resetAll() {
 
     $('#assets-selector').empty();
 
+    $('#category-selector').empty();
+
     clearMarkers();
 
-    getStateDetails(24).then(function (res) {
+    getStateDetails(24).then ( function (res) {
 
         console.log ( res );
+
+        originalStateName = res.stateName;
 
         stateName = res.stateName.split(" ").join("");
 
@@ -486,37 +549,24 @@ function resetAll() {
 
         stateCenter = stateCenters[stateName];
 
-        map.setView(stateCenter, defaultZoom);
+        map.setView ( stateCenter, defaultZoom );
 
-        $.get(apiHost.concat (endpoints.state),{ state: res.stateName } , function (res) {
+        // get States Data
+        getStatesData ( originalStateName, htypeId );
 
-            // $.get("/static/data/karthi/state.json", function (res) {
+        // Total Counts
+        getTotalCounts ( htypeId );
 
-            // console.log(JSON.stringify(res));
+        // Hospital Type List
+        $.get ( apiHost.concat( endpoints.hospitaltype ), function( res ){
 
-            stateData = res;
+            console.log ( res );
 
-            console.log ( stateData);
+            hospitalType = res;
 
-            assetsList = generateAssetsList(stateData);
+            addStringArrayToSelect ( '#category-selector', hospitalType.map ( ele => ele.hospital_type ) );
 
-            console.log ( assetsList )
-
-            assetSelectorForStateOnChange(assetsList[0]);
-
-            $("#assets-selector").prop('selectedIndex', 0);
-
-            getGeoJson();
-
-        });
-
-        $.get(apiHost.concat (endpoints.totalcounts) , function (res) {
-            // $.get("/static/data/karthi/totalcounts.json", function (res) {
-              console.log("Total counts response"+res)
-            $('#totalhospitals').html(res.totalhospitals);
-            $('#patientsadmitted').html(res.patientsadmitted);
-            $('#availablebeds').html(res.availablebed);
-            $('#availableventilators').html(res.availableventilator);
+            $('#category-selector').prepend("<option value='All' selected='selected'>All</option>");
         });
 
     }).catch  ( function (err){
@@ -526,7 +576,27 @@ function resetAll() {
 
 }
 
+function onCategoryChange() {
+
+    console.log ( this.value )
+}
+
 $("#ak-reset").on('click', () => resetAll());
+
+$("#category-selector").on ("change", function(){
+
+    if ( this.value == 'All') htypeId = 0; else 
+
+    htypeId = hospitalType.filter ( ele => ele.hospital_type == this.value )[0].htype_id;
+
+    console.log ( htypeId );
+
+    $('#assets-selector').empty();
+
+    getStatesData ( originalStateName, htypeId );
+
+    getTotalCounts ( htypeId );
+})
 
 $(function () {
 
