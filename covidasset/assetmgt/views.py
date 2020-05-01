@@ -6,6 +6,7 @@ from .models import AssetFiles
 from .models import AssetMgt
 from .models import Hospital
 from .models import Asset
+from .models import HospAssetMapping
 
 from django.db import transaction
 from django.db.models.query import QuerySet
@@ -71,9 +72,9 @@ class AssetFileUploadView(View):
                             raise Exception('Value Error for {}, Check Value of Assets'.format(sheet.cell_value(row,1)))
                         
                         ad = AssetMgt()                
-                        ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))
-                        hospitalCheck(ad.hospital_id.hospital_id,hosp)
+                        ad.hospital_id=Hospital.objects.get(hospital_id=int(sheet.cell_value(row,0)))                        
                         ad.asset_id=Asset.objects.get(asset_name=str(sheet.cell_value(row,2)))
+                        hospitalCheck(ad.hospital_id.hospital_id,hosp,ad.asset_id)
                         ad.asset_total=int(sheet.cell_value(row,3))
                         ad.asset_utilized=int(sheet.cell_value(row,4))
                         ad.asset_balance=ad.asset_total-ad.asset_utilized
@@ -173,7 +174,7 @@ def xlsGenerate(datavals,username):
 
 
 
-def hospitalCheck(hid, hospital):
+def hospitalCheck(hid, hospital,asset_id):
     """
             ## Hospital Check 
     """
@@ -183,6 +184,12 @@ def hospitalCheck(hid, hospital):
         hids = [hospital.hospital_id]    
     if hid not in hids:
         raise Exception("Hospital ID {} - Not Available for the User.".format(hid))
+    else:
+        hosobject=Hospital.objects.get(hospital_id=hid)
+        assetobj=HospAssetMapping.objects.filter(hospital=hosobject).values_list('assetsmapped',flat=True).distinct('assetsmapped')
+        print('{} = {}'.format(asset_id,assetobj))
+        if asset_id.asset_id not in assetobj:
+            raise Exception("Asset {}  - Not Available for the hospital {}".format(asset_id,hid))
 
         
 

@@ -579,8 +579,8 @@ def AssetManagementView(request):
         else:
             hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
         
-        for i in hosp:
-            assetobj=HospAssetMapping.objects.filter(hospital=i)
+        for i in hosp:            
+            assetobj=HospAssetMapping.objects.filter(hospital=i).distinct('assetsmapped')            
             for a in assetobj:
                 tmp = []
                 tmp.append(i.hospital_id)
