@@ -32,7 +32,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home',IndexPage.as_view(), name="index"),
@@ -43,6 +42,8 @@ urlpatterns = [
     path('assets', assetmgt.AssetsView, name="assetview"),
     path('returnassetsht', assetmgt.returnAssetsHt, name="returnassetsht"),
     path('returnassetsh', assetmgt.returnAssetsH, name="returnassetsh"),
+    path('assetmaphtype', assetmgt.HospitalTypeAssetMapping, name="assetmaphtype"),
+    path('assetmaphosp', assetmgt.HospitalAssetMapping, name="assetmaphosp"),
     path('assetmappingform', assetmgt.returnhtypeMappingForm, name="assetmappingform"),
     path('assetmanagement', assetmgt.AssetManagementView, name="assetmanagementview"),
     path('assetmanagementimg', assetmgt.AssetManagementImgView, name="assetmanagementimgview"),

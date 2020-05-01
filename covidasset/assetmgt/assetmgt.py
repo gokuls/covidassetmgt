@@ -41,6 +41,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth import logout
 from django.forms import formset_factory
 
+from django.db import DatabaseError, transaction
 
 
 
@@ -144,9 +145,19 @@ def returnhtypeMappingForm(request):
 def returnAssetsHt(request):
     """
     """
-    assets = Asset.objects.all()
+    #assets = Asset.objects.all()
     context = dict()
-    context['vals'] = assets
+    htype = request.GET['ht']
+    htypeobj = HospitalType.objects.get(htype_id=int(htype))
+
+    exisa = HtypeAssetMapping.objects.filter(
+        district=request.user.userprofile.district_id,
+        htype=htypeobj)
+    assetsmappeda = exisa.values_list('assetsmapped',flat=True)
+    print(exisa)
+    context['vals'] = Asset.objects.exclude(asset_id__in=assetsmappeda)
+    context['existasset'] = exisa
+    #context['vals'] = assets - assetsmappeda
 
     return render(request,'assetmgt/assetval.html',context)
 
@@ -155,7 +166,13 @@ def returnAssetsH(request):
     """
     assets = Asset.objects.all()
     context = dict()
-    context['vals'] = assets
+    htype = request.GET['ht']
+    hobj = Hospital.objects.get(hospital_id=int(htype))
+    exisa =HospAssetMapping.objects.filter(
+        hospital=hobj)
+    assetsmappeda = exisa.values_list('assetsmapped',flat=True)
+    context['vals'] = Asset.objects.exclude(asset_id__in=assetsmappeda)
+    context['existasset'] = exisa
 
     return render(request,'assetmgt/assetval.html',context)
 
@@ -309,12 +326,17 @@ def returnAssetMgtMultiForm(request):
             try:
                 AssetMgtFormset = formset_factory(AssetMgtForm2,extra=0)
                 initopass = []                
-                assets = Asset.objects.all()
+                #assets = Asset.objects.all()
+                hobj = Hospital.objects.get(hospital_id=hid)
+                aids = HospAssetMapping.objects.filter(
+                    hospital=hobj).values_list('assetsmapped',flat=True)
+                assets = Asset.objects.filter(asset_id__in=aids)
                 context = {}
-                
+                if not assets:
+                    return HttpResponse("No Assets Have been Mapped to %s Hospital"%hobj.hospital_name)
                 for ast in assets:
                     inidict = {}
-                    inidict['hospital_id'] = Hospital.objects.get(hospital_id=hid)
+                    inidict['hospital_id'] = hobj
                     inidict['asset_id'] = ''
                     try:
                         objast = AssetMgt.objects.filter(hospital_id=hid,asset_id=ast).last()
@@ -618,6 +640,88 @@ def AssetManagementView(request):
         return render(request,
                 'assetmgt/assetmanagement.html',
                 context)
+
+def HospitalTypeAssetMapping(request):
+    """
+
+        Map Assets to Hospital Type
+        Map Assets to the Hospital 
+        Then send response 
+    """
+    try:
+        hosptype = request.POST['htypeid']
+        assets = request.POST.getlist('assets')
+        if assets:
+            assetobjs = [Asset.objects.get(asset_id=int(i)) for i in assets ]
+        print(hosptype)
+        print(assets)
+        htypeobj = HospitalType.objects.get(htype_id=int(hosptype))
+        with transaction.atomic():
+            state = request.user.userprofile.state_id
+            district = request.user.userprofile.district_id
+            for asset in assetobjs:
+                HtypeAssetMapping.objects.create(
+                    state = state,
+                    district = district,
+                    htype = htypeobj,
+                    assetsmapped = asset
+                    )
+
+            ## Get hospital List
+            hospitals = Hospital.objects.filter(district_id=district,htype=htypeobj)
+            for h in hospitals:
+                for ast in assetobjs:
+                    HospAssetMapping.objects.create(
+                        hospital = h,
+                        assetsmapped = ast
+                        )
+
+
+
+        ## get the list of assets. 
+
+        return HttpResponse("Updated")
+
+    except Exception as details:
+        print(details)
+        return HttpResponse("Error")
+
+
+def HospitalAssetMapping(request):
+    """
+
+        Map Assets to Hospital Type
+        Map Assets to the Hospital 
+        Then send response 
+    """
+    try:
+        hospid = request.POST['hospid']
+        assets = request.POST.getlist('assets')
+        if assets:
+            assetobjs = [Asset.objects.get(asset_id=int(i)) for i in assets ]
+        print(hospid)
+        print(assets)
+        
+        with transaction.atomic():
+            ## Get hospital List
+            hospital = Hospital.objects.get(hospital_id=int(hospid))
+            for ast in assetobjs:
+                HospAssetMapping.objects.create(
+                    hospital = hospital,
+                    assetsmapped = ast
+                    )
+
+
+
+        ## get the list of assets. 
+
+        return HttpResponse("Updated")
+
+    except Exception as details:
+        print(details)
+        return HttpResponse("Error")
+
+
 
 def AssetManagementImgView(request):
     if request.user:

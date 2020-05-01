@@ -1,12 +1,35 @@
-  <label for="assets" class="col-sm-3 col-form-label">Assets</label>
- <div class="col-sm-9" >
-<select name="assets" id="assets1"  class="form-control" required=true multiple>
-{% for ht in vals %}
-						        <option value="{{ ht.asset_id }}">
-						        {{ ht.asset_name }}
-						        </option>
-{% endfor %}		       
-</select>
+<label for="assets" class="col-sm-3 col-form-label">Assets</label>
+<div class="col-sm-6">
+    <select name="assets" id="assets1" class="form-control" required=true multiple>
+        {% for ht in vals %}
+        <option value="{{ ht.asset_id }}">
+            {{ ht.asset_name }}
+        </option>
+        {% endfor %}
+    </select>
 </div>
-					</div> </div>
-				 </div>
+
+
+<div class="col-md-3">
+        <div class="form-group row">
+            <input type="submit" value="Update" class="btn btn-primary">
+        </div>
+    </div>
+
+  {% if existasset %}
+
+    <div class="panel panel-primary" id="result_panel">
+    <div class="panel-heading"><h3 class="panel-title">Asset Mapped </h3>
+    </div>
+    <div class="panel-body">
+    		<ul class="list-group scrollthis">
+				{% for asts in existasset %}
+		  			<li class="list-group-item list-group-item-success">{{ asts.assetsmapped.asset_name }}</li>
+				{% endfor %}
+			</ul>
+				</div></div>
+				{% endif %}
+</div>
+</div>
+</div>
+

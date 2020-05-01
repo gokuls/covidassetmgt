@@ -5,6 +5,22 @@
 
 {% load app_filters %}
 
+{% load static %}
+
+    {% block 'customcss' %}
+  <link rel="stylesheet" href="{% static  'assetmgt/css/multiselect.css' %}" type="text/css" />
+  <style type="text/css">
+    .scrollthis{
+    max-height: 200px;
+    max-width: 500px;
+    margin-bottom: 10px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+}
+  </style>
+
+    {% endblock %}
+
 {% block 'content' %}
   <div class="row mb-3">
   <div class="col-12">
@@ -42,6 +58,8 @@
 {% endblock %}
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	{% block 'customjs' %}
+        <script src="{% static 'assetmgt/js/jquery.multi-select.min.js' %}"></script>
+
 <script type="text/javascript">
  $(document).ready(function() {
  $("#htypemapping").click(function () {
@@ -75,6 +93,9 @@ $(document).on({
         },
         success: function (data) {   // `data` is the return of the `load_cities` view function
           $("#element2").html(data);  // replace the contents of the city input with the data that came from the server
+          $('#assets1').multiSelect({
+            'modalHTML': '<div class="multi-select-modal">'
+        });
         }
       });
 
@@ -94,6 +115,9 @@ $(document).on({
         },
         success: function (data) {   // `data` is the return of the `load_cities` view function
           $("#element2").html(data);  // replace the contents of the city input with the data that came from the server
+          $('#assets1').multiSelect({
+            'modalHTML': '<div class="multi-select-modal">'
+        });
         }
       });
 
@@ -123,6 +147,143 @@ $(document).on({
     });
 
 });
+</script>
+
+
+<script type="text/javascript">
+  
+  $(document).ready(function() {
+
+function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+  var $myForm = $('#maphtype')
+  $(document).on('submit', '#maphtype',function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      var $val = confirm("Are you sure!!");
+        if ($val) {
+
+              var $formData = $(this).serialize()
+        console.log($formData);
+              var $thisURL = "{% url 'assetmaphtype' %}" // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess,
+                  error: handleFormError,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        $('#mappingform').html(data)
+
+      //   $("#addassetmodel").modal('toggle');
+      //   $("#responseText").html(data);
+      //   $('#overlay').modal('show').slideUp( 300 ).delay( 800 ).fadeIn( 400 );
+      // if(data=="Done"){
+      //   alert("Value for Asset is added successfully");
+      // }
+      // else if(data=="AE"){
+      //   alert("Value of the Asset is already exists");
+      // }
+      // else{
+      //   alert("Value for Asset is already exists");
+      // }
+          //window.location.replace("{% url 'assetmanagementview' %}");
+
+            };
+
+    function handleFormError(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
+
+
+
+
+
+
+    var $myForm = $('#maphospa')
+  $(document).on('submit', '#maphospa',function(event){
+      console.log("preventDefault");
+      event.preventDefault();
+      var $val = confirm("Are you sure!!");
+        if ($val) {
+
+              var $formData = $(this).serialize()
+        console.log($formData);
+              var $thisURL = "{% url 'assetmaphosp' %}" // or set your own url
+              console.log($thisURL)
+              $.ajax({
+                  method: "POST",
+                  url: $thisURL,
+                  data: $formData,
+                  success: handleFormSuccess2,
+                  error: handleFormError2,
+              })
+            }
+        else{
+
+        }
+    });
+
+    function handleFormSuccess2(data, textStatus, jqXHR){
+        console.log("data"+data)
+        console.log("textstatus -"+textStatus)
+        console.log("jqXHR "+jqXHR)
+
+        $('#mappingform').html(data)
+
+     
+
+            };
+
+    function handleFormError2(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    };
+});
+
 </script>
 {% endblock %}
 
