@@ -4,7 +4,8 @@ from assetmgt.hospitalviews import GetDistrictByState
 from assetmgt.hospitalviews import AddHospital
 from assetmgt.hospitalviews import AddMultipleHospital
 from assetmgt.hospitalviews import GetHospitalSample,GetHospitalData
-from assetmgt.hospitalviews import GetHospitalSample 
+from assetmgt.hospitalviews import GetHospitalSample
+from assetmgt.hospitalviews import hospitalxlsGenerate
 from assetmgt.assetreport import GetReport 
 from assetmgt import assetreport
 from .views import AssetFileUploadView
@@ -18,6 +19,7 @@ urlpatterns = [
         path('addsinglehospital',AddHospital.as_view(),name='addsinglehospital'),
         path('assetfileupload',AssetFileUploadView.as_view(),name='assetfileupload'),
         path('gethospitalsamplecsv',GetHospitalSample.as_view(),name='gethospitalsample'),
+        path('gethospitalxls',hospitalxlsGenerate,name='gethospitalxls'),
         path('addhospitalcsv',AddMultipleHospital.as_view(),name='addhospitalcsv'),
         path('gethospitaldata',GetHospitalData.as_view(),name='gethospitaldata'),
         path('assetreport',assetreport.assetReport,name='assetreport'),
