@@ -63,9 +63,15 @@
 
       <input class="btn btn-primary" type="submit" name="assetupload" id="assetupload" value='Upload ' ></input> 
 
+     
+
+
            
 </div> 
-      </form> </div> <div class="col-md-4"><a class="btn btn-primary pull-right" href="{% static sample_tmp %}"> <i class="fa fa-download"></i> Download Template File </a> </div></div>
+      </form> </div> <div class="col-md-4">
+        
+         <input class="btn btn-primary" type="button" name="download_btn" id="download_btn" value='Download Template File '</input> 
+       </div></div>
     </div></div></div></div>
 
 
@@ -141,6 +147,47 @@
 
 {% block 'customjs' %}
 
+
+<script type="text/javascript">
+
+
+$('#download_btn').on('click', e => {
+    // random data
+    let data = 'mydata=foo&excel=bar';
+    let request = new XMLHttpRequest();
+    request.open('GET', '{% url "sample_tmp" %}', true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.responseType = 'blob';
+    request.onload = function (e) {
+        if (this.status === 200) {
+            let filename = "";
+            let disposition = request.getResponseHeader('Content-Disposition');
+            // check if filename is given
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                let matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+            }
+            let blob = this.response;
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveBlob(blob, filename);
+            }
+            else {
+                let downloadLink = window.document.createElement('a');
+                let contentTypeHeader = request.getResponseHeader("Content-Type");
+                downloadLink.href = window.URL.createObjectURL(new Blob([blob], {type: contentTypeHeader}));
+                downloadLink.download = filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        } else {
+            alert('Download failed.')
+        }
+    };
+    request.send(data);
+});
+</script>
 
 
  
