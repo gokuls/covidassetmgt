@@ -361,7 +361,7 @@ def getStateNew(request):
                 district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id,htype=htype)
 
             if user.adminstate == 0:
-                district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id,hospital_id=user.hospital_id.hospital_id)
+                district_hospitals = district_hospitals.filter(state_id=district.state_id,district_id=district.district_id,hospital_id=user.hospital_id.hospital_id)
             
             h_count = district_hospitals.count()
 
