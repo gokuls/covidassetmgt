@@ -1,0 +1,131 @@
+{% extends 'assetmgt/base.html' %}
+
+
+{% block 'title' %} Asset Mapping {% endblock %}
+
+{% load app_filters %}
+
+{% block 'content' %}
+  <div class="row mb-3">
+  <div class="col-12">
+  <div class="card">
+  <div class="card-body">
+<div class="row" >
+  <div class="col-md-10">
+
+    <button type="button" value="Asset  : Hospital Type Mapping" id="htypemapping" class="btn btn-primary">
+      Asset  : Hospital Type Mapping
+    </button>
+    <button type="button" value="Asset Mapping to Hospital " id="hospitalmapping"  class="btn btn-success" >
+      Asset Mapping to Hospital
+    </button>
+  </div>
+
+</div>
+
+<br/>
+<div class="row">
+  <div class="col-md-12">
+
+    <div id="mappingform">
+
+    </div>
+  </div>
+  </div>
+
+</div></div></div></div>
+
+
+
+
+
+{% endblock %}
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	{% block 'customjs' %}
+<script type="text/javascript">
+ $(document).ready(function() {
+ $("#htypemapping").click(function () {
+
+      var url = "{% url 'assetmappingform' %}"  // get the url of the `load_cities` view
+      var formtype = 'hospitaltype';  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'formt': formtype       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#mappingform").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+
+
+$(document).on({
+  change: function () {
+      var url = "{% url 'returnassetsh' %}"  // get the url of the `load_cities` view
+      var ht = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'ht': ht       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#element2").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+}
+}, '#hospid');
+
+
+$(document).on({
+  change: function () {
+      var url = "{% url 'returnassetsht' %}"  // get the url of the `load_cities` view
+      var ht = $(this).val();  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'ht': ht       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#element2").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    }
+}, '#htypeid');
+
+
+
+
+
+
+
+ $("#hospitalmapping").click(function () {
+      var url = "{% url 'assetmappingform' %}"  // get the url of the `load_cities` view
+      var formtype = 'hospital';  // get the selected country ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'formt': formtype       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#mappingform").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+});
+</script>
+{% endblock %}
+
+
+	</body>
+	</html>

@@ -91,6 +91,7 @@ class HospAssetMapping(models.Model):
 	def __str__(self):
 		return "%s-%s"%(self.hospital.hospital_name,self.assetsmapped.asset_name)
 
+
 class AssetMgt(models.Model):
 	asset_id 			= models.ForeignKey(Asset,on_delete=models.CASCADE)
 	hospital_id 		= models.ForeignKey(Hospital,on_delete=models.CASCADE)

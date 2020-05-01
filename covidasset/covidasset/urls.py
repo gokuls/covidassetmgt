@@ -39,7 +39,11 @@ urlpatterns = [
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
     ## asset management
+    path('assetmapping', assetmgt.AssetsMappingView, name="assetmapping"),
     path('assets', assetmgt.AssetsView, name="assetview"),
+    path('returnassetsht', assetmgt.returnAssetsHt, name="returnassetsht"),
+    path('returnassetsh', assetmgt.returnAssetsH, name="returnassetsh"),
+    path('assetmappingform', assetmgt.returnhtypeMappingForm, name="assetmappingform"),
     path('assetmanagement', assetmgt.AssetManagementView, name="assetmanagementview"),
     path('assetmanagementimg', assetmgt.AssetManagementImgView, name="assetmanagementimgview"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),

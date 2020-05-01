@@ -1,0 +1,12 @@
+  <label for="assets" class="col-sm-3 col-form-label">Assets</label>
+ <div class="col-sm-9" >
+<select name="assets" id="assets1"  class="form-control" required=true multiple>
+{% for ht in vals %}
+						        <option value="{{ ht.asset_id }}">
+						        {{ ht.asset_name }}
+						        </option>
+{% endfor %}		       
+</select>
+</div>
+					</div> </div>
+				 </div>

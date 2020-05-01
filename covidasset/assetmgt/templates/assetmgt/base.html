@@ -66,6 +66,8 @@
 
             {% if request.user.userprofile.adminstate > 0 %}
 
+            <a href="{% url 'assetmapping' %}" class="list-group-item border-0 list-group-item-action "> Asset Mapping <i class="fa  fa-file-excel-o pull-right mr-2" aria-hidden="true"></i></a>
+
             <a href="{% url 'assetreport' %}" class="list-group-item border-0 list-group-item-action "> Asset Report <i class="fa  fa-file-excel-o pull-right mr-2" aria-hidden="true"></i></a>
 
             <a href="{% url 'addhospitaltemp' %}" class="list-group-item border-0 list-group-item-action "> Add Hospital <i class="fa  fa-hospital-o pull-right mr-2" aria-hidden="true"></i></a>

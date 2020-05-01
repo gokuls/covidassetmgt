@@ -1,0 +1,20 @@
+<form name="addhtype" id="maphtype" method="post" action="" >		
+					{% csrf_token %}
+
+<div class="row">
+                        <div class="col-md-6">
+					<div class="form-group row">
+					    <label for="htypeid" class="col-sm-3 col-form-label">Hospital Type</label>
+					    <div class="col-sm-9">
+					        <select name="state" id="htypeid" class="form-control" required=true >
+							    {% for ht in htypes %}
+							     <option value="{{ht.htype_id}}">{{ht.hospital_type}}</option>
+							    {% endfor %}
+    					    </select>
+    					</div>
+					</div>
+				 </div>
+					<div class="col-md-6">
+					<div class="form-group row" id="element2">
+					
+</form>

@@ -51,7 +51,8 @@ class GetDistrictByState(View):
                 state = State.objects.get(pk=stateid)
                 districts = District.objects.filter(state_id=state)
             else:
-                districts = District.objects.filter(state_id=usr.state_id.state_id,district_id=usr.district_id.district_id)
+                districts = District.objects.filter(state_id=usr.state_id.state_id,
+                    district_id=usr.district_id.district_id)
             print(districts)
         except State.DoesNotExist as state_not_found:
             print(state_not_found)
@@ -68,7 +69,8 @@ class AddHospital(LoginRequiredMixin,View):
         #if not request.user:
         assets = Asset.objects.all()
 
-        usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
+        usr = UserProfile.objects.get(user__username=request.user.username)
+        #To do user username from request object
         try:
             usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
             states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission

@@ -6,7 +6,10 @@ from .models import Asset
 from .models import State
 from .models import District
 from .models import Hospital
-from .models import AssetMgt
+from .models import ( AssetMgt ,
+                    HospitalType  ,
+                    HtypeAssetMapping,
+                    HospAssetMapping  )
 
 from .forms import ExtendedUserCreationForm
 from .forms import UserProfileForm
@@ -99,6 +102,60 @@ def AssetsView(request):
                  'assetmgt/assetview.html',
                  context)
 
+
+
+
+@login_required
+def AssetsMappingView(request):
+    '''
+        Page to view the asset and add the Asset 
+    '''
+    if request.user.userprofile.adminstate < 1:
+        messages.info(request,"You are not Authorised to View this page ")
+        return redirect('index')
+    
+    context = dict()
+
+
+    return render(request,
+                 'assetmgt/assetmapping.html',
+                 context)
+
+
+def returnhtypeMappingForm(request):
+    """
+    Method to return Asset Mapping based on Hospital Type
+    """
+    formtype = request.GET['formt']
+    if formtype == "hospitaltype":
+        htypes = HospitalType.objects.all()
+        context = dict()
+        context['htypes'] = htypes
+        return render(request,'assetmgt/htypemapping.html',context)
+    else:
+        user = request.user
+        context = dict()
+        hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+        context['hosp'] = hosp
+        return render(request,'assetmgt/hospitalmapping.html',context)
+
+def returnAssetsHt(request):
+    """
+    """
+    assets = Asset.objects.all()
+    context = dict()
+    context['vals'] = assets
+
+    return render(request,'assetmgt/assetval.html',context)
+
+def returnAssetsH(request):
+    """
+    """
+    assets = Asset.objects.all()
+    context = dict()
+    context['vals'] = assets
+
+    return render(request,'assetmgt/assetval.html',context)
 
 def returnAssetForm(request):
     """
