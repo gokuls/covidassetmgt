@@ -74,7 +74,7 @@ def getTotalCounts(request):
             print("Hospital type",htype)
             if user.adminstate == 1:
                 #state_hospitals = Hospital.objects.filter(district_id=user.district_id.district_id,
-                state_hospitals = state_hospitals.filter(district_id=user.district_id.district_id,
+                state_hospitals = Hospital.objects.filter(district_id=user.district_id.district_id,
                         state_id=user.state_id.state_id,
                         htype=htype)
                 h_total = state_hospitals.count()
@@ -132,6 +132,7 @@ def getTotalCounts(request):
 
                 except AssetMgt.DoesNotExist as asset_not_found:
                     print("exception while getting asset_total for state is %s"%(str(asset_notfound)))
+                    total_counts["available"+asset_lower]=asset_balance
                     continue
 
                 except Exception as st_data_exp:
@@ -141,11 +142,56 @@ def getTotalCounts(request):
             total_counts["available"+asset_lower] = asset_balance 
             if 'bed' in asset_lower:
                 total_counts['patientsadmitted'] = asset_utilized
+        
+        if not state_hospitals.exists():
+            print("No Asset or Hospital type mapped")
+            total_counts["totalhospitals"]= h_total
+            assets_list = Asset.objects.all()
+            for asset in assets_list:
+                asset_total = 0
+                asset_utilized = 0
+                asset_balance = 0
+                ast_name = asset.asset_name.split(" ")
+                ast_name = "_".join(ast_name)
+                asset_lower = ast_name.lower()
+                total_counts["available"+asset_lower]=asset_balance
+                if 'bed' in asset_lower:
+                    total_counts['patientsadmitted'] = asset_utilized
 
+
+    except HtypeAssetMapping.DoesNotExist as ht_ast_mapping_not_found:
+        print(ht_ast_mapping_not_found)
+        total_counts["totalhospitals"]= h_total
+        assets_list = Asset.objects.all()
+        for asset in assets_list:
+            asset_total = 0
+            asset_utilized = 0
+            asset_balance = 0
+            ast_name = asset.assetsmapped.asset_name.split(" ")
+            ast_name = "_".join(ast_name)
+            asset_lower = ast_name.lower()
+            total_counts["available"+asset_lower]=asset_balance
+            if 'bed' in asset_lower:
+                total_counts['patientsadmitted'] = asset_utilized
+
+    except Hospital.DoesNotExist as hospital_obj_found:
+        print("Exception hospital not found %s"%(str(hospital_obj_found)))
+        total_counts["totalhospitals"]= h_total
+        assets_list = Asset.objects.all()
+        for asset in assets_list:
+            asset_total = 0
+            asset_utilized = 0
+            asset_balance = 0
+            ast_name = asset.assetsmapped.asset_name.split(" ")
+            ast_name = "_".join(ast_name)
+            asset_lower = ast_name.lower()
+            total_counts["available"+asset_lower]=asset_balance
+            if 'bed' in asset_lower:
+                total_counts['patientsadmitted'] = asset_utilized
+ 
     except Exception as ec:
         print(ec)
         total_counts["totalhospitals"]=h_total
-        return JsonResponse({"totalcounts":total_counts})
 
     return JsonResponse(total_counts)
 
@@ -291,7 +337,7 @@ def getStateNew(request):
         if "htypeid" in request.GET:
             htypeid = int(request.GET['htypeid'])
 
-        state = State.objects.get(state_name=request.GET["state"])
+        #state = State.objects.get(state_name=request.GET["state"])
         districts = District.objects.filter(state_id=user.state_id)
         if user.adminstate == 1:
             districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)
@@ -383,7 +429,7 @@ def getStateNew(request):
                 dist_dict["assets"] = {}
                 dist_dict["status"] = { "totalhospitals":0,"patientsadmitted":0,"availablebeds":0,"availableventilators":0}
                 for ast in assets:
-                    asset_lower = ast.asset_name.split(" ")
+                    asset_lower = ast.assetsmapped.asset_name.split(" ")
                     asset_lower = "_".join(asset_lower)
                     asset_lower = asset_lower.lower()
 

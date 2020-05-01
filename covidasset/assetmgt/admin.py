@@ -14,4 +14,5 @@ admin.site.register(UserProfile)
 
 admin.site.register(HospitalType)
 admin.site.register(HospAssetMapping)
+admin.site.register(HtypeAssetMapping)
 
