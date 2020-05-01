@@ -138,7 +138,10 @@ def returnhtypeMappingForm(request):
     else:
         user = request.user
         context = dict()
-        hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
+        if user.userprofile.adminstate ==2:
+            hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
+        else:
+            hosp = Hospital.objects.filter(district_id=user.userprofile.district_id.district_id)
         context['hosp'] = hosp
         return render(request,'assetmgt/hospitalmapping.html',context)
 
