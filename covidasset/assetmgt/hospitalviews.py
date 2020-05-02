@@ -485,11 +485,11 @@ class UploadHospitalXls(LoginRequiredMixin,View):
                         hospital.healthworkers=int(sheet.cell_value(row,11))
                         hospital.save()
 
-                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital.htype).select_related('assetsmapped')
+                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital.htype,district=hospital.district_id).select_related('assetsmapped')
                         for htype_asset in htype_mapping_obj:
                             HospAssetMapping.objects.create(hospital=hospital,assetsmapped=htype_asset.assetsmapped)
                         for asset in htype_mapping_obj:
-                            AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
+                            AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital,author=user.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                         print("Hospital ",hospital.hospital_name," Added successfully")    
                  ## Successful Message
                 messages.info(request,"File Uploaded Successfully")
