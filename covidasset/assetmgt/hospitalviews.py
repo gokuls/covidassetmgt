@@ -138,7 +138,7 @@ class AddHospital(LoginRequiredMixin,View):
                         hospital_type=ht,city=city,taluk=tk,address=addr,
                         contact_number=hcontact,pincode=pin,doctors=nd,
                         healthworkers=nhw,htype=htyp)
-                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype,district=hospital_obj.district_id).select_related('assetsmapped')
                     for htype_asset in htype_mapping_obj:
                         HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
  
@@ -164,7 +164,7 @@ class AddHospital(LoginRequiredMixin,View):
                     h.pincode = pin
                     h.htype=htyp
                     h.save()
-                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                    htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=h.htype,ditstrict=h.district_id).select_related('assetsmapped')
                     for htype_asset in htype_mapping_obj:
                         HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
  
@@ -316,7 +316,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                     healthworkers=int(row[DATA_CSV_HEADER[9]]),
                                     htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                     )
-                            htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                            htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype,district=hospital_obj.district_id).select_related('assetsmapped')
                             for htype_asset in htype_mapping_obj:
                                 HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
                             for asset in htype_mapping_obj:
@@ -363,7 +363,7 @@ class AddMultipleHospital(LoginRequiredMixin,View):
                                 healthworkers=int(row[DATA_CSV_HEADER[9]]),
                                 htype = HospitalType.objects.get(hospital_type=row[DATA_CSV_HEADER[2]])
                                 )
-                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype).select_related('assetsmapped')
+                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype,district=hospital_obj.district_id).select_related('assetsmapped')
                         for htype_asset in htype_mapping_obj:
                             HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
 
