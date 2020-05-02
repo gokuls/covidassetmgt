@@ -88,6 +88,8 @@ class AssetFileUploadView(View):
                     messages.error(request,'Constrain violation, Check Value of Assets')
                 elif isinstance(e, ValueError):
                     messages.error(request,'Value Error, Check Value of Assets')
+                elif isinstance(e, TypeError):
+                    messages.error(request,'Value Error, Check Value of Assets')
                 else:
                     messages.error(request,str(e))
                 
