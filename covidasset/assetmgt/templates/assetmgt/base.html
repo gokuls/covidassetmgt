@@ -82,7 +82,7 @@
 
             {% endif %}
 
-            {% if request.user.userprofile.adminstate > 1 %}
+            {% if request.user.userprofile.adminstate > 0 %}
             <a href="{% url 'register' %}" class="list-group-item border-0 list-group-item-action ">Add User  <i class="fa  fa-user-plus pull-right mr-2" aria-hidden="true"></i></a>
 
 
