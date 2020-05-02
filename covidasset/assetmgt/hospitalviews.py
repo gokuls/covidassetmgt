@@ -98,7 +98,7 @@ class AddHospital(LoginRequiredMixin,View):
         usr = UserProfile.objects.get(user__username=request.user.username)
         #To do user username from request object
         try:
-            usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
+            #usr = UserProfile.objects.get(user__username=request.user.username)#To do user username from request object
             states = State.objects.filter(state_name=usr.state_id)#To do to query the State respect to the user permission
             htypes = HospitalType.objects.all()
         except UserProfile.DoesNotExist as e:
@@ -141,7 +141,9 @@ class AddHospital(LoginRequiredMixin,View):
                     htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital_obj.htype,district=hospital_obj.district_id).select_related('assetsmapped')
                     for htype_asset in htype_mapping_obj:
                         HospAssetMapping.objects.create(hospital=hospital_obj,assetsmapped=htype_asset.assetsmapped)
- 
+
+                    for asset in htype_mapping_obj:
+                            AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital_obj,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
                     messages.info(request,hname+" added successfully") 
                     # for asset in assets:
                     #     AssetMgt.objects.create(asset_id=asset,
