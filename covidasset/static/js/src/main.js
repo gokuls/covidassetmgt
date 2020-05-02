@@ -45,7 +45,9 @@ let stateCenters = {
 
     TamilNadu: [10.985378, 78.664046],
 
-    DamanDiu: [20.597270, 71.894826]
+    DamanDiu: [20.597270, 71.894826],
+
+    Maharashtra : [19.661492, 76.576587]
 };
 
 /*
