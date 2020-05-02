@@ -43,7 +43,8 @@ from django.forms import formset_factory
 
 from django.db import DatabaseError, transaction
 
-
+import xlwt
+import time
 
 def error_404(request,exception):
         data = {}
@@ -556,19 +557,16 @@ def returnData(userobj):
     #print(datatowrite)
     return datatowrite
 
-
+"""
+    XLS Generate Download
+"""
 @login_required
-def AssetManagementView(request):
-    if request.user:
+def AssetMgmtemDownload(request):
+     if request.user:
         user = request.user 
-
         datatowrite = []
-        userobj = user
-        #assetobj = Asset.objects.all()
+        userobj = user        
         hids = []
-        #print(request.user)
-        #print(request.user.userprofile.adminstate)
-
         if userobj.userprofile.adminstate == 0:
             hosp = []
             hosp.append(Hospital.objects.get(
@@ -579,8 +577,8 @@ def AssetManagementView(request):
         else:
             hosp = Hospital.objects.filter(state_id=user.userprofile.state_id.state_id)
         
-        for i in hosp:
-            assetobj=HospAssetMapping.objects.filter(hospital=i)
+        for i in hosp:            
+            assetobj=HospAssetMapping.objects.filter(hospital=i).distinct('assetsmapped')            
             for a in assetobj:
                 tmp = []
                 tmp.append(i.hospital_id)
@@ -595,10 +593,36 @@ def AssetManagementView(request):
                     utilized = 0
                 tmp.append(total)
                 tmp.append(utilized)
-                datatowrite.append(tmp)
+                datatowrite.append(tmp)        
 
-        #print(datatowrite)
+        wb = xlwt.Workbook(encoding='utf-8') # create empty workbook object
+        newsheet = wb.add_sheet('asset_details') # sheet name can not be longer than 32 characters    
+        newsheet.write(0,0,'hospital_id') 
+        newsheet.write(0,1,'hospital_name')
+        newsheet.write(0,2,'Asset_name')
+        newsheet.write(0,3,'Total')
+        newsheet.write(0,4,'Utilized')
+        rows=1    
+        for dat in datatowrite:        
+            newsheet.write(rows,0,dat[0])
+            newsheet.write(rows,1,dat[1])
+            newsheet.write(rows,2,dat[2])
+            newsheet.write(rows,3,dat[3])
+            newsheet.write(rows,4,dat[4])
+            rows += 1
+        # content-type of response
+        response = HttpResponse(content_type='application/ms-excel')
+        # file name
+        epoc=int(time.time())
+        fileName = str(request.user)+"-"+str(epoc)+".xls"        
+        response['Content-Disposition'] = 'attachment; filename="%s"' %(fileName)
+        wb.save(response)       
+        return response
 
+@login_required
+def AssetManagementView(request):
+    if request.user:
+        user = request.user         
         if user.userprofile.adminstate == 0:
             #print('Hospital admin')
             hosp = Hospital.objects.get(hospital_id=user.userprofile.hospital_id.hospital_id)
@@ -639,14 +663,16 @@ def AssetManagementView(request):
                 'asset_id','-creation_date').distinct('asset_id')
                 assetmt.extend(tmp)
             #sample_tmp=xlsGenerate(assetmt,user.username)
-        sample_tmp=xlsGenerate(datatowrite,user.username)
-        context = dict()
-        
+        context = dict()           
 
         context['selecthospital'] = rendered
         context['assetmgt'] = assetmt
-        context['sample_tmp'] = sample_tmp
+        
 
+        return render(request,
+                'assetmgt/assetmanagement.html',
+                context)
+    else:
         return render(request,
                 'assetmgt/assetmanagement.html',
                 context)
