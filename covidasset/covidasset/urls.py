@@ -47,6 +47,7 @@ urlpatterns = [
     path('assetmappingform', assetmgt.returnhtypeMappingForm, name="assetmappingform"),
     path('assetmanagement', assetmgt.AssetManagementView, name="assetmanagementview"),
     path('assetmanagementimg', assetmgt.AssetManagementImgView, name="assetmanagementimgview"),
+    path('tmpdownload/', assetmgt.AssetMgmtemDownload, name="sample_tmp"),
     path('ajax/load-dist/', usercreation.load_district, name='ajax_load_districts'),
     path('assetmgt/',include('assetmgt.urls'),name='assetmgt'),
     path('ajax/load-hospital/', usercreation.load_hospital, name='ajax_load_hospital'),
