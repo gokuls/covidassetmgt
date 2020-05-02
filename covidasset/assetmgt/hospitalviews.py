@@ -16,6 +16,11 @@ import sys
 import csv
 import xlrd
 import xlwt
+import time
+from  django.db.utils import IntegrityError
+from django.urls import reverse
+from django.http import  HttpResponseRedirect
+
 from django.core.files.storage import FileSystemStorage
 
 from assetmgt.models import (Hospital,
@@ -436,38 +441,116 @@ class IndexPage(LoginRequiredMixin,View):
 
 
 #==================== K. Karthikeyan =====================================
+class UploadHospitalXls(LoginRequiredMixin,View):
+    login_url = 'login'
+    
+    def post(self,request):
+        if request.FILES['datafile']:            
+            myfile = request.FILES['datafile']
+            fs = FileSystemStorage()
+            
+            #FileName with EPOC time format
+            epoc=int(time.time())
+            tmpfileName = str(request.user)+"-"+str(epoc)+".csv"
+            filename = fs.save(tmpfileName, myfile)
+            user = UserProfile.objects.get(user__username=request.user.username)
+            
+            try:
+                wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
+                sheet=wb.sheet_by_index(0)
+                with transaction.atomic():
+                    for row in range(1,(sheet.nrows)):
+                        #If total value is 0 Fields is Ommited
+                        """balance = sheet.cell_value(row,3) - sheet.cell_value(row,4)                        
+                        if sheet.cell_value(row,3) == 0 :
+                            continue
+                        elif balance < 0:
+                            raise Exception('Value Error for {}, Check Value of Assets'.format(sheet.cell_value(row,1)))"""                     
+                        hospital = Hospital()                
+                        hospital.state_id=user.state_id
+                        hospital.district_id=District.objects.get(district_name=str(sheet.cell_value(row,0)))                                            
+                        hospital.district_id=District.objects.get(district_name=str(sheet.cell_value(row,0)))                                            
+                        hospital.hospital_name = str(sheet.cell_value(row,1))
+                        if len(hospital.hospital_name) == 0:
+                            raise Exception('Value Error for {}, Check Value Hospitalname'.format(sheet.cell_value(row,1)))
+                        hospital.htype=HospitalType.objects.get(hospital_type=str(sheet.cell_value(row,2)))
+                        hospital.address=str(sheet.cell_value(row,3))
+                        hospital.city=str(sheet.cell_value(row,4))
+                        hospital.taluk=str(sheet.cell_value(row,5))
+                        hospital.pincode=str(sheet.cell_value(row,6))
+                        hospital.contact_number=str(sheet.cell_value(row,7))
+                        hospital.latitude=str(sheet.cell_value(row,8))
+                        hospital.longitude=str(sheet.cell_value(row,9))
+                        hospital.doctors=int(sheet.cell_value(row,10))
+                        hospital.healthworkers=int(sheet.cell_value(row,11))
+                        hospital.save()
+
+                        htype_mapping_obj = HtypeAssetMapping.objects.filter(htype=hospital.htype).select_related('assetsmapped')
+                        for htype_asset in htype_mapping_obj:
+                            HospAssetMapping.objects.create(hospital=hospital,assetsmapped=htype_asset.assetsmapped)
+                        for asset in htype_mapping_obj:
+                            AssetMgt.objects.create(asset_id=asset.assetsmapped,hospital_id=hospital,author=usr.user,asset_total=0,asset_utilized=0,asset_balance=0) 
+                        print("Hospital ",hospital.hospital_name," Added successfully")    
+                 ## Successful Message
+                messages.info(request,"File Uploaded Successfully")
+                url = reverse('addhospitaltemp')
+                return HttpResponseRedirect(url)
+            except Exception as e:                
+                if isinstance(e, IntegrityError):
+                    messages.error(request,'Constrain violation, Check Value of Assets')
+                elif isinstance(e, ValueError):
+                    messages.error(request,'Value Error, Check Value of Doctors, Healthworkers')
+                else:
+                    messages.error(request,str(e))
+                    
+                url = reverse('addhospitaltemp')
+                return HttpResponseRedirect(url)           
+        else:
+            messages.info(request,"File Not Uploaded")
+            url = reverse('addhospitaltemp')
+            return HttpResponseRedirect(url)
+    
+
 def hospitalxlsGenerate(request):
     htypes = HospitalType.objects.all().values_list('hospital_type',flat=True)
     user = UserProfile.objects.get(user__username=request.user.username)
     
     wb = xlwt.Workbook() # create empty workbook object
     newsheet = wb.add_sheet('hospital_template') # sheet name can not be longer than 32 characters    
-    newsheet.write(0,0,'District') 
+    newsheet1 = wb.add_sheet('Districts and Hospital Types') # sheet name can not be longer than 32 characters    
+    newsheet.write(0,0,'District')
+    newsheet1.write(0,0,'District') 
+
     newsheet.write(0,1,'Hospital_Name')
-    newsheet.write(0,2,'Hospital_Type\n('+'/'.join(htypes)+')')
+    newsheet.write(0,2,'Hospital_Type')    
+    newsheet1.write(0,2,'Hospital_Type')
     newsheet.write(0,3,'Full Address')
     newsheet.write(0,4,'City')
     newsheet.write(0,5,'Taluk')
     newsheet.write(0,6,'Pincode')
     newsheet.write(0,7,'Contact_Number')
     newsheet.write(0,8,'latitude')
-    newsheet.write(0,9,'longitude')    
+    newsheet.write(0,9,'longitude')
+    newsheet.write(0,10,'Doctors')
+    newsheet.write(0,11,'Health Workers')
+    
     
     if user.adminstate == 2:
         dists = District.objects.filter(state_id=user.state_id).values_list("district_name",flat=True)
         i = 1
         for dist in dists:
-            newsheet.write(i,0,dist)
+            newsheet1.write(i,0,dist)
             i+=1
 
     if user.adminstate == 1:
         dist = user.district_id.district_name 
-        newsheet.write(1,0,dist)
+        newsheet1.write(1,0,dist)
     
     i = 1
     for htype in htypes:
-        newsheet.write(i,2,htype)
+        newsheet1.write(i,2,htype)
         i+=1
+  
   
     #if settings.DEBUG:
     try:

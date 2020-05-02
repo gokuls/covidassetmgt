@@ -12,7 +12,7 @@
 {% if usr.adminstate > 0 %}
 		<input type="radio" id="single"  name="hospitaldata" value="1"><label for="single">Add Hospital</label>
 		<input type="radio" id="multiple" class= "btn radio-inline btn-primary" name="hospitaldata" value="0"><label for="multiple">Upload Hospital Data</label>
-		<a class="btn btn-info pull-right"href="{% url 'gethospitalsample' %}" download >Sample CSV File</a>
+		<a class="btn btn-info pull-right"href="{% url 'gethospitalxls' %}" download >Download Hospital Upload xls</a>
 		{% else %}
 		<input type="radio" id="edit" name="hospitaldata" value="2"><label for="multiple">Edit Hospital Data</label>
 		{% endif %}
@@ -27,14 +27,17 @@
 	
 
 	<div id="forbulk" > <!-- for render file browser -->
-		<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" >
+		<!-- <form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'addhospitalcsv' %}" enctype="multipart/form-data" > -->
+		<form name="addbulk" id="bulkhospitalform" method="post" action="{% url 'uploadhospitalxls' %}" enctype="multipart/form-data" >
     					{% csrf_token %}
     				<div class="row">	 
 					<div class="col-md-6"> 
 						<div class="form-group row">
-        					<label for="#datafile" class="col-sm-3 col-form-label"> Select CSV File : </label> 
+        					<label for="#datafile" class="col-sm-3 col-form-label"> Select xls File </label> 
         					<div class="col-sm-9">
-        					    <input id="#datafile"  class="form-control" name="datafile" type="file" required accept=".csv" ></input>
+        					    <!-- <input id="#datafile"  class="form-control" name="datafile" type="file" required accept=".csv" ></input> -->
+        					    <input id="#datafile"  class="form-control" name="datafile" type="file" ></input>
+        					    
         					</div>
         					</div>
 					 </div>
@@ -53,8 +56,8 @@
 					<div class="form-group row">
 					<p><strong> Note:-</strong><br>
 						<ul>
-						<li> All field / column filled with correct values within ("New Delhi","Delhi","AIMS") double quotes</li>
-						<li> If any field / column not having value fill that column with comma "," Example: "New Delhi",,AIMS,,,,,,10,33</li>
+						<li> All field / column filled with correct values</li>
+						<li> Mandatory Fidelds are: District, Hospital Name, Hospital type, [If no value for Doctors & Health workers then set as 0] .</li>
 						</ul>
 					</p>
 					</div>

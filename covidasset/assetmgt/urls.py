@@ -2,7 +2,7 @@ from django.urls import path,re_path,include
 from assetmgt.hospitalviews import AddHospitalTemplate
 from assetmgt.hospitalviews import GetDistrictByState
 from assetmgt.hospitalviews import AddHospital
-from assetmgt.hospitalviews import AddMultipleHospital
+from assetmgt.hospitalviews import AddMultipleHospital, UploadHospitalXls
 from assetmgt.hospitalviews import GetHospitalSample,GetHospitalData
 from assetmgt.hospitalviews import GetHospitalSample
 from assetmgt.hospitalviews import hospitalxlsGenerate
@@ -18,9 +18,10 @@ urlpatterns = [
         path('getdistrict',GetDistrictByState.as_view(),name='getdistrict'),
         path('addsinglehospital',AddHospital.as_view(),name='addsinglehospital'),
         path('assetfileupload',AssetFileUploadView.as_view(),name='assetfileupload'),
-        path('gethospitalsamplecsv',GetHospitalSample.as_view(),name='gethospitalsample'),
+        path('gethospitalsamplefcsv',GetHospitalSample.as_view(),name='gethospitalsample'),
         path('gethospitalxls',hospitalxlsGenerate,name='gethospitalxls'),
         path('addhospitalcsv',AddMultipleHospital.as_view(),name='addhospitalcsv'),
+        path('uploadhospitalxls',UploadHospitalXls.as_view(),name='uploadhospitalxls'),        
         path('gethospitaldata',GetHospitalData.as_view(),name='gethospitaldata'),
         path('assetreport',assetreport.assetReport,name='assetreport'),
         path('generatereport',GetReport.as_view(),name='generatereport'),

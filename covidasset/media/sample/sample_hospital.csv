@@ -1,4 +1,4 @@
-District,Hospital_Name,Hospital_Type(Government/Private),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealthWorkers
+District,Hospital_Name,Hospital_Type(Government/Private/Welfare Center),FullAddress,City,Taluk,PINCODE,Phone_Number(with STD-code),Total_Doctors,Total_HealthWorkers
 Ariyalur, ,Government/Private/Welfare Center, , , , , , 
 Chengalpattu, ,Government/Private/Welfare Center, , , , , , 
 Chennai, ,Government/Private/Welfare Center, , , , , , 
