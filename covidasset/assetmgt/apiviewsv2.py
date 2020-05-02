@@ -396,7 +396,7 @@ def getStateNew(request):
                 distdict['assets'] = 0
             else:
                 distdict['status'] = {
-                'totalhospital' : 0,
+                'totalhospitals' : 0,
                 'availablebed' :0,
                 'patientsadmitted' : 0,
                 'availableventilator' : 0
@@ -412,15 +412,13 @@ def getStateNew(request):
                 bedast = Asset.objects.get(asset_name='Bed')
                 venast = Asset.objects.get(asset_name='ventilator')
                 for hosps in hospitals:
-                    distdict['status']['totalhospital'] += 1
+                    distdict['status']['totalhospitals'] += 1
                     assetsmapped = HospAssetMapping.objects.filter(
                                     hospital=hosps).exclude(
                                     assetsmapped__in=[bedast,venast]
                                     ).distinct('assetsmapped').values_list(
                                     'assetsmapped',flat=True).iterator()
-                    print("printing Assets Mapped")
-                    #print(assetsmapped)
-
+                    
                     if assetsmapped:
 
                         try:
@@ -496,19 +494,13 @@ def getStateNew(request):
                                 print(details)
                                 pass
 
-                distdict['info']['healthcentres'] = distdict['status']['totalhospital']
+                distdict['info']['healthcentres'] = distdict['status']['totalhospitals']
                 distdict['info']['patients'] = distdict['status']['patientsadmitted']
                 distdict['info']['freebeds'] = distdict['status']['availablebed']
 
             returndata.append(distdict)
 
         return JsonResponse(returndata,safe=False)
-
-
-
-
-
-
 
     except Exception as details:
         print(details)
