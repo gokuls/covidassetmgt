@@ -568,9 +568,9 @@ function resetAll() {
 
             hospitalType = res;
 
-            addStringArrayToSelect ( '#category-selector', hospitalType.map ( ele => ele.hospital_type ) );
+            //addStringArrayToSelect ( '#category-selector', hospitalType.map ( ele => ele.hospital_type ) );
 
-            $('#category-selector').prepend("<option value='All' selected='selected'>All</option>");
+            //$('#category-selector').prepend("<option value='All' selected='selected'>All</option>");
         });
 
     }).catch  ( function (err){
