@@ -397,9 +397,9 @@ def getStateNew(request):
             else:
                 distdict['status'] = {
                 'totalhospitals' : 0,
-                'availablebed' :0,
+                'availablebeds' :0,
                 'patientsadmitted' : 0,
-                'availableventilator' : 0
+                'availableventilators' : 0
                 }
 
                 distdict['info'] = {
@@ -425,7 +425,7 @@ def getStateNew(request):
                             ast = AssetMgt.objects.filter(hospital_id=hosps,asset_id=bedast).last()
                             if ast:
                                 distdict['status']['patientsadmitted'] += ast.asset_utilized 
-                                distdict['status']['availablebed'] += ast.asset_balance
+                                distdict['status']['availablebeds'] += ast.asset_balance
                                 if 'bed' not in distdict['assets']:
                                     distdict['assets']['bed'] = {
                                     'occupied':0,
@@ -434,7 +434,7 @@ def getStateNew(request):
                                     'unusable':0
                                     }
                                 distdict['assets']['bed']['occupied'] = distdict['status']['patientsadmitted']
-                                distdict['assets']['bed']['free'] = distdict['status']['availablebed']
+                                distdict['assets']['bed']['free'] = distdict['status']['availablebeds']
                                 distdict['assets']['bed']['total'] += ast.asset_total
                                 distdict['assets']['bed']['unusable']  = 0
 
@@ -446,7 +446,7 @@ def getStateNew(request):
                         try:
                             vst = AssetMgt.objects.filter(hospital_id=hosps,asset_id=venast).last()
                             if vst:
-                                distdict['status']['availableventilator'] += vst.asset_balance
+                                distdict['status']['availableventilators'] += vst.asset_balance
                                 if 'ventilator' not in distdict['assets']:
                                     distdict['assets']['ventilator'] = {
                                     'occupied':0,
@@ -455,7 +455,7 @@ def getStateNew(request):
                                     'unusable':0
                                     }
                                 distdict['assets']['ventilator']['occupied'] = vst.asset_utilized
-                                distdict['assets']['ventilator']['free'] = distdict['status']['availableventilator']
+                                distdict['assets']['ventilator']['free'] = distdict['status']['availableventilators']
                                 distdict['assets']['ventilator']['total'] += vst.asset_total
                                 distdict['assets']['ventilator']['unusable']  = 0
                         except Exception as details:
@@ -496,7 +496,7 @@ def getStateNew(request):
 
                 distdict['info']['healthcentres'] = distdict['status']['totalhospitals']
                 distdict['info']['patients'] = distdict['status']['patientsadmitted']
-                distdict['info']['freebeds'] = distdict['status']['availablebed']
+                distdict['info']['freebeds'] = distdict['status']['availablebeds']
 
             returndata.append(distdict)
 
