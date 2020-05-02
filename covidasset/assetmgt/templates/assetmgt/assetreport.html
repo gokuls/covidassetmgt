@@ -140,15 +140,17 @@
 		                <!-- <td rowspan={{assetcount}}> {{ assetmgt.district }}</td>
 		                <td rowspan={{assetcount}}>{{ assetmgt.status.totalhospitals }}</td> -->
 		                {% for key,value in assetmgt.assets.items %}
-		                    <tr>
-		                    <td>{{ assetmgt.district }}</td>
-    		                <!-- <td>{{ assetmgt.status.totalhospitals }}</td> -->
-		                    <td>{{ key }}</td>
-		                    <td>{{ value.total }}</td>
-		                    <td>{{ value.occupied }}</td>
-		                    <td>{{ value.free }}</td>
-		                    </tr>
-		                    <!-- <td>{{assetmgt.creation_date}}</td> -->
+		                    {% if value.total %}
+		                        <tr>
+		                        <td>{{ assetmgt.district }}</td>
+        		                <!--<td>{{ assetmgt.status.totalhospitals }}</td> -->
+		                        <td>{{ key }}</td>
+		                        <td>{{ value.total }}</td>
+		                        <td>{{ value.occupied }}</td>
+		                        <td>{{ value.free }}</td>
+		                        </tr>
+		                        <!-- <td>{{assetmgt.creation_date}}</td> -->
+		                    {% endif %}
 		                {% endfor %}
 	              
 	                {% endfor %}
