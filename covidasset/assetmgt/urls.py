@@ -27,9 +27,9 @@ urlpatterns = [
         path('generatereport',GetReport.as_view(),name='generatereport'),
         #Apiurls
         path('getallState',apicall.getAllState,name='getallstate'),
-        path('totalcounts',apicall.getTotalCounts,name='totalcounts'),
+        path('totalcounts',apicall.getTotalCountsNew,name='totalcounts'),
         #path('getstatedata',apicall.getState,name='getstatedata'),
-        path('getstatedata',apicall.getStateNew,name='getstatedata'),
+        path('getstatedata',apicall.getStateDataNew,name='getstatedata'),
         path('getdistrictdata',apicall.getHospitalsByDistrict,name='getdistrictdata'),
         path('getstatenamebyid',apicall.getStateNameById,name='getstatenamebyid'),
         path('gethospitaltype',apicall.getHospitalType,name='gethospitaltype'),
