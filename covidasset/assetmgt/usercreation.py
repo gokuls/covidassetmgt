@@ -34,7 +34,7 @@ def index(request):
 
 @login_required
 def register(request):
-	if request.user.userprofile.adminstate < 2:
+	if request.user.userprofile.adminstate < 1:
 		messages.info(request,"You are not Authorised to View this page ")
 		return redirect('index')
 	if request.method == 'POST':
