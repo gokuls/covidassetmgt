@@ -50,7 +50,7 @@
     <div  id="sidebar-wrapper">
          <div class="sidebar-heading  shadow-sm "><img  src="{% static 'assetmgt/images/cdacnew.png' %}" alt="logo" /> </div>
 	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p > <i class="fa  fa-user  mr-1" aria-hidden="true"></i>
-      {{ user }}<br/><small>System Administrator</small> </p></div>
+      {{ request.user.first_name |upper }}<br/><small>System Administrator</small> </p></div>
       <div class="list-group list-group-flush">
         
         
@@ -86,7 +86,7 @@
             <a href="{% url 'register' %}" class="list-group-item border-0 list-group-item-action ">Add User  <i class="fa  fa-user-plus pull-right mr-2" aria-hidden="true"></i></a>
 
 
-            <a href="http://14.139.180.57:5000/" target="_blank" class="list-group-item border-0 list-group-item-action "> Over ALL View  <i class="fa   fa-university pull-right mr-2" aria-hidden="true"></i></a>   
+            <a href="http://cov19ops.cdacchn.in/grafana" target="_blank" class="list-group-item border-0 list-group-item-action "> Over ALL View  <i class="fa   fa-university pull-right mr-2" aria-hidden="true"></i></a>   
 
             
             {% endif %}

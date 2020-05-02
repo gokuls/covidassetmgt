@@ -47,7 +47,9 @@ let stateCenters = {
 
     DamanDiu: [20.597270, 71.894826],
 
-    Maharashtra : [19.661492, 76.576587]
+    Maharashtra : [19.661492, 76.576587],
+
+    Sikkim: [27.548302, 88.439784] 
 };
 
 /*
@@ -566,9 +568,9 @@ function resetAll() {
 
             hospitalType = res;
 
-            addStringArrayToSelect ( '#category-selector', hospitalType.map ( ele => ele.hospital_type ) );
+            //addStringArrayToSelect ( '#category-selector', hospitalType.map ( ele => ele.hospital_type ) );
 
-            $('#category-selector').prepend("<option value='All' selected='selected'>All</option>");
+            //$('#category-selector').prepend("<option value='All' selected='selected'>All</option>");
         });
 
     }).catch  ( function (err){
