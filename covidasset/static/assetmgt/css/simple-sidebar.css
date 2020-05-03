@@ -106,6 +106,6 @@ position:relative;
   }
 }
 .breadcrumb {background-color:transparent !important; padding-left:0 !important;}
-.list-group-item {padding:0.8rem 0 .8rem 1rem; background-color:#33077c; color:#ede7ff	;}
-.list-group-item:hover {background-color:#4309a2; color:#fafafa;}
-
+.list-group-items {padding:0.8rem 0 .8rem 1rem; background-color:#33077c; color:#ede7ff	;}
+.list-group-items:hover {background-color:#4309a2; color:#fafafa;}
+.badge {font-size: 96% !important; font-weight: normal !important;}
