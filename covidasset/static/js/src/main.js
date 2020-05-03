@@ -297,10 +297,11 @@ function getDistrictData ( selectedDistrict, htypeid ) {
                     "<div class=\"popup\">", value.name, 
                     "<br>Patients: ", value.patients, 
                     "<br>","Beds:",( value.assets.bed ?"".concat(
-                    "<table class=\"my-table\"><tr><td>Occupied:</td><td>", value.assets.bed.occupied, 
-                    "</td></tr><tr><td>Free:</td><td>", value.assets.bed.free, 
-                    "</td></tr><tr><td>Unusable:</td><td>", value.assets.bed.unusable, 
-                    "</td></tr></table></div>"):""));
+                    	"<table class=\"my-table\"><tr><td>Occupied:</td><td>",
+			    value.assets.bed.occupied, 
+                    	"</td></tr><tr><td>Free:</td><td>", value.assets.bed.free, 
+                    	"</td></tr><tr><td>Unusable:</td><td>", value.assets.bed.unusable, 
+                    	"</td></tr></table></div>"):""));
                     //"<br>", popUpBalance, "</div>");
 
                 // console.log ( value.location, popupText );
