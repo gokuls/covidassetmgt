@@ -1,16 +1,23 @@
 {% extends 'assetmgt/base.html' %}
 {% block 'title' %} Asset Report {% endblock %}
 {% block 'content' %}
-        <br /><br />
+     <div class="row mb-3">
+  <div class="col-12">
+  <div class="card">
+  <div class="card-body">
 {% if message %}
-    <div align="center"><b>{{ message }}<b></div>
+    <p class="alert alert-info">{{ message }}</p>
 {% else %}    
+	
+
+  <div class="row mt-1">
+  <div class="col-6">
 	<form id="reportform" method="post" action="{% url 'assetreport' %}" >
 		{% csrf_token %}
 		<div class="form-group row">
 		    <label for="state" class="col-sm-2 col-form-label">State</label>
 		    <div class="col-sm-10">
-		        <select name="state" id="state" required=true>
+		        <select class="form-control" name="state" id="state" required=true>
 				    <!-- <option value="">--select-state--</option> -->
 				    {% for state in states %}
 				     <!-- <option value="{{state.state_id}}" selected=true>{{state.state_name}}</option> -->
@@ -24,7 +31,7 @@
 		<div class="form-group row">
 		    <label for="district" class="col-sm-2 col-form-label">District</label>
 		    <div class="col-sm-10">
-		        <select name="district" id="district" required=true >
+		        <select class="form-control"  name="district" id="district" required=true >
 			        <!-- <option value="">--Select-District--</option> -->
 			        {% if userprofile.adminstate == 1 %}
 				     <option value="{{userprofile.district_id_id}}" selected=true>{{userprofile.district_id.district_name}}</option>
@@ -61,7 +68,7 @@
 		<div class="form-group row">
 		    <label for="hospital" class="col-sm-2 col-form-label">Report</label>
 		    <div class="col-sm-10">
-		        <select name="opt" id="opt" required>
+		        <select class="form-control" name="opt" id="opt" required>
 			        <option value="">--Select--</option>
 			        <option value="by-hospitals">By - Hospitals</option>
    			        <option value="by-assets">By - Assets</option>
@@ -70,14 +77,18 @@
 		</div>
 
 		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">&nbsp; </label>
 		    <div class="col-sm-10">
-			    <input type="submit" id="formsubmit" value="Get Report" />
-			    <input type="reset" value="Reset" />
+			    <input type="submit" class="btn btn-primary" id="formsubmit" value="Get Report" />
+			    <input type="reset" class="btn btn-reset"  value="Reset" />
 		    </div>
 		</div>
 
 
 	</form>
+
+
+</div></div>
     
         {% if assetmgts is not empty %} 
         <div id="reportfor">
@@ -156,10 +167,10 @@
 			    </table>
             </div>
         {% endif %}
-{% endif %}
+{% endif %} 
 
 {% endblock %}
-
+</div></div></div></div>
 {% block 'customjs' %}
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
