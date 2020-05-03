@@ -454,7 +454,7 @@ def getStateNew(request):
                                     'total':0,
                                     'unusable':0
                                     }
-                                distdict['assets']['ventilator']['occupied'] = vst.asset_utilized
+                                distdict['assets']['ventilator']['occupied'] += vst.asset_utilized
                                 distdict['assets']['ventilator']['free'] = distdict['status']['availableventilators']
                                 distdict['assets']['ventilator']['total'] += vst.asset_total
                                 distdict['assets']['ventilator']['unusable']  = 0
