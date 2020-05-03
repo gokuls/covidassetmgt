@@ -48,17 +48,18 @@ animation: {
         ctx.textAlign = "left";
         ctx.font = "9px Open Sans";
         ctx.fillStyle = "#fff";
-
+/*
         Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
             var meta = chartInstance.controller.getDatasetMeta(i);
             Chart.helpers.each(meta.data.forEach(function (bar, index) {
                 data =  dataset.data[index];
-                /* if(i==0){
-                    ctx.fillText(data, 50, bar._model.y+4);
-                } else {  */
+                // if(i==0){
+                 //   ctx.fillText(data, 50, bar._model.y+4);
+               // } else {  
                 if ( data != 0 ) ctx.fillText(data, bar._model.x - 15, bar._model.y);                // }
             }),this)
         }),this);
+*/
     }
 },
 pointLabelFontFamily : "Quadon Extra Bold",

@@ -27,7 +27,7 @@ class LoginForm(forms.Form):
 				widget=forms.PasswordInput(
 					attrs={'class':'form-control','autocomplete':'off'}), 
 				help_text='Enter Password')
-        #captcha = CaptchaField()
+        captcha = CaptchaField()
 
 
 
