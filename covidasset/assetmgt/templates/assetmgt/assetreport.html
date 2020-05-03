@@ -70,6 +70,9 @@
 		    <div class="col-sm-10">
 		        <select class="form-control" name="opt" id="opt" required>
 			        <option value="">--Select--</option>
+			      
+
+
 			        <option value="by-hospitals">By - Hospitals</option>
    			        <option value="by-assets">By - Assets</option>
 		        </select>
@@ -80,7 +83,7 @@
 			<label class="col-sm-2 col-form-label">&nbsp; </label>
 		    <div class="col-sm-10">
 			    <input type="submit" class="btn btn-primary" id="formsubmit" value="Get Report" />
-			    <input type="reset" class="btn btn-reset"  value="Reset" />
+			    <input type="reset" class="btn btn-warning"  value="Reset" />
 		    </div>
 		</div>
 
@@ -88,7 +91,7 @@
 	</form>
 
 
-</div></div>
+</div> </div>  <div class="row mt-2">  <div class="col-md-12">
     
         {% if assetmgts is not empty %} 
         <div id="reportfor">
@@ -137,7 +140,7 @@
 				    <thead>
 					    <tr>
 						    <th> District </th>
-						    <!-- <th>Total Hospitals</th> -->
+						    <th>Total Hospitals</th>
 						    <th>Asset Name</th>
 						    <th>Total</th>
 						    <th>Occupied</th>
@@ -151,28 +154,26 @@
 		                <!-- <td rowspan={{assetcount}}> {{ assetmgt.district }}</td>
 		                <td rowspan={{assetcount}}>{{ assetmgt.status.totalhospitals }}</td> -->
 		                {% for key,value in assetmgt.assets.items %}
-		                    {% if value.total %}
-		                        <tr>
-		                        <td>{{ assetmgt.district }}</td>
-        		                <!--<td>{{ assetmgt.status.totalhospitals }}</td> -->
-		                        <td>{{ key }}</td>
-		                        <td>{{ value.total }}</td>
-		                        <td>{{ value.occupied }}</td>
-		                        <td>{{ value.free }}</td>
-		                        </tr>
-		                        <!-- <td>{{assetmgt.creation_date}}</td> -->
-		                    {% endif %}
+		                    <tr>
+		                    <td>{{ assetmgt.district }}</td>
+    		                <td>{{ assetmgt.status.totalhospitals }}</td>
+		                    <td>{{ key }}</td>
+		                    <td>{{ value.total }}</td>
+		                    <td>{{ value.occupied }}</td>
+		                    <td>{{ value.free }}</td>
+		                    </tr>
+		                    <!-- <td>{{assetmgt.creation_date}}</td> -->
 		                {% endfor %}
 	              
 	                {% endfor %}
 	                </tbody>					
 			    </table>
-            </div>
+            </div> </div></div>
         {% endif %}
 {% endif %} 
-
-{% endblock %}
 </div></div></div></div>
+{% endblock %}
+
 {% block 'customjs' %}
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
