@@ -37,6 +37,7 @@ urlpatterns = [
     path('home',IndexPage.as_view(), name="index"),
     path('adduser', usercreation.register, name="register"),
     path('addhospital', usercreation.addHospital, name="addhospital"),
+    path('refreshcaptcha', assetmgt.returnCaptcha, name="refreshcaptcha"),
     ## asset management
     path('assetmapping', assetmgt.AssetsMappingView, name="assetmapping"),
     path('assets', assetmgt.AssetsView, name="assetview"),

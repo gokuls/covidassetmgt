@@ -49,8 +49,22 @@
     <!-- Sidebar -->
     <div  id="sidebar-wrapper">
          <div class="sidebar-heading  shadow-sm "><img  src="{% static 'assetmgt/images/cdacnew.png' %}" alt="logo" /> </div>
-	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p > <i class="fa  fa-user  mr-1" aria-hidden="true"></i>
-      {{ request.user.first_name |upper }}<br/><small>  {{ request.user.last_name | upper }}</small> </p></div>
+	  <div class="sidebar-heading  text-white border-top border-bottom border-light custom-bg"><p >
+     <i class="fa  fa-user  mr-1" aria-hidden="true"></i>
+
+
+      {{ request.user.first_name |upper }}<br/><small>  
+        {% if request.user.userprofile.adminstate > 0 %}
+
+      {{ request.user.last_name | upper }}
+      
+      {% else %}
+       {{ request.user.userprofile.district_id.district_name | upper }}
+       {% endif %}
+
+    </small> 
+
+    </p></div>
       <div class="list-group list-group-flush">
         
         

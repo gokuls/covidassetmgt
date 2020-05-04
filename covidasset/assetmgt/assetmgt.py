@@ -31,7 +31,6 @@ from django.http import HttpResponse
 from django.http import  HttpResponseRedirect
 from django.contrib.auth import authenticate 
 from django.contrib.auth import login
-from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from .forms import LoginForm
@@ -42,6 +41,11 @@ from django.contrib.auth import logout
 from django.forms import formset_factory
 
 from django.db import DatabaseError, transaction
+
+import json
+from django.views.generic.edit import CreateView
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 import xlwt
 import time
@@ -88,6 +92,38 @@ def LoginMeth(request):
     else:
         form = LoginForm()
     return render(request, 'assetmgt/login.html', {'form': form})
+
+
+def returnCaptcha(request):
+    to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
+    to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
+    return HttpResponse("okay")
+
+class AjaxExampleForm(CreateView):
+    template_name = ''
+    form_class = LoginForm()
+
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            to_json_response = dict()
+            to_json_response['status'] = 0
+            to_json_response['form_errors'] = form.errors
+
+            to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
+            to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
+
+            return HttpResponse(json.dumps(to_json_response), content_type='application/json')
+
+    def form_valid(self, form):
+        form.save()
+        if self.request.is_ajax():
+            to_json_response = dict()
+            to_json_response['status'] = 1
+
+            to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
+            to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
+
+            return HttpResponse(json.dumps(to_json_response), content_type='application/json')
 
 @login_required
 def AssetsView(request):
