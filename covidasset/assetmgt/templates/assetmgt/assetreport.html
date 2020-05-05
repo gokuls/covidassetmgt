@@ -44,6 +44,20 @@
                 </select>
 		    </div>
 		</div>
+
+		<div class="form-group row">
+		    <label for="htype" class="col-sm-2 col-form-label">Hospital Type</label>
+		    <div class="col-sm-10">
+		        <select class="form-control"  name="htype" id="htype" required=true >
+			        <!-- <option value="">--Select-District--</option> -->
+   				    <option value="all">All Types</option>
+   				    {% for htype in htypes %}
+                    <option value="{{htype.htype_id}}" >{{htype.hospital_type}}</option>
+                    {% endfor %}                                             
+                </select>
+		    </div>
+		</div>
+
 		
 		<!-- <div class="form-group row">
 		    <label for="hospital" class="col-sm-2 col-form-label">Hospital</label>
@@ -107,7 +121,7 @@
 						    {% if userprofile.adminstate == 2 %}
 						    <th> District </th>
 						    {% endif %}
-						    <th>Hospital Name-City</th>
+						    <th>Hospital Name</th>
 						    <th>Asset</th>
 						    <th>Total</th>
 						    <th>Utilized</th>
@@ -123,7 +137,8 @@
 		                {% if userprofile.adminstate == 2 %}
 		                <td > {{ assetmgt.hospital_id.district_id.district_name | safe }}</td>
 		                {% endif %}
-		                <td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td>
+		                <!-- <td>{{assetmgt.hospital_id.hospital_name | safe }} - {{assetmgt.hospital_id.city | safe }}</td> -->
+		                <td>{{assetmgt.hospital_id.hospital_name | safe }}</td>
 		                <td>{{assetmgt.asset_id.asset_name | safe }}</td>
 		                <td>{{assetmgt.asset_total | safe }}</td>
 		                <td>{{assetmgt.asset_utilized | safe }}</td>
@@ -140,7 +155,7 @@
 				    <thead>
 					    <tr>
 						    <th> District </th>
-						    <th>Total Hospitals</th>
+						    <!-- <th>Total Hospitals</th> -->
 						    <th>Asset Name</th>
 						    <th>Total</th>
 						    <th>Occupied</th>
@@ -154,14 +169,16 @@
 		                <!-- <td rowspan={{assetcount}}> {{ assetmgt.district }}</td>
 		                <td rowspan={{assetcount}}>{{ assetmgt.status.totalhospitals }}</td> -->
 		                {% for key,value in assetmgt.assets.items %}
-		                    <tr>
-		                    <td>{{ assetmgt.district }}</td>
-    		                <td>{{ assetmgt.status.totalhospitals }}</td>
-		                    <td>{{ key }}</td>
-		                    <td>{{ value.total }}</td>
-		                    <td>{{ value.occupied }}</td>
-		                    <td>{{ value.free }}</td>
-		                    </tr>
+		                    {% if value.total %}
+		                        <tr>
+		                        <td>{{ assetmgt.district }}</td>
+        		                <!-- <td>{{ assetmgt.status.totalhospitals }}</td> -->
+		                        <td>{{ key }}</td>
+		                        <td>{{ value.total }}</td>
+		                        <td>{{ value.occupied }}</td>
+		                        <td>{{ value.free }}</td>
+		                        </tr>
+		                    {% endif %}
 		                    <!-- <td>{{assetmgt.creation_date}}</td> -->
 		                {% endfor %}
 	              

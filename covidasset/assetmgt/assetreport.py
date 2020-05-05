@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 
 from .models import State
 from .models import District
-from .models import Hospital
+from .models import Hospital, HospitalType
 from .models import Asset
 from .models import AssetMgt
 from .models import UserProfile
@@ -28,16 +28,25 @@ def assetReport(request):
         sel_state = State.objects.get(state_id=state_id).state_name
         try:
             sel_district = District.objects.get(district_id=request.POST['district']).district_name
-            district_id = District.objects.get(district_id=request.POST['district']).district_id
+            district_ids = District.objects.filter(district_id=request.POST['district']).values_list('district_id', flat=True)
         except:
             if request.POST['district'] == "all":
                 sel_district = "All District"
-                district_id="all"
+                district_ids= District.objects.filter(state_id=state_id).values_list('district_id', flat=True)
+
+        try:
+            sel_htype = HospitalType.objects.get(htype_id=request.POST['htype']).hospital_type
+            htype_ids = HospitalType.objects.filter(htype_id=request.POST['htype']).values_list('htype_id', flat=True)
+        except:
+            if request.POST['htype'] == "all":
+                sel_htype = "All Types"
+                htype_ids = HospitalType.objects.all().values_list('htype_id', flat=True)
+        
                 
         #sel_opt = request.POST['opt'] if request.POST['opt']!="0" else "Not selected"
         report_by = request.POST['opt']
         context['report_by'] = report_by
-        context['reportfor']=" / admin state :  "+sel_state+" / District : "+sel_district+" / Report : "+report_by#context['userstate'].state_name+" userdistrict: "+context['userdistrict'].district_name
+        context['reportfor']=" / State :  "+sel_state+" / District : "+sel_district+" / Hospital Type : "+sel_htype+" / Report : "+report_by#context['userstate'].state_name+" userdistrict: "+context['userdistrict'].district_name
     
     assets = Asset.objects.all()
     assetcount = Asset.objects.all().count()
@@ -46,40 +55,44 @@ def assetReport(request):
     districts = District.objects.filter(district_id=userprofile.district_id.district_id)
     districts = District.objects.filter(state_id=userprofile.state_id)
     hospitals = Hospital.objects.filter(state_id=userprofile.state_id.state_id,district_id=userprofile.district_id.district_id)
+    htypes = HospitalType.objects.all()
     asset_count = Asset.objects.all().count()
 
     context['states'] = states
     context['districts'] = districts
-    context['hospitals'] = hospitals    
+    context['hospitals'] = hospitals   
+    context['htypes'] = htypes 
     context['assets'] = assets
     context['user'] = user
     context['userstate'] = State.objects.get(state_id=userprofile.state_id_id)
     context['userdistrict'] = District.objects.get(district_id=userprofile.district_id_id)
     context['assetcount'] = assetcount+1
+
     if request.POST:
-        result_set = generateReport(state_id,district_id,report_by,request)
+        result_set = generateReport(state_id,district_ids,report_by,htype_ids,request)
         if result_set:
-            context['assetmgts'] = result_set
-            
+            context['assetmgts'] = result_set        
          
     if 'reportfor' in context:
-        context['reportfor']="Report for user : "+user.username+context['reportfor']
+        context['reportfor']="/User : "+user.username+context['reportfor']
 
-    print("context-output:\n",context)
+    #print("context-output:\n",context)
     #context['userhospital'] = Hospital.objetcts.get(hospital_id_id=userprofile.hospital_id_id)
     return render(request, 'assetmgt/assetreport.html',context=context)
  
 
-def generateReport(state_id,district_id,report_by,request):
+def generateReport(state_id,district_ids,report_by,htype_ids,request):
     assetmgt = None
+    #print(state_id, "\n", district_ids, "\n", htype_ids, "\n", report_by)
     if report_by == "by-hospitals":
-        if district_id == "all":
+        """if district_id == "all":
             assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]
         else:
-            assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]        
+            assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]        """
+        assetmgt = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id__in=district_ids, hospital_id__htype_id__in=htype_ids).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")#[:asset_count]        
 
     if report_by == "by-assets":
-            assetmgt = reportByAsset(request,state_id,district_id)        
+            assetmgt = reportByAsset(request,state_id,district_ids,htype_ids)        
         
 
     """if userprofile.adminstate == 1:
@@ -90,7 +103,7 @@ def generateReport(state_id,district_id,report_by,request):
     return assetmgt
 
 
-def reportByAsset(request,state_id,district_id):
+def reportByAsset(request,state_id,district_ids,htype_ids):
 
     state_data = list()
     try:
@@ -104,22 +117,25 @@ def reportByAsset(request,state_id,district_id):
 
         if user.adminstate == 0:
             districts = District.objects.filter(state_id=user.state_id.state_id,district_id=user.district_id.district_id)"""
-        if district_id == "all":
+        """if district_id == "all":
             districts = District.objects.filter(state_id=state_id)
         else:
-            districts = District.objects.filter(state_id=state_id,district_id=district_id)
+            districts = District.objects.filter(state_id=state_id,district_id=district_id)"""
 
         assets = Asset.objects.all()#values_list("asset_name",flat=True)
-        for district in districts:
+        for district in district_ids:
             dist_dict = {}
-            district_hospitals = Hospital.objects.filter(state_id=state_id,district_id=district.district_id)
+            district_hospitals = Hospital.objects.filter(state_id=state_id,district_id=district,htype_id__in=htype_ids)
+            #print("\n\n----",district,district_hospitals)
                 
             if user.adminstate == 0:
-                district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district.district_id,hospital_id=user.hospital_id.hospital_id)
+                district_hospitals = Hospital.objects.filter(state_id=district.state_id,district_id=district,htype_id__in=htype_ids,hospital_id=user.hospital_id.hospital_id)
             
             h_count = district_hospitals.count()
 
-            dist_dict["district"]=district.district_name
+            cur_dist = District.objects.get(district_id=district)
+            #print(cur_dist,cur_dist.district_name)
+            dist_dict["district"]=cur_dist.district_name
             dist_dict["status"] = {}
             dist_dict["info"]={}
             dist_dict["assets"]={}
@@ -139,7 +155,7 @@ def reportByAsset(request,state_id,district_id):
                             asset_lower = asset.lower()
                             #assetmgt_object = AssetMgt.objects.filter(hospital_id__district_id=district.district_id,hospital_id=hospital,asset_id__asset_name=asset).annotate(count_asset=Count("hospital_id")).order_by("-creation_date","asset_id","hospital_id")[0].distinct('hospital_id').values('asset_total','asset_utilized','asset_balance')
                             assetmgt_object = AssetMgt.objects.filter(
-                                hospital_id__district_id=district.district_id,
+                                hospital_id__district_id=district,
                                 hospital_id=hospital.hospital_id,asset_id=ast).order_by(
                                 "hospital_id","-creation_date").distinct('hospital_id').values(
                                 'asset_total','asset_utilized','asset_balance')
