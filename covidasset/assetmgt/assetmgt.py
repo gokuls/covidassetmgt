@@ -95,9 +95,10 @@ def LoginMeth(request):
 
 
 def returnCaptcha(request):
-    to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
-    to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
-    return HttpResponse("okay")
+    to_json_response = dict()
+    to_json_response['key'] = CaptchaStore.generate_key()
+    to_json_response['image_url'] = captcha_image_url(to_json_response['key'])
+    return JsonResponse(to_json_response)
 
 class AjaxExampleForm(CreateView):
     template_name = ''
@@ -109,8 +110,8 @@ class AjaxExampleForm(CreateView):
             to_json_response['status'] = 0
             to_json_response['form_errors'] = form.errors
 
-            to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
-            to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
+            to_json_response['key'] = CaptchaStore.generate_key()
+            to_json_response['image_url'] = captcha_image_url(to_json_response['new_cptch_key'])
 
             return HttpResponse(json.dumps(to_json_response), content_type='application/json')
 
