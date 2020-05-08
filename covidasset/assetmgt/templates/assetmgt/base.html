@@ -43,7 +43,8 @@
 <body>
       {% block 'main' %}
 
-
+{% load app_filters %}
+{% load tz %}
   <div class="d-flex" id="wrapper">
 
     <!-- Sidebar -->
@@ -53,7 +54,8 @@
      <i class="fa  fa-user  mr-1" aria-hidden="true"></i>
 
 
-      {{ request.user.first_name |upper }}<br/><small>  
+      {{ request.user.first_name |upper }}<br/>
+       <small>  
         {% if request.user.userprofile.adminstate > 0 %}
 
       {{ request.user.last_name | upper }}
@@ -61,8 +63,7 @@
       {% else %}
        {{ request.user.userprofile.district_id.district_name | upper }}
        {% endif %}
-
-    </small> 
+ </small> 
 
     </p></div>
       <div class="list-group list-group-flush">
@@ -125,6 +126,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
           <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
             <li class="nav-item active">
               <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>

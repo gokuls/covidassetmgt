@@ -97,8 +97,8 @@ class AssetMgt(models.Model):
 	asset_id 			= models.ForeignKey(Asset,on_delete=models.CASCADE)
 	hospital_id 		= models.ForeignKey(Hospital,on_delete=models.CASCADE)
 	author 				= models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
-	asset_total			= models.IntegerField()
-	asset_utilized 		= models.IntegerField(null=True,default=0)
+	asset_total			= models.PositiveIntegerField()
+	asset_utilized 		= models.PositiveIntegerField(null=True,default=0)
 	asset_balance 		= models.PositiveIntegerField(null=True,default=0)
 	creation_date 		= models.DateTimeField(auto_now_add=True)
 

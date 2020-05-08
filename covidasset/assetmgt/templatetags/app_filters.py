@@ -29,7 +29,7 @@ def addclass(value):
 def addclass(total, utilized):
 	try:
 		mc = int(((utilized)/total)*100)
-		print(mc)
+		#print(mc)
 	except:
 		mc = 0
 	if mc < 25:

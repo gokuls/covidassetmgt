@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'assetmgt',
     'captcha',
+    'django.contrib.humanize',
+    #'session',
   #  'easy_timezones',
 ]
 
@@ -57,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-   # 'easy_timezones.middleware.EasyTimezoneMiddleware',
+    #'session.middleware.SessionIdleTimeout',
 ]
 
 ROOT_URLCONF = 'covidasset.urls'
@@ -128,6 +130,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+#session Settings
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE  =  1200
+SESSION_SAVE_EVERY_REQUEST = True
+#SESSION_IDLE_TIMEOUT = 30
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

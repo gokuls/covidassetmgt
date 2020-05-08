@@ -202,7 +202,7 @@ def returnAssetsHt(request):
         htype=htypeobj).distinct('assetsmapped')
 
     assetsmappeda = exisa.values_list('assetsmapped',flat=True)
-    print(exisa)
+    #print(exisa)
     context['vals'] = Asset.objects.exclude(asset_id__in=assetsmappeda)
     context['existasset'] = exisa
     #context['vals'] = assets - assetsmappeda
@@ -278,7 +278,7 @@ def returnAssetShow(request):
     if request.method == 'POST':
         if 'hospital_id' in request.POST:
             hid = request.POST['hospital_id']
-            print(hid)
+            #print(hid)
             try:
                 context = dict()
 
@@ -478,33 +478,38 @@ def addMultipleAssetManagement(request):
             formset = AssetMgtFormset(request.POST)
             # for forms in formset:
             #     forms.full_clean()
+            updateflag = False
             mess = ['<p>']
             if formset.is_valid():
                 print("Form is valid")
-                updateflag = False
+                
         
                 for form in formset:
                     #print(form)
-                    
-                    obj = form.save(commit=False)
-                    if obj.asset_total:
-                        if obj.asset_utilized <= obj.asset_total:
-                            obj.author = request.user
-                            obj.asset_balance = obj.asset_total - obj.asset_utilized 
-                            obj.save()
-                            updateflag = True
+                    try:
+                        obj = form.save(commit=False)
+                        if obj.asset_total:
+                            if obj.asset_utilized <= obj.asset_total:
+                                obj.author = request.user
+                                obj.asset_balance = obj.asset_total - obj.asset_utilized 
+                                obj.save()
+                                updateflag = True
+                            else:
+                                mess.append("Utilization was given more then Total for Asset %s"\
+                                    %obj.asset_id.asset_name)
                         else:
-                            mess.append("Utilization was given more then Total for Asset %s"\
-                                %obj.asset_id.asset_name)
-                    else:
-                        if obj.asset_utilized > 0:
-                            mess.append("Total Should be more then utilized Invalid input for %s"\
-                                %obj.asset_id.asset_name)
+                            if obj.asset_utilized > 0:
+                                mess.append("Total Should be more then utilized Invalid input for %s"\
+                                    %obj.asset_id.asset_name)
+                    except Exception:
+                        mess.append(" Provide Positve Integer Value ")
             else:
                 #print(formset.errors)
                 print("Some Issue")
             
                 #messages.info(request,'Asset Added')
+                mess.append("Provide Valid Values : Values should be Positve Integer and \
+                    Utilization should be less then or equal to Total")
             if updateflag:
                 mess.append("All Valid Inputs has been Updated")
             mess.append("</p>")
@@ -514,7 +519,8 @@ def addMultipleAssetManagement(request):
 
             return HttpResponseRedirect(url)
         except IntegrityError as ie:
-            print("Asset already exists")
+            print(ie)
+            #print("Asset already exists")
             url = reverse('assetmanagementview')
             messages.info(request,"Issue in Updating ")
             return HttpResponseRedirect(url)
@@ -726,8 +732,8 @@ def HospitalTypeAssetMapping(request):
         assets = request.POST.getlist('assets')
         if assets:
             assetobjs = [Asset.objects.get(asset_id=int(i)) for i in assets ]
-        print(hosptype)
-        print(assets)
+        #print(hosptype)
+        #print(assets)
         htypeobj = HospitalType.objects.get(htype_id=int(hosptype))
         with transaction.atomic():
             state = request.user.userprofile.state_id
@@ -793,8 +799,8 @@ def HospitalAssetMapping(request):
         assets = request.POST.getlist('assets')
         if assets:
             assetobjs = [Asset.objects.get(asset_id=int(i)) for i in assets ]
-        print(hospid)
-        print(assets)
+        #print(hospid)
+        #print(assets)
         
         with transaction.atomic():
             ## Get hospital List
