@@ -58,12 +58,14 @@ class AssetFileUploadView(View):
                 hosp = Hospital.objects.filter(state_id=userobj.userprofile.state_id.state_id)
             
             # AssetMgmt List Constructions and saved to database 
+            rowno=0
                       
             try:
                 wb=xlrd.open_workbook(settings.MEDIA_ROOT+"/"+filename)
                 sheet=wb.sheet_by_index(0)
                 with transaction.atomic():
                     for row in range(1,(sheet.nrows)):
+                        rowno=row
                         #If total value is 0 Fields is Ommited
                         balance = sheet.cell_value(row,3) - sheet.cell_value(row,4)                        
                         if sheet.cell_value(row,3) == 0 :
@@ -83,13 +85,14 @@ class AssetFileUploadView(View):
                 messages.info(request,"File Uploaded Successfully")
                 url = reverse('assetmanagementview')
                 return HttpResponseRedirect(url)
-            except Exception as e:                
+            except Exception as e:
+                rowno += 1                
                 if isinstance(e, IntegrityError):
-                    messages.error(request,'Constrain violation, Check Value of Assets')
+                    messages.error(request,'Constrain violation, Check Value of Assets - Row No {} '.format(rowno))
                 elif isinstance(e, ValueError):
-                    messages.error(request,'Value Error, Check Value of Assets')
+                    messages.error(request,'Value Error, Check Value of Assets - Row No {} '.format(rowno))
                 elif isinstance(e, TypeError):
-                    messages.error(request,'Value Error, Check Value of Assets')
+                    messages.error(request,'Value Error, Check Value of Assets - Row No {} '.format(rowno))
                 else:
                     messages.error(request,str(e))
                 
