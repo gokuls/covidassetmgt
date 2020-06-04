@@ -39,6 +39,7 @@ urlpatterns = [
         path('getallstates',hospitalsearch.get_all_states,name='getallstates'),
         path('getalldistrictsbystate',hospitalsearch.get_all_districts_by_state,name='getalldistrictsbystate'),
         path('getallassets',hospitalsearch.get_all_assets,name='getallassets'),
+        path('gethospitalasset',hospitalsearch.get_hospitals_with_assets,name='gethospitalasset'),
         ]
         
 

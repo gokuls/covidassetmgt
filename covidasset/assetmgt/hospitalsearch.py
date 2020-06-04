@@ -35,8 +35,9 @@ def get_all_states(request):#getAllState():
 
 def get_all_districts_by_state(request):#getAllState():
     """ To get all state as dictionary """
+    stateid = request.GET['stateid']
     dists_dict = {}
-    districts = District.objects.filter(state_id=1).values("district_id","district_name")
+    districts = District.objects.filter(state_id=stateid).values("district_id","district_name")
     if districts.exists():
         i = 0
         for district in districts:
@@ -50,6 +51,8 @@ def get_all_districts_by_state(request):#getAllState():
 
 def get_all_assets(request):#getAllState():
     """ To get all state as dictionary """
+    state_id = request.GET['stateid']
+    district_id = request.GET['districtid']
     assets_dict = {}
     assets = Asset.objects.all().values("asset_id","asset_name")
     if assets.exists():
@@ -63,5 +66,27 @@ def get_all_assets(request):#getAllState():
     return JsonResponse(assets_dict)
     #return HttpResponse(assets_dict)
     
-
+def get_hospitals_with_assets(request):
+    state_id = request.GET['stateid']
+    district_id = request.GET['districtid']
+    asset_id = request.GET['assetid']
+    
+    data_table_list = []
+    h_assets = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id,asset_id=asset_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")
+    
+    if h_assets.exists():
+        i=0
+        for h_asset in h_assets:
+            data_table={}
+            data_table['hname']=h_asset.hospital_id.hospital_name
+            data_table['aname']=h_asset.asset_id.asset_name
+            data_table['atot']=h_asset.asset_total
+            data_table['autil']=h_asset.asset_utilized
+            data_table['abal']=h_asset.asset_balance
+            data_table_list.append(data_table)
+            i += 1
+    print(data_table_list)
+    return JsonResponse(data_table_list,safe=False)   
+    #return JsonResponse(json.dumps(data_table_list), content_type='application/json')         
+                
     
