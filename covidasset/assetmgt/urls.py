@@ -8,6 +8,7 @@ from assetmgt.hospitalviews import GetHospitalSample
 from assetmgt.hospitalviews import hospitalxlsGenerate
 from assetmgt.assetreport import GetReport 
 from assetmgt import assetreport
+from assetmgt import hospitalsearch
 from .views import AssetFileUploadView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -33,7 +34,13 @@ urlpatterns = [
         path('getdistrictdata',apicall.getHospitalsByDistrict,name='getdistrictdata'),
         path('getstatenamebyid',apicall.getStateNameById,name='getstatenamebyid'),
         path('gethospitaltype',apicall.getHospitalType,name='gethospitaltype'),
+        
+        #For hospital search by assets(by patient)
+        path('getallstates',hospitalsearch.get_all_states,name='getallstates'),
+        path('getalldistrictsbystate',hospitalsearch.get_all_districts_by_state,name='getalldistrictsbystate'),
+        path('getallassets',hospitalsearch.get_all_assets,name='getallassets'),
         ]
+        
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
