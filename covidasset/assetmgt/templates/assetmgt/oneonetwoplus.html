@@ -1,0 +1,307 @@
+{% extends 'assetmgt/base.html' %}
+
+
+
+{% block 'title' %}
+    Check hospital status around me
+{% endblock %}
+
+
+
+
+    {% block 'customcss' %}
+    {% load static %}
+
+
+      <link rel="stylesheet" href="{% static  'assetmgt/css/leaflet.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static  'assetmgt/css/style.css' %}" type="text/css" />
+
+    {% endblock %}
+
+
+
+{% block 'content' %}
+
+    <div>
+        <h1 class="ak-title">Check hospital status around me</h1>
+        <label class="switch">
+            <input id="view-selector" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div>
+        <table class="selectors">
+            <tr>
+                <td>State</td>
+                <td>
+                    <select id="state-selector">
+                        <option>Select</option>
+                    </select>
+                </td>
+
+
+                <td>District</td>
+                <td>
+                    <select id="district-selector">
+                        <option>Select</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Assets</td>
+                <td>
+                    <select id="asset-selector">
+                        <option>Select</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="map-view">
+        <h2>Map View</h2>
+
+        <div id="mapid"></div>
+    </div>
+
+    <div id="table-view">
+        <h2>Table View</h2>
+
+        <div id="results"></div>
+
+    </div>
+{% endblock %}
+
+{% block 'customjs' %}
+
+
+      <script src="{% static 'assetmgt/js/jquery.min.js' %}"></script>
+      <script src="{% static 'assetmgt/js/leaflet.js' %}"></script>
+
+<!--     <script src="./static/jquery-3.5.1.min.js"></script>
+ -->    
+
+    <script>
+
+        let apiHost = "";
+
+        let selectedState = null;
+
+        let selectedDistrict = null;
+
+        let statesList = null; //NEW
+
+        let districtsList = null;//NEW
+
+        let assetsList = null;//NEW
+
+        let markers = [];
+
+        let redMarkerIconUrl = "/static/marker-icon-red.png";
+
+        let MarkerIcon = L.Icon.extend({
+            options: {
+                iconSize: [30, 45],
+                //shadowSize: [50, 64],
+                //iconAnchor: [22, 94],
+                //shadowAnchor: [4, 62],
+                //popupAnchor: [-3, -76]
+            }
+        });
+
+        let redMarkerIcon = new MarkerIcon({ iconUrl: redMarkerIconUrl });
+
+        let map = L.map('mapid').setView([23.803594, 79.657438], 4);
+
+        L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms?', { layers: 'indiainf', maxZoom: 18 }).addTo(map);
+
+        function findBounds(latlngs) {
+
+            // console.clear();
+
+            // console.log(latlngs);
+
+            let delta = 0.1
+
+            if (latlngs.length == 0) return null;
+
+            if (latlngs.length == 1) return [
+
+                [parseFloat(latlngs[0][0]) + delta, parseFloat(latlngs[0][1]) + delta],
+
+                [parseFloat(latlngs[0][0]) - delta, parseFloat(latlngs[0][1]) - delta],
+            ];
+
+            latlngs.forEach((i, e) => latlngs[i] = [parseFloat(e[0]), parseFloat(e[1])]);
+
+            let lats = latlngs.map(ele => ele[0]);
+
+            let lngs = latlngs.map(ele => ele[1]);
+
+            let bounds = [
+
+                [Math.max.apply(null, lats), Math.max.apply(null, lngs)],
+
+                [Math.min.apply(null, lats), Math.min.apply(null, lngs)]
+            ];
+
+            // console.log(bounds);
+
+            return bounds;
+
+        }
+
+        function addStringArrayToSelect(selectId, stringArray) {
+
+            $(selectId).empty();
+
+            let options = '';
+
+            for (let i = 0; i < stringArray.length; i++) {
+
+                options += '<option value="' + stringArray[i] + '">' + stringArray[i] + '</option>';
+            }
+            $(selectId).prepend("<option value='' selected='selected' disabled>Select</option>");
+
+            $(selectId).append(options);
+        }
+
+        function getKeyByValue(object, value) {//NEW
+
+            return Object.keys(object).find(key => object[key] === value);//NEW
+
+        }//NEW
+
+        function getStates() {
+
+            $.get(apiHost.concat("/assetmgt/getallstates"), function (response) {
+
+                console.log ( response );
+
+                statesList = response;//NEW
+
+                addStringArrayToSelect("#state-selector", Object.values(response));
+            });
+        }
+
+        function getDistricts() {
+
+            $.get(apiHost.concat("/assetmgt/getalldistrictsbystate"), { stateid: getKeyByValue(statesList, selectedState) }, function (response) {
+
+                console.log ( response );
+
+                districtsList = response;//NEW
+
+                addStringArrayToSelect("#district-selector", Object.values(response));
+            });
+        }
+
+        function getAssets() {
+
+            $.get(apiHost.concat("/assetmgt/getallassets"), { stateid: getKeyByValue(statesList, selectedState), districtid:  getKeyByValue(districtsList, selectedDistrict) }, function (response) {
+
+                console.log ( response );
+
+                assetsList = response;//NEW
+
+                addStringArrayToSelect("#asset-selector", Object.values(response)); //UPDATE
+            });
+        }
+
+        function getMapData() {
+
+            $("#results").html("");
+            // Map data passing parameters are commented  uncomment it to pass stateid, districtid & assetid.
+            $.get(apiHost.concat("/apis/map-data"), { /* stateid: getKeyByValue(statesList, selectedState), districtid:  getKeyByValue(districtsList, selectedDistrict) assetid: getKeyByValue(assetsList, selectedAsset), */ }, function (response) { //UPDATED
+
+                console.log ( response );
+
+                $.each(response, function (index, value) {
+
+                    let popUp = "";
+
+                    for (let [k, v] of Object.entries(value.status)) {
+
+                        popUp += `${k}: ${v}<br>`;
+                    }
+
+                    markers.push(L.marker(value.location, { icon: redMarkerIcon }).addTo(map).bindPopup(popUp));
+
+
+                    let mydiv = $("<div/>", {
+
+                        "class": "entry"
+                    });
+
+                    for (let [k, v] of Object.entries(value)) {
+
+                        if (typeof v !== 'object' && v !== null) {
+
+                            $(mydiv).append(`<div>${k}:&nbsp;${v}</div>`);
+
+                        } else {
+
+                            for (let [k1, v1] of Object.entries(v)) {
+
+                                $(mydiv).append(`<div>${k1}: ${v1}</div>`);
+                            }
+                        }
+
+
+                    }
+                    $("#results").append(mydiv);
+                });
+
+                let bounds = findBounds(response.map(e => e.location));
+
+                if (bounds) { map.fitBounds(bounds); }
+
+                /* Update the same data to table. */
+
+            });
+        }
+
+        $("#state-selector").on("change", function () {
+
+            selectedState = this.value;
+
+            getDistricts();
+        });
+
+        $("#district-selector").on("change", function () {
+
+            selectedDistrict = this.value;
+
+            getAssets();
+        });
+
+        $("#asset-selector").on("change", function () {
+
+            selectedAsset = this.value;
+
+            getMapData();
+        });
+
+        /* Toggle map/table view */
+        $("#view-selector").change(function () {
+
+            if (this.checked) {
+                // show map view & hide table view
+                document.getElementById("map-view").style.display = "none";
+
+                document.getElementById("table-view").style.display = "block";
+            } else {
+                // show table view & hide map view
+                document.getElementById("table-view").style.display = "none";
+
+                document.getElementById("map-view").style.display = "block";
+            }
+        });
+
+        $(function () {
+
+            getStates();
+        });
+    </script>
+
+{% endblock %}
