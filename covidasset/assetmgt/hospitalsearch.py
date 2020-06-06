@@ -90,3 +90,7 @@ def get_hospitals_with_assets(request):
     #return JsonResponse(json.dumps(data_table_list), content_type='application/json')         
                 
     
+def oneonetwo(request):
+    return render(request,
+        'assetmgt/oneonetwoplus.html',
+        {})

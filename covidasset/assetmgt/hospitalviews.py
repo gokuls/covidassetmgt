@@ -33,7 +33,7 @@ from assetmgt.models import (Hospital,
         HtypeAssetMapping,
         HospAssetMapping)
 
-htypes_header = HospitalType.objects.all().values_list('hospital_type',flat=True)
+htypes_header = 'one' #HospitalType.objects.all().values_list('hospital_type',flat=True)
 DATA_CSV_HEADER = [ "District",
         "Hospital_Name",
         "Hospital_Type("+'/'.join(htypes_header)+")",

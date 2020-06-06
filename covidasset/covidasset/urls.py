@@ -23,14 +23,18 @@ from django.contrib.auth import views as auth_views
 
 
 from assetmgt import usercreation
-from assetmgt import assetmgt
+from assetmgt import ( assetmgt,
+                    hospitalsearch,
+                    o12plus)
+
+#from assetmgt import ( assetmgt,
+#                    hospitalsearch as o12plus)
 
 #from assetmgt import hospital
 from assetmgt.hospitalviews import AddHospitalTemplate,IndexPage
 from assetmgt.hospitalviews import GetDistrictByState
 from django.conf import settings
 from django.conf.urls.static import static
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -57,9 +61,11 @@ urlpatterns = [
     path('ajax/loadallastform/', assetmgt.returnAssetMgtMultiForm, name='assetmgtmultiforms'),
     path('ajax/loadassetimg/', assetmgt.returnAssetShow, name='assetshow'),
     path('addasset/', assetmgt.addAsset, name='addasset'),
+    path('assetdetails/', hospitalsearch.oneonetwo, name='oneonetwo'),
     path('ajax/addentry/', assetmgt.addAssetManagement, name='addassetmanagement'),
     path('ajax/addmulentry/', assetmgt.addMultipleAssetManagement, name='addmultiassetmanagement'),
     path('', assetmgt.LoginMeth, name='login'),
+    path('api/hosp/', o12plus.returnHospitals, name='returnnearbyhosp'),
     #path('', assetmgt.LoginMeth, name='login1'),
     path('logout', assetmgt.Logout_view, name='logout'),
     path('changepassword', auth_views.PasswordChangeView.as_view(template_name='assetmgt/password_change.html',success_url = '/'),name='changepassword'),
