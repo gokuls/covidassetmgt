@@ -73,7 +73,7 @@ def get_hospitals_with_assets(request):
     
     data_table_list = []
     h_assets = AssetMgt.objects.filter(hospital_id__state_id_id=state_id, hospital_id__district_id_id=district_id,asset_id=asset_id).order_by("hospital_id","asset_id","-creation_date").distinct("hospital_id","asset_id")
-    
+
     if h_assets.exists():
         i=0
         for h_asset in h_assets:
@@ -83,6 +83,7 @@ def get_hospitals_with_assets(request):
             data_table['atot']=h_asset.asset_total
             data_table['autil']=h_asset.asset_utilized
             data_table['abal']=h_asset.asset_balance
+            data_table['cdate']=h_asset.creation_date
             data_table_list.append(data_table)
             i += 1
     print(data_table_list)
